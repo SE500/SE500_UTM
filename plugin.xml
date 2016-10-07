@@ -34,5 +34,22 @@
             file="contexts.xml">
       </contexts>
    </extension>
+   <extension
+         point="org.eclipse.ui.importWizards">
+      <category
+            id="org.eclipse.utm.importWizards.sampleCategory"
+            name="UTM File Import">
+      </category>
+      <wizard
+            category="org.eclipse.utm.importWizards.sampleCategory"
+            class="org.eclipse.utm.importWizards.ImportWizard"
+            icon="icons/sample.gif"
+            id="org.eclipse.utm.importWizards.ImportWizard"
+            name="Import File">
+         <description>
+            Import a file from the local file system into the workspace.
+         </description>
+      </wizard>
+   </extension>
 
 </plugin>
