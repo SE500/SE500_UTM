@@ -13,6 +13,8 @@ import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.SWT;
 
 
+
+
 /**
  * This UTM Input Output class demonstrates how to plug-in a new
  * workbench view. The view shows data obtained from the
@@ -72,7 +74,10 @@ public class UTMInputOutput extends ViewPart {
 		viewer.setContentProvider(ArrayContentProvider.getInstance());
 		viewer.setInput(new String[] { "One", "Two", "Three" });
 		viewer.setLabelProvider(new ViewLabelProvider());
-
+		
+		//Try import GUI
+		UTMGuiImport.main(null);
+		
 		// Create the help context id for the viewer's control
 		PlatformUI.getWorkbench().getHelpSystem().setHelp(viewer.getControl(), "org.eclipse.utm.viewer");
 		getSite().setSelectionProvider(viewer);
@@ -126,6 +131,7 @@ public class UTMInputOutput extends ViewPart {
 		action1 = new Action() {
 			public void run() {
 				showMessage("Action 1 executed");
+				
 			}
 		};
 		action1.setText("Action 1");
