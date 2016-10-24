@@ -1,1 +1,5 @@
+# Exclude the following
 /bin/
+/.settings
+/.project
+/.classpath
