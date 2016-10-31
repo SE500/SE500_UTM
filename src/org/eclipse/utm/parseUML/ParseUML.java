@@ -16,7 +16,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import javax.swing.JFileChooser;
-import javax.swing.JFrame;
+//import javax.swing.JFrame;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import org.eclipse.acceleo.common.utils.ModelUtils;
@@ -28,42 +28,60 @@ import org.eclipse.uml2.uml.UMLPackage;
 import org.eclipse.uml2.uml.resource.UMLResource;
 import org.eclipse.utm.UTMDB;
 import org.eclipse.utm.parseUML.main.Generate;
-
-import com.google.common.base.Splitter;
+//import com.google.common.base.Splitter;
 /**
  * @author Thomas Colborne
  *
  */
-//@SuppressWarnings("restriction")
+/**
+ * 
+ * A class that parses a UML file and enters relevant information into
+ * the UTMDB - an SQL database
+ *
+ */
 public class ParseUML {
 	
 	/*
-	 * @constructor 
-	 * 
+	 * Variable declarations
 	 */
-//	public ParseUML() {
-//		
-//	}
 	private static boolean testCleanUp = true;
 	
-	private static UTMDB db = new UTMDB();
+	private File modelFile;
 	
-	private static File modelFile;
+	private File tempGenFolder = new File(System.getProperty("user.dir","temp")
+			+ "/temp/generated_model_src");
 	
+	private EObject model;
+	
+	private UTMDB db = new UTMDB();
+	
+	/**
+	 * Empty constructor - Do not use
+	 * @constructor  
+	 */
+	public ParseUML() {
+			
+	}
+	/**
+	 * Constructor with a passed model file
+	 * @param model
+	 */
+	public ParseUML(File model){
+		initialize(model);
+	}
+	
+
+	/**
+	 * The main of ParseUML provides the option for this class to called 
+	 * as a stand alone program.
+	 * @param args
+	 * @throws IOException
+	 */
 	public static void main(String[] args) throws IOException {
-		ResourceSet resourceSet = new ResourceSetImpl();
-		resourceSet.getPackageRegistry().put(org.eclipse.uml2.uml.UMLPackage.eINSTANCE.getNsURI(), UMLPackage.eINSTANCE);
-		resourceSet.getPackageRegistry().put("http://www.eclipse.org/uml2/4.0.0/UML", UMLPackage.eINSTANCE);
-		resourceSet.getResourceFactoryRegistry().getExtensionToFactoryMap().put(UMLResource.FILE_EXTENSION, UMLResource.Factory.INSTANCE);
-		//File modelFile = new File("D:/Users/Stew/Documents/GIT/SE500_UTM/test/ExtendedPO2.uml");
-		modelFile = selectUmlFile();
-		if(modelFile != null) {
-			EObject model = ModelUtils.load(modelFile, resourceSet);
-			String userDir = System.getProperty("user.dir","temp");
-			//System.out.println(userDir);
-			//System.out.println(System.getProperty("user.home"));
-			String tempGenFolderPath = userDir + "/temp/generated_model_src";
-			File tempGenFolder = new File(tempGenFolderPath);
+		/*File selectedModel = selectUmlFile();
+		if(selectedModel != null) {
+			initialize(selectedModel);
+			
 			Generate uml2java = new Generate(model, tempGenFolder, new ArrayList<Object>());
 			uml2java.doGenerate(new BasicMonitor());
 			processGenDir(tempGenFolder);
@@ -77,28 +95,77 @@ public class ParseUML {
 		else {
 			System.err.println("Error: No UML File selected.");
 		}
-		System.exit(0);		
+		System.exit(0);*/		
 	}
 	
-	/*
-	 * @method Select a UML file
+	/**
+	 * Launch the process to parse the UML into the SQL database
+	 * @throws IOException
+	 */
+	public void launch() throws IOException {
+		Generate uml2java = new Generate(this.model, this.tempGenFolder, new ArrayList<Object>());
+		uml2java.doGenerate(new BasicMonitor());
+		processGenDir(this.tempGenFolder);		
+	}
+	
+	/**
+	 * Launch the process to parse the UML into the SQL database
+	 * and cleans up temporary files if argument is true
+	 * @param withCleanUp
+	 * @throws IOException
+	 */
+	public void launch(boolean withCleanUp) throws IOException {
+		Generate uml2java = new Generate(this.model, this.tempGenFolder, new ArrayList<Object>());
+		uml2java.doGenerate(new BasicMonitor());
+		processGenDir(this.tempGenFolder);
+		if(withCleanUp)
+			this.cleanUp();
+	}
+	
+	
+	/**
+	 * This method initializes the ParseUML object
+	 * @param model
+	 */
+	private void initialize(File model) {
+		ResourceSet resourceSet = new ResourceSetImpl();
+		resourceSet.getPackageRegistry().put(org.eclipse.uml2.uml.UMLPackage.eINSTANCE.getNsURI(), UMLPackage.eINSTANCE);
+		resourceSet.getPackageRegistry().put("http://www.eclipse.org/uml2/4.0.0/UML", UMLPackage.eINSTANCE);
+		resourceSet.getResourceFactoryRegistry().getExtensionToFactoryMap().put(UMLResource.FILE_EXTENSION, UMLResource.Factory.INSTANCE);
+		this.modelFile = model;
+		if(this.modelFile != null) {
+			try {
+				this.model = ModelUtils.load(this.modelFile, resourceSet);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}	
+	
+	
+	/**
+	 * Select a UML file
+	 * @return the UML file selected or null
 	 */
 	public static File selectUmlFile(){
 		JFileChooser fileChooser = new JFileChooser();
 		fileChooser.setCurrentDirectory(new File(System.getProperty("user.dir")));
 		FileNameExtensionFilter filter = new FileNameExtensionFilter("UML File","uml");
 		fileChooser.setFileFilter(filter);
-		int result = fileChooser.showOpenDialog(new JFrame());
+		int result = fileChooser.showOpenDialog(null);
 		if (result == JFileChooser.APPROVE_OPTION) {
 		    return fileChooser.getSelectedFile();
 		}
 		return null;
 	}
 	
-	/*
-	 *  @method Process the generated UML files within directory
+	/**
+	 * Process the generated UML files within directory
+	 * @param directory
+	 * @return true if the directory is deleted or false if deletion fails
 	 */
-	public static boolean processGenDir(File directory) {
+	private boolean processGenDir(File directory) {
 		if (directory == null||!directory.exists()||!directory.isDirectory())
 			return false;
 		
@@ -130,10 +197,14 @@ public class ParseUML {
 		return true;
 	}
 	
-	/*
-	 * @method Process each individually generated file
+	/**
+	 * Process each individually generated file
+	 * @param file
+	 * @return 	true if all lines are processed successfully 
+	 *			false if line fails to be processed
+	 * @throws IOException
 	 */
-	public static boolean processGenFile(File file) throws IOException {
+	private boolean processGenFile(File file) throws IOException {
 		FileInputStream fis = new FileInputStream(file);
 		 
 		//Construct BufferedReader from InputStreamReader
@@ -143,7 +214,9 @@ public class ParseUML {
 		int lineNumber = 0;
 		while ((line = br.readLine()) != null) {
 			lineNumber++;
-			if(!processGenFileLine(line, lineNumber)){
+			if(!processGenFileLine(line)){
+				System.err.printf("File %1$s: Line %2$d: Line Processing Failed",
+						file.getName(), lineNumber);
 				br.close();
 				return false;
 			}
@@ -155,40 +228,38 @@ public class ParseUML {
 		return true;
 	}
 	
-	/*
-	 * @method Process each line within a generated file and store it appropriately
+	/**
+	 * Process each line within a generated file and store it appropriately
+	 * @param line
+	 * @return
 	 */
-	public static boolean processGenFileLine(String line, int lineNumber) {
-		//Splitter stringSplitter = Splitter.on(' ').omitEmptyStrings().trimResults();
+	private boolean processGenFileLine(String line) {
 		
-		//System.out.printf("Start Line: %1d\n", lineNumber);
-		//Iterable<String> tokens = stringSplitter.split(line);
-		//int i = 0;
 		String[] tokens = line.split("\\s");
-		System.out.printf("%1$s %2$s %3$d\n",tokens[0], tokens[1], tokens.length);
+		/*System.out.printf("%1$s %2$s %3$d\n",tokens[0], tokens[1], tokens.length);
 		for(String token : tokens){
 			System.out.println(token.trim());
-		}
+		}*/
 		switch (tokens[0]) {
 			case "class" :
 				if(tokens.length == 3) {
-					db.Open();
-					db.NewUMLClass(modelFile.getName(), tokens[1].trim(), tokens[2].trim(), false, false, false);
-					db.Close();
+					this.db.Open();
+					this.db.NewUMLClass(modelFile.getName(), tokens[1].trim(), tokens[2].trim(), false, false, false);
+					this.db.Close();
 				}
 				break;
 			case "attribute" :
 				if(tokens.length == 5) {
-					db.Open();
-					db.NewUMLAttribute(modelFile.getName(), tokens[1].trim(), tokens[2].trim(), tokens[3].trim(), tokens[4].trim());
-					db.Close();
+					this.db.Open();
+					this.db.NewUMLAttribute(modelFile.getName(), tokens[1].trim(), tokens[2].trim(), tokens[3].trim(), tokens[4].trim());
+					this.db.Close();
 				}
 				break;
 			case "method" :
 				if(tokens.length == 5) {
-					db.Open();
-					db.NewUMLMethod(modelFile.getName(), tokens[1].trim(), tokens[2].trim(), tokens[3].trim(), tokens[4].trim(), "");
-					db.Close();
+					this.db.Open();
+					this.db.NewUMLMethod(modelFile.getName(), tokens[1].trim(), tokens[2].trim(), tokens[3].trim(), tokens[4].trim(), "");
+					this.db.Close();
 				}
 				break;
 			default:
@@ -199,14 +270,14 @@ public class ParseUML {
 	}
 	
 	
-	/*
-	 * @method Cleanup after parsing a UML file by deleting any temporary files created.
+	/**
+	 * Cleanup after parsing a UML file by deleting any temporary files created.
 	 */
 	public void cleanUp() {
-		
+		removeDirectory(new File(this.tempGenFolder.getParent()));
 	}
 	
-	/*
+	/**
 	 * @method Removes a directory from the file system
 	 */
 	public static boolean removeDirectory(File directory) {
@@ -226,8 +297,6 @@ public class ParseUML {
 		if (list != null) {
 			for (int i = 0; i < list.length; i++) {
 				File entry = new File(directory, list[i]);
-
-				//System.out.println("\tremoving entry " + entry);
 
 				if (entry.isDirectory())
 				{
