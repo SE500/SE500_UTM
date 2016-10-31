@@ -37,6 +37,10 @@ import javax.swing.ImageIcon;
 
 public class GuiJavaToUml extends JFrame {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 5800421425665534667L;
 	private JPanel contentPane;
 	private JButton btnNewButton;
 	private JButton btnNewButton_1;

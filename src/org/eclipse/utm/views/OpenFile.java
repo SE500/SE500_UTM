@@ -13,7 +13,7 @@ public class OpenFile {
 	public void PickMe() throws Exception {
 		fileChooser.setDialogTitle("Open a File");
 		fileChooser.setFileFilter(new FileTypeFilter(".java","Java File"));
-		fileChooser.setFileFilter(new FileTypeFilter(".Uml","Uml File"));
+		fileChooser.setFileFilter(new FileTypeFilter(".uml","Uml File"));
 //		int result = fileChooser.showOpenDialog(null);
 		
 		fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);

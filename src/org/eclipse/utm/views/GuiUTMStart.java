@@ -18,12 +18,17 @@ import javax.swing.LayoutStyle.ComponentPlacement;
 
 import javax.swing.UIManager;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.net.URI;
 import java.awt.event.ActionEvent;
 import javax.swing.JPanel;
 import javax.swing.border.TitledBorder;
+
+import org.eclipse.utm.parseUML.ParseUML;
+
 import javax.swing.JScrollPane;
 import java.awt.Font;
+
 
 public class GuiUTMStart extends JFrame
 {
@@ -111,7 +116,7 @@ public class GuiUTMStart extends JFrame
 		mnHelp.add(mntmHelp);
 		
 		JLabel lblNewLabel = new JLabel("Welcome to UML Trace Magic");
-		lblNewLabel.setIcon(createImageIcon("org.eclipse.utm/src/org/eclipse/utm/resources/Magic_icon_16.png", "A magical icon"));
+		lblNewLabel.setIcon(createImageIcon("Resource/Magic_icon_16.png", "A magical icon"));
 		lblNewLabel.setBounds(115, 6, 179, 16);
 		frame.getContentPane().setLayout(null);
 		frame.getContentPane().add(lblNewLabel);
@@ -130,14 +135,17 @@ public class GuiUTMStart extends JFrame
 		btnSelectUmlFile.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				
-				OpenFile of = new OpenFile();
+				//OpenFile of = new OpenFile();
+				File file = null;
 				
 				try {
-					of.PickMe();
+					//of.PickMe();
+					file = ParseUML.selectUmlFile();
 				} catch (Exception e1) {
 					e1.printStackTrace();
 				}
-				textAreaUML.setText(of.sb.toString());		
+				textAreaUML.setText(file.getName());
+				//textAreaUML.setText(of.sb.toString());		
 			}
 		});
 		
@@ -196,14 +204,15 @@ public class GuiUTMStart extends JFrame
 		panel_1.setBounds(27, 139, 345, 65);
 		frame.getContentPane().add(panel_1);
 		
-		btnNewButton = new JButton("Trace UML file");
+		btnNewButton = new JButton("Parse UML file");
 		btnNewButton.setFont(new Font("Lucida Grande", Font.PLAIN, 10));
 		btnNewButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				try{
-					frame.dispose();
-					GuiUmlToJava output = new GuiUmlToJava();
-					output.setVisible(true);
+					
+					//frame.dispose();
+					//GuiUmlToJava output = new GuiUmlToJava();
+					//output.setVisible(true);
 			}catch(Exception e2){
 				JOptionPane.showMessageDialog(null, e2);
 			}

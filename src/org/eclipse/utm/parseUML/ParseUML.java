@@ -53,7 +53,7 @@ public class ParseUML {
 	
 	private EObject model;
 	
-	private UTMDB db = new UTMDB();
+	private UTMDB db = null;
 	
 	/**
 	 * Empty constructor - Do not use
@@ -173,6 +173,11 @@ public class ParseUML {
 
 		// Some JVMs return null for File.list() when the directory is empty.
 		if (list != null) {
+			
+			this.db = new UTMDB();
+			this.db.Open();
+			this.db.InitDatabase();
+			
 			for (int i = 0; i < list.length; i++) {
 				File entry = new File(directory, list[i]);
 
@@ -192,8 +197,17 @@ public class ParseUML {
 					}
 
 				}
+
 			}
+			this.db.Relate();
+			this.db.Match();
+			this.db.Commit();
+			System.out.println("UML Class Count:" + this.db.CountUMLClasses());
+			System.out.println("UML Attribute Count:" + this.db.CountUMLAttributes());
+			System.out.println("UML Method Count:" + this.db.CountUMLMethods());
+			this.db.Close();
 		}
+		
 		return true;
 	}
 	
@@ -243,23 +257,17 @@ public class ParseUML {
 		switch (tokens[0]) {
 			case "class" :
 				if(tokens.length == 3) {
-					this.db.Open();
 					this.db.NewUMLClass(modelFile.getName(), tokens[1].trim(), tokens[2].trim(), false, false, false);
-					this.db.Close();
 				}
 				break;
 			case "attribute" :
 				if(tokens.length == 5) {
-					this.db.Open();
 					this.db.NewUMLAttribute(modelFile.getName(), tokens[1].trim(), tokens[2].trim(), tokens[3].trim(), tokens[4].trim());
-					this.db.Close();
 				}
 				break;
 			case "method" :
 				if(tokens.length == 5) {
-					this.db.Open();
 					this.db.NewUMLMethod(modelFile.getName(), tokens[1].trim(), tokens[2].trim(), tokens[3].trim(), tokens[4].trim(), "");
-					this.db.Close();
 				}
 				break;
 			default:
