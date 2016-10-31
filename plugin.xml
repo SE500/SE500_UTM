@@ -3,53 +3,66 @@
 <plugin>
 
    <extension
-         point="org.eclipse.ui.views">
-      <category
-            name="UML Trace Magic"
-            id="org.eclipse.utm">
-      </category>
-      <view
-            name="UTM Input Output"
-            icon="icons/sample.gif"
-            category="org.eclipse.utm"
-            class="org.eclipse.utm.views.UTMInputOutput"
-            id="org.eclipse.utm.views.UTMInputOutput">
-      </view>
-   </extension>
-   <extension
-         point="org.eclipse.ui.perspectiveExtensions">
-      <perspectiveExtension
-            targetID="org.eclipse.jdt.ui.JavaPerspective">
-         <view
-               id="org.eclipse.utm.views.UTMInputOutput"
-               ratio="0.5"
-               relationship="right"
-               relative="org.eclipse.ui.views.ProblemView">
-         </view>
-      </perspectiveExtension>
-   </extension>
-   <extension
          point="org.eclipse.help.contexts">
       <contexts
             file="contexts.xml">
       </contexts>
    </extension>
    <extension
-         point="org.eclipse.ui.importWizards">
+         point="org.eclipse.ui.commands">
       <category
-            id="org.eclipse.utm.importWizards.sampleCategory"
-            name="UTM File Import">
+            id="org.eclipse.utm.commands.category"
+            name="Sample Category">
       </category>
-      <wizard
-            category="org.eclipse.utm.importWizards.sampleCategory"
-            class="org.eclipse.utm.importWizards.ImportWizard"
-            icon="icons/sample.gif"
-            id="org.eclipse.utm.importWizards.ImportWizard"
-            name="Import File">
-         <description>
-            Import a file from the local file system into the workspace.
-         </description>
-      </wizard>
+      <command
+            categoryId="org.eclipse.utm.commands.category"
+            id="org.eclipse.utm.commands.sampleCommand"
+            name="Sample Command">
+      </command>
+   </extension>
+   <extension
+         point="org.eclipse.ui.handlers">
+      <handler
+            class="org.eclipse.utm.handlers.executeUtm"
+            commandId="org.eclipse.utm.commands.sampleCommand">
+      </handler>
+   </extension>
+   <extension
+         point="org.eclipse.ui.bindings">
+      <key
+            commandId="org.eclipse.utm.commands.sampleCommand"
+            contextId="org.eclipse.ui.contexts.window"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="M1+6">
+      </key>
+   </extension>
+   <extension
+         point="org.eclipse.ui.menus">
+      <menuContribution
+            locationURI="menu:org.eclipse.ui.main.menu?after=additions">
+         <menu
+               id="org.eclipse.utm.menus.sampleMenu"
+               label="Sample Menu"
+               mnemonic="M">
+            <command
+                  commandId="org.eclipse.utm.commands.sampleCommand"
+                  id="org.eclipse.utm.menus.sampleCommand"
+                  mnemonic="S">
+            </command>
+         </menu>
+      </menuContribution>
+      <menuContribution
+            locationURI="toolbar:org.eclipse.ui.main.toolbar?after=additions">
+         <toolbar
+               id="org.eclipse.utm.toolbars.sampleToolbar">
+            <command
+                  commandId="org.eclipse.utm.commands.sampleCommand"
+                  icon="icons/sample.gif"
+                  id="org.eclipse.utm.toolbars.sampleCommand"
+                  tooltip="Say hello world">
+            </command>
+         </toolbar>
+      </menuContribution>
    </extension>
 
 </plugin>
