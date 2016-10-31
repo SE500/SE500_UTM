@@ -110,8 +110,8 @@ public class GuiUTMStart extends JFrame
 		});
 		mnHelp.add(mntmHelp);
 		
-		JLabel lblNewLabel = new JLabel("Welcome to Trace Magic");
-		lblNewLabel.setIcon(new ImageIcon(GuiUTMStart.class.getResource("/resources/Magic_icon_16.png")));
+		JLabel lblNewLabel = new JLabel("Welcome to UML Trace Magic");
+		lblNewLabel.setIcon(createImageIcon("org.eclipse.utm/src/org/eclipse/utm/resources/Magic_icon_16.png", "A magical icon"));
 		lblNewLabel.setBounds(115, 6, 179, 16);
 		frame.getContentPane().setLayout(null);
 		frame.getContentPane().add(lblNewLabel);
@@ -244,4 +244,16 @@ public class GuiUTMStart extends JFrame
 		);
 		panel_1.setLayout(gl_panel_1);
 	}
+	
+	/** Returns an ImageIcon, or null if the path was invalid. */
+	protected ImageIcon createImageIcon(String path, String description) {
+	    java.net.URL imgURL = getClass().getResource(path);
+	    if (imgURL != null) {
+	        return new ImageIcon(imgURL, description);
+	    } else {
+	        System.err.println("Couldn't find file: " + path);
+	        return null;
+	    }
+	}
+
 }
