@@ -8,6 +8,9 @@ import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.FileDialog;
+import org.eclipse.swt.widgets.Group;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
@@ -19,134 +22,155 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 
 public class ViewOpen extends ViewPart {
-
-	public static final String ID = "com.free.view.treeview.views.ViewOpen"; 
-	private Text getUMLFileName;
-	private Text getJavaSourceFileName;
-
 	public ViewOpen() {
 	}
 
-	/**
-	 * Create contents of the view part.
-	 * @param parent
-	 */
-	@Override
-	public void createPartControl(Composite parent) {
-		Composite container = new Composite(parent, SWT.NONE);
-	//Button of choose UML file:	
-		Button btnChooseUmlFile = new Button(container, SWT.NONE);
-		btnChooseUmlFile.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				JFileChooser fs = new JFileChooser(new File("c:\\"));
-				fs.setDialogTitle("Open a File");
-				fs.setFileFilter(new FileTypeFilter(".uml","UML File"));
-				int result = fs.showOpenDialog(null);
-				  StringBuilder sb = new StringBuilder();
-				if (result == JFileChooser.APPROVE_OPTION){
-//					System.out.println("Folder Name"+ fs.getCurrentDirectory());
-//					System.out.println("Folder Name"+ fs.getSelectedFile().getPath());
-					sb.append(fs.getSelectedFile().getName());
-				}else{
-					sb.append("no file was selected.");
-				}
-				getUMLFileName.setText(sb.toString());	
-			}
-		});
-		btnChooseUmlFile.setBounds(31, 32, 155, 28);
-		btnChooseUmlFile.setText("Choose UML file:");
-		
-	//Button of choose Java source files:	
-		Button btnChooseJavaSource = new Button(container, SWT.NONE);
-		btnChooseJavaSource.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				//open file
-				JFileChooser fs = new JFileChooser(new File("c:\\"));
-				fs.setDialogTitle("Open a File");
-				fs.setFileFilter(new FileTypeFilter(".java","Java File"));
-				int result = fs.showOpenDialog(null);
-				  StringBuilder sb = new StringBuilder();
-				if (result == JFileChooser.APPROVE_OPTION){
-//					System.out.println("Folder Name"+ fs.getCurrentDirectory());
-//					System.out.println("Folder Name"+ fs.getSelectedFile().getPath());
-					sb.append(fs.getSelectedFile().getName());
-				}else{
-					sb.append("no file was selected.");
-				}
-				getJavaSourceFileName.setText(sb.toString());	
-			}
-		});
-		btnChooseJavaSource.setBounds(31, 79, 173, 28);
-		btnChooseJavaSource.setText("Choose Java Source Files:");
-		
-	//show File name in text field	
-		getUMLFileName = new Text(container, SWT.BORDER);
-		getUMLFileName.setBounds(210, 36, 155, 19);
-		
-		getJavaSourceFileName = new Text(container, SWT.BORDER);
-		getJavaSourceFileName.setBounds(210, 83, 155, 19);
-		
-	//Button of get result of UML to Java Source File:	
-		Button btnGetResultsUMLtoJava = new Button(container, SWT.NONE);
-		btnGetResultsUMLtoJava.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				//Method of 
-				//IWorkbenchPage.showView(viewId, secondardId, IWorbenchPage.VEW_ACTIVATE);
-			//	IWorkbenchPage page = getSite().getPage();
-				IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
-				try {
-					page.showView("com.free.view.treeview.views.TreeView");
-				} catch (PartInitException e1) {
-				
-					e1.printStackTrace();
-				}
-			}
-		});
-		btnGetResultsUMLtoJava.setBounds(413, 32, 95, 28);
-		btnGetResultsUMLtoJava.setText("Get Results:");
-		
-	//Button of get result of JAVA Source file to UML:	
-		Button btnGetResultsJavatoUML = new Button(container, SWT.NONE);
-		btnGetResultsJavatoUML.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				//get results
-			}
-		});
-		btnGetResultsJavatoUML.setBounds(413, 79, 95, 28);
-		btnGetResultsJavatoUML.setText("Get Results:");
+	public static final String ID = "com.free.view.treeview.views.ViewOpen";
+	
+	 Composite mainPanel;
+	private Text textAreaUML;
+	private Text textAreaJavaSourceCode;
+	private Button btnShowResults;
+	private Button btnChooseJavaSource2;
+	private Button btnChooseUmlFile;
+	private Label lblFilenameSingle;
+	File umlFile;
+	File javaFile;
+	private Button btnBrowseSingle;
+	private Button btnCompute;
 
-		createActions();
-		initializeToolBar();
-		initializeMenu();
-	}
 
-	/**
-	 * Create the actions.
-	 */
-	private void createActions() {
-		// Create the actions
-	}
+@Override
+public void createPartControl(Composite parent) {
+	Composite container = new Composite(parent, SWT.NONE);
+   		container.setLayout(null);
+   
+   		Group grpUml = new Group(container, SWT.NONE);
+   		grpUml.setBounds(5, 24, 374, 60);
+   		grpUml.setText("Choose Files");
+   		Label lblFilenameUML = new Label (grpUml, SWT.NONE);
+   		lblFilenameUML.setSize(29, 14);
+   		lblFilenameUML.setLocation(163, 17);
+   		lblFilenameUML.setText("No file selected");
+   		lblFilenameUML.setEnabled(false);
+   		lblFilenameUML.pack();
+   		
+   		Button btnBrowseUML = new Button(grpUml, SWT.PUSH);
+   		btnBrowseUML.setText("Choose UML");
+   		btnBrowseUML.setLocation(10, 10);
+   		btnBrowseUML.pack();
+   		btnBrowseUML.addSelectionListener(new SelectionAdapter() {
+   			@Override
+   			public void widgetSelected(SelectionEvent e) {
+   				  FileDialog dlg = new FileDialog(btnBrowseUML.getShell(),  SWT.OPEN  );
+   		         dlg.setText("Select Class Diagram");
+   		         final String[] allowedExtensions = {"*.uml"};
+   		         dlg.setFilterExtensions(allowedExtensions);
+   		         String path = dlg.open();
+   		         if (path == null) return;
+   		         lblFilenameUML.setText(dlg.getFileName());
+   		         lblFilenameUML.setEnabled(true);
+   		         umlFile = new File(path);
+   			}
+   		});
+   		grpUml.pack();
+   Group grpJavaSourceCode = new Group(container, SWT.NONE);
+   grpJavaSourceCode.setBounds(5, 89, 217, 60);
+   grpJavaSourceCode.setText("Choose Files"); 
+   
+            lblFilenameSingle = new Label (grpJavaSourceCode, SWT.NONE);
+            lblFilenameSingle.setBounds(211, 17, 49, 14);
+            lblFilenameSingle.setText("No file selected");
+            lblFilenameSingle.setEnabled(false);
+            lblFilenameSingle.pack();
+            
+            btnBrowseSingle = new Button(grpJavaSourceCode, SWT.PUSH);
+            btnBrowseSingle.setText("Choose Java Source File");
+            //       btnBrowseSingle.setEnabled(ture);
+                     btnBrowseSingle.setLocation(10, 10);
+                     btnBrowseSingle.pack();
+                     btnBrowseSingle.addSelectionListener(new SelectionAdapter() {
+                     	@Override
+                     	public void widgetSelected(SelectionEvent e) {
+                     		 FileDialog dlg = new FileDialog(btnBrowseSingle.getShell(),  SWT.OPEN  );
+                             dlg.setText("Select Java File");
+                             final String[] allowedExtensions = {"*.java"};
+                             dlg.setFilterExtensions(allowedExtensions);
+                             String path = dlg.open();
+                             if (path == null) return;
+                             lblFilenameSingle.setText(dlg.getFileName());
+                             lblFilenameSingle.setEnabled(true);
+                             javaFile = new File(path);
+                     	}
+                     });
+                     grpJavaSourceCode.pack();
+   
 
-	/**
-	 * Initialize the toolbar.
-	 */
-	private void initializeToolBar() {
-		IToolBarManager toolbarManager = getViewSite().getActionBars().getToolBarManager();
-	}
+   Button btnCompute_1 = new Button(container, SWT.PUSH);
+   btnCompute_1.setBounds(5, 155, 58, 28);
+   btnCompute_1.setText("Start");
+   btnCompute_1.pack();
+   
+   Label lblWelcomeToUtm = new Label(container, SWT.NONE);
+   lblWelcomeToUtm.setBounds(233, 10, 166, 14);
+   lblWelcomeToUtm.setText("Welcome To UTM");
+   btnCompute_1.addSelectionListener(new SelectionAdapter() {
+   	@Override
+   	public void widgetSelected(SelectionEvent e) {
+   	 Boolean doProject = null;
+     if (umlFile == null) {
+             //TODO: Show error message - no UML file selected
+             return;}else{
+            	 doProject = true;
+             }
+     if(javaFile==null){
+    	 return;
+     }else{
+    	 doProject=true;
+     }	 	computeTraceability(doProject);
+   	}
+   });
+	
+	createActions();
+	initializeToolBar();
+	initializeMenu();
+}
 
-	/**
-	 * Initialize the menu.
-	 */
-	private void initializeMenu() {
-		IMenuManager menuManager = getViewSite().getActionBars().getMenuManager();
-	}
+ private void computeTraceability(Boolean doProject) {
+	 parseUML();
+      parseJava(doProject);
+   //   Compare.compare();
+      showResultsView();
+	
+}
+ 
+private void showResultsView() {
+	// TODO Auto-generated method stub
+	
+}
 
-	@Override
-	public void setFocus() {
-		// Set the focus
-	}
+
+private void parseJava(Boolean doProject) {
+	// TODO Auto-generated method stub
+	
+}
+
+
+private void parseUML() {
+	// TODO Auto-generated method stub
+	
+}
+
+
+private void createActions() {
+}
+private void initializeToolBar() {
+	IToolBarManager toolbarManager = getViewSite().getActionBars().getToolBarManager();
+}	
+private void initializeMenu() {
+	IMenuManager menuManager = getViewSite().getActionBars().getMenuManager();
+}	
+public void setFocus() {
+	// Set the focus
+}
 }

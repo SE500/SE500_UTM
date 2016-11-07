@@ -4,6 +4,9 @@ import java.util.ArrayList;
 
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.part.*;
+
+
+
 import org.eclipse.jface.viewers.*;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.jface.action.*;
@@ -39,12 +42,11 @@ public class TreeView extends ViewPart {
 	 */
 	public static final String ID = "com.free.view.treeview.views.TreeView";
 
+
+	Composite mainPanel;
 	private TreeViewer viewer;
 	private DrillDownAdapter drillDownAdapter;
-	private Action action1;
-	private Action action2;
-	private Action doubleClickAction;
-	 
+		 
 	class TreeObject implements IAdaptable {
 		private String name;
 		private TreeParent parent;
@@ -118,45 +120,13 @@ public class TreeView extends ViewPart {
 				return ((TreeParent)parent).hasChildren();
 			return false;
 		}
-/*
- * We will set up a dummy model to initialize tree heararchy.
- * In a real code, you will connect to a real model and
- * expose its hierarchy.
- */
+
 		private void initialize() {
-			TreeObject to1 = new TreeObject("Method 1");
-			TreeObject to2 = new TreeObject("Method 2");
-			TreeObject to3 = new TreeObject("Method 3");
-			TreeParent p1 = new TreeParent("Class 1");
-			p1.addChild(to1);
-			p1.addChild(to2);
-			p1.addChild(to3);
-			
-			TreeObject to4 = new TreeObject("Method 4");
-			TreeObject to5 = new TreeObject("Method 5");
-			TreeParent p2 = new TreeParent("Class 2");
-			p2.addChild(to4);
-			p2.addChild(to5);
-			
-			TreeObject to6 = new TreeObject("Method 6");
-			TreeObject to7 = new TreeObject("Method 7");
-			TreeParent p3 = new TreeParent("Class 3");
-			p3.addChild(to7);
-			p3.addChild(to6);
-			
-			
-			TreeParent root = new TreeParent("Root");
-			root.addChild(p1);
-			root.addChild(p2);
-			root.addChild(p3);
-			
-			invisibleRoot = new TreeParent("");
-			invisibleRoot.addChild(root);
+			invisibleRoot = new TreeParent("Results:");
 		}
 	}
 
 	class ViewLabelProvider extends LabelProvider {
-
 		public String getText(Object obj) {
 			return obj.toString();
 		}
@@ -168,31 +138,45 @@ public class TreeView extends ViewPart {
 		}
 	}
 
-/**
-	 * The constructor.
-	 */
-	public TreeView() {
-	}
 
-	/**
-	 * This is a callback that will allow us
-	 * to create the viewer and initialize it.
-	 */
 	public void createPartControl(Composite parent) {
-		viewer = new TreeViewer(parent, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
+		this.mainPanel = mainPanel;
+		viewer = new TreeViewer(mainPanel, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
 		drillDownAdapter = new DrillDownAdapter(viewer);
-		
 		viewer.setContentProvider(new ViewContentProvider());
 		viewer.setInput(getViewSite());
 		viewer.setLabelProvider(new ViewLabelProvider());
-
-		// Create the help context id for the viewer's control
-		PlatformUI.getWorkbench().getHelpSystem().setHelp(viewer.getControl(), "com.free.view.treeview.viewer");
-		getSite().setSelectionProvider(viewer);
-		makeActions();
-		hookContextMenu();
-		hookDoubleClickAction();
-		contributeToActionBars();
+		
+		TreeObject to1 = new TreeObject("Method 1");
+		TreeObject to2 = new TreeObject("Method 2");
+		TreeObject to3 = new TreeObject("Method 3");
+		TreeParent p1 = new TreeParent("Class 1");
+		p1.addChild(to1);
+		p1.addChild(to2);
+		p1.addChild(to3);
+		
+		TreeObject to4 = new TreeObject("Method 4");
+		TreeObject to5 = new TreeObject("Method 5");
+		TreeParent p2 = new TreeParent("Class 2");
+		p2.addChild(to4);
+		p2.addChild(to5);
+		
+		TreeObject to6 = new TreeObject("Method 6");
+		TreeObject to7 = new TreeObject("Method 7");
+		TreeParent p3 = new TreeParent("Class 3");
+		p3.addChild(to7);
+		p3.addChild(to6);
+		
+		
+		TreeParent root = new TreeParent("Results:");
+		root.addChild(p1);
+		root.addChild(p2);
+		root.addChild(p3);
+				
+	}
+	
+	public void showResults(){
+		
 	}
 
 	private void hookContextMenu() {
@@ -215,14 +199,11 @@ public class TreeView extends ViewPart {
 	}
 
 	private void fillLocalPullDown(IMenuManager manager) {
-		manager.add(action1);
-		manager.add(new Separator());
-		manager.add(action2);
+	
 	}
 
 	private void fillContextMenu(IMenuManager manager) {
-		manager.add(action1);
-		manager.add(action2);
+		
 		manager.add(new Separator());
 		drillDownAdapter.addNavigationActions(manager);
 		// Other plug-ins can contribute there actions here
@@ -230,52 +211,16 @@ public class TreeView extends ViewPart {
 	}
 	
 	private void fillLocalToolBar(IToolBarManager manager) {
-		manager.add(action1);
-		manager.add(action2);
+	
 		manager.add(new Separator());
 		drillDownAdapter.addNavigationActions(manager);
 	}
 
-	private void makeActions() {
-		action1 = new Action() {
-			public void run() {
-				showMessage("Action 1 executed");
-			}
-		};
-		action1.setText("Action 1");
-		action1.setToolTipText("Action 1 tooltip");
-		action1.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages().
-			getImageDescriptor(ISharedImages.IMG_OBJS_INFO_TSK));
-		
-		action2 = new Action() {
-			public void run() {
-				showMessage("Action 2 executed");
-			}
-		};
-		action2.setText("Action 2");
-		action2.setToolTipText("Action 2 tooltip");
-		action2.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages().
-				getImageDescriptor(ISharedImages.IMG_OBJS_INFO_TSK));
-		doubleClickAction = new Action() {
-			public void run() {
-				ISelection selection = viewer.getSelection();
-				Object obj = ((IStructuredSelection)selection).getFirstElement();
-				showMessage("Double-click detected on "+obj.toString());
-			}
-		};
-	}
 
-	private void hookDoubleClickAction() {
-		viewer.addDoubleClickListener(new IDoubleClickListener() {
-			public void doubleClick(DoubleClickEvent event) {
-				doubleClickAction.run();
-			}
-		});
-	}
 	private void showMessage(String message) {
 		MessageDialog.openInformation(
 			viewer.getControl().getShell(),
-			"Tree View",
+			"Results",
 			message);
 	}
 
