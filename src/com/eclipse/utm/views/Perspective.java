@@ -3,7 +3,7 @@ package com.eclipse.utm.views;
 import org.eclipse.ui.IPageLayout;
 import org.eclipse.ui.IPerspectiveFactory;
 
-public class perspective implements IPerspectiveFactory {
+public class Perspective implements IPerspectiveFactory {
 
 	/**
 	 * Creates the initial layout for a page.
@@ -14,7 +14,7 @@ public class perspective implements IPerspectiveFactory {
 		addViewShortcuts(layout);
 		addPerspectiveShortcuts(layout);   
 	        	        layout.addView(ViewOpen.ID, IPageLayout.BOTTOM, 0.2f, editorArea); 
-	        	        layout.addView(TreeView.ID, IPageLayout.BOTTOM, 0.2f, editorArea); 
+	        	        layout.addView(ViewResult.ID, IPageLayout.BOTTOM, 0.2f, editorArea); 
 	}
 
 	/**

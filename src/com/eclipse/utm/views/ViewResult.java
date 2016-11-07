@@ -35,7 +35,7 @@ import org.eclipse.core.runtime.IAdaptable;
  * <p>
  */
 
-public class TreeView extends ViewPart {
+public class ViewResult extends ViewPart {
 
 	/**
 	 * The ID of the view as specified by the extension.
@@ -184,7 +184,7 @@ public class TreeView extends ViewPart {
 		menuMgr.setRemoveAllWhenShown(true);
 		menuMgr.addMenuListener(new IMenuListener() {
 			public void menuAboutToShow(IMenuManager manager) {
-				TreeView.this.fillContextMenu(manager);
+				ViewResult.this.fillContextMenu(manager);
 			}
 		});
 		Menu menu = menuMgr.createContextMenu(viewer.getControl());

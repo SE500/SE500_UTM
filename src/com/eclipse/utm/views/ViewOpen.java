@@ -20,7 +20,11 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-
+/**
+ * 
+ * @author junqianfeng
+ *
+ */
 public class ViewOpen extends ViewPart {
 	public ViewOpen() {
 	}
