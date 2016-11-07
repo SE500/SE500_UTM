@@ -2,10 +2,9 @@ package org.eclipse.utm.test;
 
 import java.io.File;
 import java.io.IOException;
-
 import org.eclipse.utm.parseUML.ParseUML;
 
-public class testing {
+public class TestParseUML {
 
 	public static void main(String[] args) throws IOException {
 		File selectedModel = ParseUML.selectUmlFile();

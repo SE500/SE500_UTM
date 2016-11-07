@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import javax.swing.JFileChooser;
+import javax.swing.UIManager;
 //import javax.swing.JFrame;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
@@ -31,9 +32,6 @@ import org.eclipse.utm.parseUML.main.Generate;
 //import com.google.common.base.Splitter;
 /**
  * @author Thomas Colborne
- *
- */
-/**
  * 
  * A class that parses a UML file and enters relevant information into
  * the UTMDB - an SQL database
@@ -102,10 +100,10 @@ public class ParseUML {
 	 * Launch the process to parse the UML into the SQL database
 	 * @throws IOException
 	 */
-	public void launch() throws IOException {
+	public boolean launch() throws IOException {
 		Generate uml2java = new Generate(this.model, this.tempGenFolder, new ArrayList<Object>());
 		uml2java.doGenerate(new BasicMonitor());
-		processGenDir(this.tempGenFolder);		
+		return processGenDir(this.tempGenFolder);		
 	}
 	
 	/**
@@ -114,12 +112,13 @@ public class ParseUML {
 	 * @param withCleanUp
 	 * @throws IOException
 	 */
-	public void launch(boolean withCleanUp) throws IOException {
+	public boolean launch(boolean withCleanUp) throws IOException {
 		Generate uml2java = new Generate(this.model, this.tempGenFolder, new ArrayList<Object>());
 		uml2java.doGenerate(new BasicMonitor());
-		processGenDir(this.tempGenFolder);
+		boolean success = processGenDir(this.tempGenFolder);
 		if(withCleanUp)
 			this.cleanUp();
+		return success;
 	}
 	
 	
@@ -141,6 +140,9 @@ public class ParseUML {
 				e.printStackTrace();
 			}
 		}
+		this.db = new UTMDB();
+		this.db.Open();
+		this.db.InitDatabase();
 	}	
 	
 	
@@ -149,10 +151,14 @@ public class ParseUML {
 	 * @return the UML file selected or null
 	 */
 	public static File selectUmlFile(){
+		try {
+	        UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+	    }catch(Exception ex) {
+	        ex.printStackTrace();
+	    }
 		JFileChooser fileChooser = new JFileChooser();
 		fileChooser.setCurrentDirectory(new File(System.getProperty("user.dir")));
-		FileNameExtensionFilter filter = new FileNameExtensionFilter("UML File","uml");
-		fileChooser.setFileFilter(filter);
+		fileChooser.setFileFilter(new FileNameExtensionFilter("UML File","uml"));
 		int result = fileChooser.showOpenDialog(null);
 		if (result == JFileChooser.APPROVE_OPTION) {
 		    return fileChooser.getSelectedFile();
@@ -173,10 +179,6 @@ public class ParseUML {
 
 		// Some JVMs return null for File.list() when the directory is empty.
 		if (list != null) {
-			
-			this.db = new UTMDB();
-			this.db.Open();
-			this.db.InitDatabase();
 			
 			for (int i = 0; i < list.length; i++) {
 				File entry = new File(directory, list[i]);
@@ -199,13 +201,12 @@ public class ParseUML {
 				}
 
 			}
-			this.db.Relate();
-			this.db.Match();
-			this.db.Commit();
-			System.out.println("UML Class Count:" + this.db.CountUMLClasses());
-			System.out.println("UML Attribute Count:" + this.db.CountUMLAttributes());
-			System.out.println("UML Method Count:" + this.db.CountUMLMethods());
-			this.db.Close();
+			//this.db.Relate();
+			//this.db.Match();
+			//this.db.Commit();
+			//System.out.println("UML Class Count:" + this.db.CountUMLClasses());
+			//System.out.println("UML Attribute Count:" + this.db.CountUMLAttributes());
+			//System.out.println("UML Method Count:" + this.db.CountUMLMethods());
 		}
 		
 		return true;
@@ -279,10 +280,12 @@ public class ParseUML {
 	
 	
 	/**
-	 * Cleanup after parsing a UML file by deleting any temporary files created.
+	 * Cleanup after parsing a UML file by deleting any temporary files created
+	 * and closing the database.
 	 */
 	public void cleanUp() {
 		removeDirectory(new File(this.tempGenFolder.getParent()));
+		this.db.Close();
 	}
 	
 	/**

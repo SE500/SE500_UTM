@@ -8,5 +8,27 @@
             file="contexts.xml">
       </contexts>
    </extension>
+   <extension
+         point="org.eclipse.ui.editors">
+      <editor
+            class="org.eclipse.utm.views.GuiOption"
+            id="org.eclipse.utm.views.GuiOption"
+            name="UML Trace Magic">
+      </editor>
+   </extension>
+   <extension
+         point="org.eclipse.ui.views">
+      <view
+            class="org.eclipse.utm.test.GuiUtm"
+            id="org.eclipse.utm.test.GuiUtm"
+            name="UML Trace Magic">
+      </view>
+      <view
+            class="org.eclipse.utm.views.TestGui"
+            id="org.eclipse.utm.view.TestGui"
+            name="UML Trace Magic"
+            restorable="true">
+      </view>
+   </extension>
 
 </plugin>
