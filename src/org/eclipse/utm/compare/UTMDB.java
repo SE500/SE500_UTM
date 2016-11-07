@@ -52,6 +52,11 @@ public final class UTMDB {
 	
 	private int newReference(boolean IsFromUML, String ClassName, String AccessType, String RefClass)
 	{
+		if(true)
+		{
+			return 0;
+		}
+		
 		try
 		{
 			String strInsert =
