@@ -2,7 +2,12 @@ package org.eclipse.utm.test;
 
 import java.io.File;
 import org.eclipse.utm.parseSource.ParseSource;
-
+/**
+ * 
+ * @author Thomas Colborne
+ * Testing the ParseSource feature functionality
+ *
+ */
 public class TestParseSource {
 
 	public static void main(String[] args) {
@@ -16,5 +21,4 @@ public class TestParseSource {
 		}
 		System.exit(0);	
 	}
-
 }

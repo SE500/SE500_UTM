@@ -3,10 +3,15 @@ package org.eclipse.utm.test;
 import java.io.File;
 import java.io.IOException;
 
-import org.eclipse.utm.UTMDB;
+import org.eclipse.utm.compare.UTMDB;
 import org.eclipse.utm.parseSource.ParseSource;
 import org.eclipse.utm.parseUML.ParseUML;
-
+/**
+ * 
+ * @author Thomas Colborne
+ * Testing the compare feature functionality
+ *
+ */
 public class TestCompare {
 
 	public static void main(String[] args) throws IOException {
@@ -36,7 +41,7 @@ public class TestCompare {
 		if(sourceParsed && umlParsed) {
 			db = new UTMDB();
 			db.Open();
-			//db.InitDatabase();
+			db.InitDatabase();
 			db.Relate();
 			db.Match();
 			db.Commit();
@@ -47,9 +52,6 @@ public class TestCompare {
 			System.out.println("UML Method Count:\t" + db.CountUMLMethods());
 			System.out.println("Source Method Count:\t" + db.CountSourceMethods());
 		}
-		
-		
-		
 		System.exit(0);
 	}
 }

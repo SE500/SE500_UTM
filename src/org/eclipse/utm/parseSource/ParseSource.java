@@ -4,12 +4,11 @@ import java.io.*;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 import javax.swing.JFileChooser;
 import javax.swing.UIManager;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
-import org.eclipse.utm.UTMDB;
+import org.eclipse.utm.compare.UTMDB;
 
 import java.util.ArrayList;
 /**
@@ -26,8 +25,6 @@ public class ParseSource {
 	 */
 	private File SourceCode;
 	private String className = null;
-	private ArrayList<String> javaCodeVar;
-	private ArrayList<String> javaCodeMeth;
 	private UTMDB db = null;
 	
 	/**
@@ -65,8 +62,9 @@ public class ParseSource {
 	}
 	
 	/**
-	 * Select a Java Source file or folder
-	 * @return the Java Source File or Folder selected or null
+	 * Select a Java Source file or directory
+	 * @return 
+	 * 		the selected Java Source File or Directory or null
 	 */
 	public static File selectSource(){
 		try {
@@ -86,8 +84,12 @@ public class ParseSource {
 	}
 
 	/**
-	 * Parse all Java files 
-	 * @param File projectPath
+	 * Parses all Java files within a directory recursively
+	 * @param projectPath
+	 * 		The path the directory to be parsed
+	 * @return
+	 * 		Returns true on successfully parsing all files
+	 * 		Returns false on failure
 	 */
 	private boolean projectFiles(File projectPath){
 		if(projectPath == null||!projectPath.exists())
@@ -121,7 +123,10 @@ public class ParseSource {
 			if(fileNameFilter.accept(projectPath.getParentFile(), projectPath.getName()))
 				return readFile(projectPath);
 			else 
+			{
+				System.err.println("Error: A *.java file was not selected!");
 				return false;
+			}
 		}
 		
 		// Recursively loop through directories
@@ -144,9 +149,12 @@ public class ParseSource {
 	}
 	 
 	/**
-	 * To read file 
-	 * @param String fileName
-	 * @return String[]
+	 * This method reads a file and processes it into the UTM database
+	 * @param fileName
+	 * 		The file to be parsed
+	 * @return
+	 * 		Returns true on successfully parsing the file
+	 * 		Returns false on failure to parse the file
 	 */
 	private boolean readFile(File fileName){
 		try{
@@ -164,10 +172,13 @@ public class ParseSource {
 				lines[i] = scanner2.nextLine();
 			}
 			scanner2.close();
-			findClass(lines, fileName.getName());
-			findClassVar(lines, fileName.getName());
-			findClassMeth(lines, fileName.getName());
-			return true;
+			if(findClass(lines, fileName.getName()))
+				if(findClassVar(lines, fileName.getName()))
+					if(findClassMeth(lines, fileName.getName()))
+						return true;
+					else return false;
+				else return false;
+			else return false;
 		}
 		catch(FileNotFoundException ex) {
 		    System.out.println(
@@ -179,11 +190,16 @@ public class ParseSource {
 	}
 	 
 	 /**
-	 * To find class deceleration  
-	 * @param String[] lines
-	 * @return String
+	 * This method finds the class declaration  
+	 * @param line
+	 *		An array of lines from the file 'name'
+	 * @param name
+	 * 		The name of the file
+	 * @return
+	 * 		returns true on successfully finding the class declaration
+	 * 		returns false on a failure
 	 */
-	public boolean findClass(String[] line, String name){
+	private boolean findClass(String[] line, String name){
 		
 		this.className = null;
 		String currentLn="";
@@ -206,13 +222,13 @@ public class ParseSource {
 				}
 				switch (tokens[1]) {
 				case "class":
-					this.db.NewUMLClass(name, tokens[2], tokens[0], isStatic, isAbstract, isFinal);
+					this.db.NewSourceClass(name, count, tokens[2], tokens[0], isStatic, isAbstract, isFinal);
 					this.className = tokens[2];
 					break;
 				case "static":
 					isStatic = true;
 					if(tokens[2].equals("class")) {
-						this.db.NewUMLClass(name, tokens[3], tokens[0], isStatic, isAbstract, isFinal);
+						this.db.NewSourceClass(name, count, tokens[3], tokens[0], isStatic, isAbstract, isFinal);
 						this.className = tokens[3];
 					}
 					else
@@ -221,7 +237,7 @@ public class ParseSource {
 				case "final":
 					isFinal = true;
 					if(tokens[2].equals("class")) {
-						this.db.NewUMLClass(name, tokens[3], tokens[0], isStatic, isAbstract, isFinal);
+						this.db.NewSourceClass(name, count, tokens[3], tokens[0], isStatic, isAbstract, isFinal);
 						this.className = tokens[3];
 					}
 					else
@@ -230,7 +246,7 @@ public class ParseSource {
 				case "abstract":
 					isAbstract = true;
 					if(tokens[2].equals("class")) {
-						this.db.NewUMLClass(name, tokens[3], tokens[0], isStatic, isAbstract, isFinal);
+						this.db.NewSourceClass(name, count, tokens[3], tokens[0], isStatic, isAbstract, isFinal);
 						this.className = tokens[3];
 					}
 					else
@@ -247,24 +263,27 @@ public class ParseSource {
 	}
 	
 	/**
-     * To find class's instance variables  
-     * @param String[] lines
-     * @return String[]
-     */
-	public boolean findClassVar(String[] line, String name){
+	 * This method finds all the class's attribute variables within the file
+	 * @param line
+	 *		An array of lines from the file 'name'
+	 * @param name
+	 * 		The name of the file
+	 * @return
+	 * 		returns true on successfully parsing all lines in the file
+	 * 		returns false on a failure
+	 */
+	private boolean findClassVar(String[] line, String name){
 	
 		int count = 0;
 		//String classRgEx="((public\\s|private\\s)?(static\\s)?([a-zA-Z0-9]+)+\\s+([a-zA-Z0-9_]+)+\\s?(.+)?\\s?;)";
 		String attributeRgEx="((public|private|protected|static|final|native|synchronized|abstract|transient)+\\s)+[\\$_\\w\\<\\>\\[\\]]*\\s+[\\$_\\w]+;";
 		String currentLn="";
-		javaCodeVar = new ArrayList<String>();
-		boolean check = false;
+		new ArrayList<String>();
 		for (int i=0; i<line.length; i++) {
 			currentLn = line[i];
 			count++;
 			Pattern p = Pattern.compile(attributeRgEx);
 			Matcher m =p.matcher(currentLn);
-			//while (m.find()) {
 			if(m.find())
 			{
 				System.out.println("Found an Attribute in line " + count + " " + m.group() + "" + currentLn);
@@ -273,37 +292,32 @@ public class ParseSource {
 					System.out.println(token);
 				}
 				if(tokens.length == 3)
-					this.db.NewUMLAttribute(name, this.className, tokens[0], tokens[1], tokens[2]);
+					this.db.NewSourceAttribute(name, count, this.className, tokens[0], tokens[1], tokens[2]);
 				else
 					return false;
-				//javaCodeVar.add(currentLn);
-				//check = true;
-				//return i + "" + currentLn;
 			}
 			
 		}
-		/*if (check){
-			String [] var = javaCodeVar.toArray(new String[javaCodeVar.size()]);
-			for(String s : var)
-			//System.out.println(s);
-		return var;
-		}*/
 		return true;
 	}
 	
 	/**
-     * To find class's methods  
-     * @param String[] lines
-     * @return String[]
-     */
-	public boolean findClassMeth(String[] line, String name){
+	 * This method finds all the class's methods within the file
+	 * @param line
+	 * 		An array of lines from the file 'name'
+	 * @param name
+	 * 		The name of the file
+	 * @return
+	 * 		returns true on successfully parsing all lines in the file
+	 * 		returns false on a failure
+	 */
+	private boolean findClassMeth(String[] line, String name){
 	
 		int count = 0;
 		//String classRgEx="((public\\s|private\\s)?(static\\s)?([a-zA-Z0-9]+)+\\s+([a-zA-Z0-9_]+)+\\s?(\\(.+\\))?\\s?\\{)";
 		String methodRgEx="((public|private|protected|static|final|native|synchronized|abstract|transient)+\\s)+[\\$_\\w\\<\\>\\[\\]]*\\s+[\\$_\\w]+\\([^\\)]*\\)?\\s*\\{?[^\\}]*\\}?";
 		String currentLn="";
-		javaCodeMeth = new ArrayList<String>();
-		boolean check = false;
+		new ArrayList<String>();
 		for (int i=0; i<line.length; i++){
 			currentLn = line[i];
 			count++;
@@ -318,22 +332,14 @@ public class ParseSource {
 					System.out.println(token);
 				}
 				if(tokens.length == 4)
-					this.db.NewUMLMethod(name, this.className, tokens[0], tokens[1], tokens[2], tokens[3]);
+					this.db.NewSourceMethod(name, count, this.className, tokens[0], tokens[1], tokens[2], tokens[3]);
 				else if(tokens.length == 3)
-					this.db.NewUMLMethod(name, this.className, tokens[0], tokens[1], tokens[2], "");
+					this.db.NewSourceMethod(name, count, this.className, tokens[0], tokens[1], tokens[2], "");
 				else
 					return false;
-				//javaCodeMeth.add(currentLn);
-				//check = true;
 			}
 			
 		}
-		/*if (check){
-			String [] var = javaCodeMeth.toArray(new String[javaCodeMeth.size()]);
-			for(String s : var)
-			//System.out.println(s);
-		return var;
-		}*/
 		return true;
 	}
 }

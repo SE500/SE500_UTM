@@ -1,4 +1,4 @@
-package org.eclipse.utm;
+package org.eclipse.utm.compare;
 
 import java.io.File;
 import java.sql.*;

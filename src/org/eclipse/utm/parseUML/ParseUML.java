@@ -27,7 +27,7 @@ import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.uml2.uml.UMLPackage;
 import org.eclipse.uml2.uml.resource.UMLResource;
-import org.eclipse.utm.UTMDB;
+import org.eclipse.utm.compare.UTMDB;
 import org.eclipse.utm.parseUML.main.Generate;
 //import com.google.common.base.Splitter;
 /**
@@ -39,23 +39,16 @@ import org.eclipse.utm.parseUML.main.Generate;
  */
 public class ParseUML {
 	
-	/*
-	 * Variable declarations
-	 */
-	private static boolean testCleanUp = true;
-	
 	private File modelFile;
-	
 	private File tempGenFolder = new File(System.getProperty("user.dir","temp")
 			+ "/temp/generated_model_src");
-	
 	private EObject model;
-	
 	private UTMDB db = null;
 	
 	/**
-	 * Empty constructor - Do not use
+	 * Empty constructor
 	 * @constructor  
+	 * If used initialize must be called before launch
 	 */
 	public ParseUML() {
 			
@@ -67,35 +60,7 @@ public class ParseUML {
 	public ParseUML(File model){
 		initialize(model);
 	}
-	
-
-	/**
-	 * The main of ParseUML provides the option for this class to called 
-	 * as a stand alone program.
-	 * @param args
-	 * @throws IOException
-	 */
-	public static void main(String[] args) throws IOException {
-		/*File selectedModel = selectUmlFile();
-		if(selectedModel != null) {
-			initialize(selectedModel);
-			
-			Generate uml2java = new Generate(model, tempGenFolder, new ArrayList<Object>());
-			uml2java.doGenerate(new BasicMonitor());
-			processGenDir(tempGenFolder);
-			
-			if(testCleanUp) {
-				if(removeDirectory(new File(tempGenFolder.getParent()))) {
-					System.out.println("Temporary Generated Files Removed");
-				}
-			}
-		}
-		else {
-			System.err.println("Error: No UML File selected.");
-		}
-		System.exit(0);*/		
-	}
-	
+		
 	/**
 	 * Launch the process to parse the UML into the SQL database
 	 * @throws IOException
@@ -126,7 +91,7 @@ public class ParseUML {
 	 * This method initializes the ParseUML object
 	 * @param model
 	 */
-	private void initialize(File model) {
+	public void initialize(File model) {
 		ResourceSet resourceSet = new ResourceSetImpl();
 		resourceSet.getPackageRegistry().put(org.eclipse.uml2.uml.UMLPackage.eINSTANCE.getNsURI(), UMLPackage.eINSTANCE);
 		resourceSet.getPackageRegistry().put("http://www.eclipse.org/uml2/4.0.0/UML", UMLPackage.eINSTANCE);
@@ -208,7 +173,6 @@ public class ParseUML {
 			//System.out.println("UML Attribute Count:" + this.db.CountUMLAttributes());
 			//System.out.println("UML Method Count:" + this.db.CountUMLMethods());
 		}
-		
 		return true;
 	}
 	
@@ -237,9 +201,7 @@ public class ParseUML {
 			}
 				
 		}
-	 
 		br.close();	
-		
 		return true;
 	}
 	
@@ -274,7 +236,6 @@ public class ParseUML {
 			default:
 				System.err.println("Error: Unknown model translation");
 		}
-		
 		return true;
 	}
 	
@@ -285,6 +246,7 @@ public class ParseUML {
 	 */
 	public void cleanUp() {
 		removeDirectory(new File(this.tempGenFolder.getParent()));
+		//System.out.println("Temporary Generated Files Removed");
 		this.db.Close();
 	}
 	
@@ -321,7 +283,6 @@ public class ParseUML {
 				}
 			}
 		}
-
 		return directory.delete();
 	}
 }
