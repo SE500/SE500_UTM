@@ -1,4 +1,4 @@
-package com.eclipse.utm.views;
+package org.eclipse.utm.views;
 
 import java.io.File;
 
@@ -11,6 +11,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
@@ -20,28 +21,19 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-/**
- * 
- * @author junqianfeng
- *
- */
+
 public class ViewOpen extends ViewPart {
 	public ViewOpen() {
 	}
 
 	public static final String ID = "com.free.view.treeview.views.ViewOpen";
 	
-	 Composite mainPanel;
-	private Text textAreaUML;
-	private Text textAreaJavaSourceCode;
-	private Button btnShowResults;
-	private Button btnChooseJavaSource2;
-	private Button btnChooseUmlFile;
+	Composite mainPanel;
+
 	private Label lblFilenameSingle;
 	File umlFile;
 	File javaFile;
 	private Button btnBrowseSingle;
-	private Button btnCompute;
 
 
 @Override
@@ -109,60 +101,104 @@ public void createPartControl(Composite parent) {
                      });
                      grpJavaSourceCode.pack();
    
-
+   Label lblWelcomeToUtm = new Label(container, SWT.NONE);
+   lblWelcomeToUtm.setBounds(233, 10, 166, 14);
+   lblWelcomeToUtm.setText("Welcome To UTM");
    Button btnCompute_1 = new Button(container, SWT.PUSH);
    btnCompute_1.setBounds(5, 155, 58, 28);
    btnCompute_1.setText("Start");
    btnCompute_1.pack();
-   
-   Label lblWelcomeToUtm = new Label(container, SWT.NONE);
-   lblWelcomeToUtm.setBounds(233, 10, 166, 14);
-   lblWelcomeToUtm.setText("Welcome To UTM");
    btnCompute_1.addSelectionListener(new SelectionAdapter() {
    	@Override
    	public void widgetSelected(SelectionEvent e) {
-   	 Boolean doProject = null;
+   	 Boolean ParseJava = null;
      if (umlFile == null) {
-             //TODO: Show error message - no UML file selected
-             return;}else{
-            	 doProject = true;
-             }
-     if(javaFile==null){
-    	 return;
-     }else{
-    	 doProject=true;
-     }	 	computeTraceability(doProject);
+             return;
+             }else{
+            	 ParseJava = true;
+             }if(javaFile==null){
+            	 return;
+             }else{
+            	 ParseJava=false;
+     }	 	computeTraceability(ParseJava);
    	}
    });
-	
 	createActions();
 	initializeToolBar();
 	initializeMenu();
 }
 
- private void computeTraceability(Boolean doProject) {
+ private void computeTraceability(Boolean ParseJava) {
 	 parseUML();
-      parseJava(doProject);
-   //   Compare.compare();
-      showResultsView();
+     parseJava(ParseJava);
+ //    UTMDB.Match();
+     showResultsView();
 	
 }
  
 private void showResultsView() {
-	// TODO Auto-generated method stub
+	 IWorkbenchPage page = getSite().getPage();
+     IViewPart resultsView = page.findView("com.free.view.treeview.views.ViewResult");
+     if (resultsView == null) {
+             try {
+                     resultsView = page.showView("com.free.view.treeview.views.ViewResult");
+             } catch (PartInitException e) {
+                     e.printStackTrace();
+             }
+     }
+     if (resultsView != null) {
+             getSite().getPage().bringToTop(resultsView);
+             ViewResult rv = (ViewResult) resultsView;
+             rv.showResults();
+     }
+		
 	
 }
 
 
 private void parseJava(Boolean doProject) {
-	// TODO Auto-generated method stub
-	
+//	 try {
+//         if (doProject) {
+//                 JavaExtractor.collectFiles(projectDirectory, false);
+//         } else {
+//                 JavaExtractor.extractFromFile(javaFile, false);
+//         }
+// } catch (IOException e) {
+//         e.printStackTrace();
+// }
 }
 
 
 private void parseUML() {
-	// TODO Auto-generated method stub
-	
+//	 File genSrcDir = new File("src-gen");
+//     if (!genSrcDir.exists()) genSrcDir.mkdir();
+//     else {
+//             emptyDirectory(genSrcDir);
+//     }
+//     
+//     URI model = URI.createFileURI(umlFile.getAbsolutePath());
+//     List<String> arguments = new ArrayList<String>();
+//     try {
+//             Generate g = new Generate(model, genSrcDir, arguments);
+//             g.doGenerate(null);
+//             JavaExtractor.collectFiles(genSrcDir, true);
+//     } catch (IOException ex) {
+//             ex.printStackTrace();
+//     }
+//	
+}
+
+private void emptyDirectory(File thisDir) {
+    File[] listOfFiles = thisDir.listFiles();
+
+for (int i = 0; i < listOfFiles.length; i++) {
+  if (listOfFiles[i].isFile()) {
+    listOfFiles[i].delete();
+  } else if (listOfFiles[i].isDirectory()) {
+   emptyDirectory(listOfFiles[i]);
+   listOfFiles[i].delete();
+  }
+}
 }
 
 
@@ -175,6 +211,5 @@ private void initializeMenu() {
 	IMenuManager menuManager = getViewSite().getActionBars().getMenuManager();
 }	
 public void setFocus() {
-	// Set the focus
 }
 }
