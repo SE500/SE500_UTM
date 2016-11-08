@@ -57,6 +57,7 @@ public class ParseSource {
 	
 	public boolean launch() {
 		boolean success = projectFiles(this.SourceCode);
+		this.db.Commit();
 		this.db.Close();
 		return success;
 	}
@@ -207,15 +208,38 @@ public class ParseSource {
 		boolean isStatic = false;
 		boolean isFinal = false;
 		boolean isAbstract = false;
+		boolean isExtension = false;
 		//String classRgEx="(^(public interface{0,1})|^(public class{0,1})|extends|impelements)";
-		String classRgEx="((public\\s|private\\s)?(static\\s)?(final\\s)?(abstract\\s)?(class)\\s([a-zA-Z0-9_\\.]+\\.)?([a-zA-Z0-9_]+)+(\\s(extends)+\\s([a-zA-Z_]+[a-zA-Z0-9\\._]+)+)?)";
+		String classRgEx="((public\\s|private\\s)(static\\s)?(final\\s)?(abstract\\s)?(class)\\s([a-zA-Z0-9_\\.]+\\.)?([a-zA-Z0-9_]+)(\\s(extends)\\s([a-zA-Z0-9_\\.]+\\.)?([a-zA-Z0-9_]+))?)";
 		for (int i=0; i<line.length; i++){
 			currentLn = line[i];
 			count++;
 			Pattern p = Pattern.compile(classRgEx);
-			Matcher m =p.matcher(currentLn);
+			Matcher m = p.matcher(currentLn);
 			while (m.find()) {
 				System.out.println("Found a Class in line " + count + " " + m.group() + "" + currentLn);
+				for(int y = 0; y <= m.groupCount(); y++) {
+					System.out.println("Group: " + y + " = " + m.group(y));
+					if(m.group(y) != null) {
+						switch(y) {
+						case 3:
+							isStatic = true;
+							break;
+						case 4:
+							isFinal = true;
+							break;
+						case 5:
+							isAbstract = true;
+							break;
+						case 10:
+							isExtension = true;
+							break;
+						default:						
+							System.err.println("Error: Somthing very weird happened");
+						}
+					}
+				}
+				
 				String[] tokens = m.group().split("\\s");
 				for(String token: tokens) {
 					System.out.println(token);
@@ -276,7 +300,7 @@ public class ParseSource {
 	
 		int count = 0;
 		//String classRgEx="((public\\s|private\\s)?(static\\s)?([a-zA-Z0-9]+)+\\s+([a-zA-Z0-9_]+)+\\s?(.+)?\\s?;)";
-		String attributeRgEx="((public|private|protected|static|final|native|synchronized|abstract|transient)+\\s)+[\\$_\\w\\<\\>\\[\\]]*\\s+[\\$_\\w]+;";
+		String attributeRgEx="((public|private|protected|static|final|native|synchronized|abstract|transient)+\\s)+([\\$_\\w\\<\\>\\[\\]]*\\s+[\\$_\\w]+);";
 		String currentLn="";
 		new ArrayList<String>();
 		for (int i=0; i<line.length; i++) {
@@ -287,14 +311,18 @@ public class ParseSource {
 			if(m.find())
 			{
 				System.out.println("Found an Attribute in line " + count + " " + m.group() + "" + currentLn);
-				String[] tokens = m.group().split("(;|\\s+)");
-				for(String token: tokens) {
-					System.out.println(token);
+				for(int y = 0; y < m.groupCount(); y++) {
+					System.out.println(m.group(y));
 				}
-				if(tokens.length == 3)
-					this.db.NewSourceAttribute(name, count, this.className, tokens[0], tokens[1], tokens[2]);
-				else
-					return false;
+				
+				//String[] tokens = m.group().split("(;|\\s+)");
+				//for(String token: tokens) {
+				//	System.out.println(token);
+				//}
+				//if(tokens.length == 3)
+				//	this.db.NewSourceAttribute(name, count, this.className, tokens[0], tokens[1], tokens[2]);
+				//else
+				//	return false;
 			}
 			
 		}

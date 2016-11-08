@@ -247,6 +247,7 @@ public class ParseUML {
 	public void cleanUp() {
 		removeDirectory(new File(this.tempGenFolder.getParent()));
 		//System.out.println("Temporary Generated Files Removed");
+		this.db.Commit();
 		this.db.Close();
 	}
 	
