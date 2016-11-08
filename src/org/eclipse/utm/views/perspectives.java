@@ -1,9 +1,9 @@
-package com.eclipse.utm.views;
+package org.eclipse.utm.views;
 
 import org.eclipse.ui.IPageLayout;
 import org.eclipse.ui.IPerspectiveFactory;
 
-public class Perspective implements IPerspectiveFactory {
+public class perspectives implements IPerspectiveFactory {
 
 	/**
 	 * Creates the initial layout for a page.
@@ -12,9 +12,11 @@ public class Perspective implements IPerspectiveFactory {
 		String editorArea = layout.getEditorArea();
 		addFastViews(layout);
 		addViewShortcuts(layout);
-		addPerspectiveShortcuts(layout);   
-	        	        layout.addView(ViewOpen.ID, IPageLayout.BOTTOM, 0.2f, editorArea); 
-	        	        layout.addView(ViewResult.ID, IPageLayout.BOTTOM, 0.2f, editorArea); 
+		addPerspectiveShortcuts(layout);
+		 
+		layout.addView(ViewOpen.ID, IPageLayout.BOTTOM, 0.2f, editorArea); 
+	        layout.addView(ViewResult.ID, IPageLayout.TOP, 0.2f, editorArea); 
+
 	}
 
 	/**

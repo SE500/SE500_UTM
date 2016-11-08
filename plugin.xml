@@ -19,16 +19,29 @@
    <extension
          point="org.eclipse.ui.views">
       <view
-            class="org.eclipse.utm.test.GuiUtm"
-            id="org.eclipse.utm.test.GuiUtm"
+            class="com.eclipse.utm.views.ViewOpen"
+            id="com.eclipse.utm.views.ViewOpen"
             name="UML Trace Magic">
       </view>
       <view
-            class="org.eclipse.utm.views.TestGui"
-            id="org.eclipse.utm.view.TestGui"
+            class="com.eclipse.utm.views.ViewResult"
+            id="com.eclipse.utm.views.ViewResult"
             name="UML Trace Magic"
             restorable="true">
       </view>
+      <view
+            class="com.eclipse.utm.views.testview"
+            id="com.eclipse.utm.views.testview"
+            name="New ViewPart">
+      </view>
+   </extension>
+   <extension
+         point="org.eclipse.ui.perspectives">
+      <perspective
+            class="com.eclipse.utm.views.perspectives"
+            id="com.eclipse.utm.views.perspectives"
+            name="New Perspective">
+      </perspective>
    </extension>
 
 </plugin>

@@ -1,46 +1,25 @@
-package com.eclipse.utm.views;
+package org.eclipse.utm.views;
 
 import java.util.ArrayList;
 
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Menu;
 import org.eclipse.ui.part.*;
-
-
-
+import org.eclipse.utm.views.ViewResult.TreeObject;
 import org.eclipse.jface.viewers.*;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.jface.action.*;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.ui.*;
-import org.eclipse.swt.widgets.Menu;
-import org.eclipse.swt.SWT;
+import org.eclipse.swt.*;
 import org.eclipse.core.runtime.IAdaptable;
-
-
-/**
- * This sample class demonstrates how to plug-in a new
- * workbench view. The view shows data obtained from the
- * model. The sample creates a dummy model on the fly,
- * but a real implementation would connect to the model
- * available either in this or another plug-in (e.g. the workspace).
- * The view is connected to the model using a content provider.
- * <p>
- * The view uses a label provider to define how model
- * objects should be presented in the view. Each
- * view can present the same model objects using
- * different labels and icons, if needed. Alternatively,
- * a single label provider can be shared between views
- * in order to ensure that objects of the same type are
- * presented in the same way everywhere.
- * <p>
- */
 
 public class ViewResult extends ViewPart {
 
 	/**
 	 * The ID of the view as specified by the extension.
 	 */
-	public static final String ID = "com.free.view.treeview.views.TreeView";
+	public static final String ID = "com.free.view.treeview.views.ViewResult";
 
 
 	Composite mainPanel;
@@ -72,10 +51,10 @@ public class ViewResult extends ViewPart {
 	}
 	
 	class TreeParent extends TreeObject {
-		private ArrayList children;
+		private ArrayList<TreeObject> children;
 		public TreeParent(String name) {
 			super(name);
-			children = new ArrayList();
+			children = new ArrayList<TreeObject>();
 		}
 		public void addChild(TreeObject child) {
 			children.add(child);
@@ -140,8 +119,7 @@ public class ViewResult extends ViewPart {
 
 
 	public void createPartControl(Composite parent) {
-		this.mainPanel = mainPanel;
-		viewer = new TreeViewer(mainPanel, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
+		viewer = new TreeViewer(this.mainPanel, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
 		drillDownAdapter = new DrillDownAdapter(viewer);
 		viewer.setContentProvider(new ViewContentProvider());
 		viewer.setInput(getViewSite());
@@ -176,6 +154,18 @@ public class ViewResult extends ViewPart {
 	}
 	
 	public void showResults(){
+		
+//		viewer.removeAll;
+//		for (CompareResults thisResult : Compare.results) {
+//		String matchFound, attrMatches, methMatches;
+//		if (thisResult.matchFound) matchFound = "Yes";
+//		else matchFound = "No";
+//		attrMatches = thisResult.attributesFound+"/"+thisResult.attributesTotal;
+//		methMatches = thisResult.methodsFound+"/"+thisResult.methodsTotal;
+//		TableItem item = new TableItem(table, SWT.NONE);
+//		item.setText(new String[] { thisResult.className, matchFound, attrMatches, methMatches });
+//		}
+
 		
 	}
 
@@ -229,5 +219,7 @@ public class ViewResult extends ViewPart {
 	 */
 	public void setFocus() {
 		viewer.getControl().setFocus();
+		mainPanel.setFocus();
+
 	}
 }
