@@ -208,38 +208,72 @@ public class ParseSource {
 		boolean isStatic = false;
 		boolean isFinal = false;
 		boolean isAbstract = false;
-		boolean isExtension = false;
-		//String classRgEx="(^(public interface{0,1})|^(public class{0,1})|extends|impelements)";
-		String classRgEx="((public\\s|private\\s)(static\\s)?(final\\s)?(abstract\\s)?(class)\\s([a-zA-Z0-9_\\.]+\\.)?([a-zA-Z0-9_]+)(\\s(extends)\\s([a-zA-Z0-9_\\.]+\\.)?([a-zA-Z0-9_]+))?)";
-		for (int i=0; i<line.length; i++){
+		boolean isReference = false;
+		
+		// Class Declaration Regular Expression
+		String classRgEx= 
+				// Group 1: AccessModifier
+				"(public|private)?\\s?" 
+				// Group 2: isStatic
+				+ "(static)?\\s?"
+				// Group 3: isFinal
+				+ "(final)?\\s?"
+				// Group 4: isAbstract
+				+ "(abstract)?\\s?"
+				// Group 5: class
+				+ "(class)\\s"
+				// Group 6: Class Absolute definition
+				+ "([\\w\\.]+\\.)?"
+				// Group 7: className
+				+ "([\\w]+)"
+				// Group 8: Extension or Implementation Declaration
+				+ "(\\s"
+					// Group 9: extends or implements
+					+"(extends|implements)\\s"
+					// Group 10: absolute definition
+					+ "([\\w\\.]+\\.)?"
+					// Group 11: class name
+					+ "([\\w]+)"
+				+ ")?";
+		
+		// Loop through all the file lines
+		for(int i=0; i < line.length; i++){
 			currentLn = line[i];
 			count++;
 			Pattern p = Pattern.compile(classRgEx);
 			Matcher m = p.matcher(currentLn);
-			while (m.find()) {
+			if(m.find()) {
 				System.out.println("Found a Class in line " + count + " " + m.group() + "" + currentLn);
-				for(int y = 0; y <= m.groupCount(); y++) {
-					System.out.println("Group: " + y + " = " + m.group(y));
+				for(int y = 1; y <= m.groupCount(); y++) {
 					if(m.group(y) != null) {
+						System.out.println("Group: " + y + " = " + m.group(y));
 						switch(y) {
-						case 3:
+						case 2:
 							isStatic = true;
 							break;
-						case 4:
+						case 3:
 							isFinal = true;
 							break;
-						case 5:
+						case 4:
 							isAbstract = true;
 							break;
-						case 10:
-							isExtension = true;
+						case 7:
+							this.className = m.group(y);
+						case 8:
+							isReference = true;
 							break;
 						default:						
-							System.err.println("Error: Somthing very weird happened");
-						}
+						}					
 					}
 				}
 				
+				this.db.NewSourceClass(name, count, this.className, m.group(1), isStatic, isAbstract, isFinal);
+				if(isReference)
+				{
+					this.db.NewSourceReference(this.className, m.group(9), m.group(11));
+				}
+				
+				/* OLD METHOD
 				String[] tokens = m.group().split("\\s");
 				for(String token: tokens) {
 					System.out.println(token);
@@ -279,7 +313,7 @@ public class ParseSource {
 				default:
 					System.err.println("No idea what this is: " + m.group());
 					return false;
-				}
+				}*/
 				return true;
 			}
 		}
@@ -298,12 +332,34 @@ public class ParseSource {
 	 */
 	private boolean findClassVar(String[] line, String name){
 	
-		int count = 0;
-		//String classRgEx="((public\\s|private\\s)?(static\\s)?([a-zA-Z0-9]+)+\\s+([a-zA-Z0-9_]+)+\\s?(.+)?\\s?;)";
-		String attributeRgEx="((public|private|protected|static|final|native|synchronized|abstract|transient)+\\s)+([\\$_\\w\\<\\>\\[\\]]*\\s+[\\$_\\w]+);";
 		String currentLn="";
-		new ArrayList<String>();
-		for (int i=0; i<line.length; i++) {
+		int count = 0;
+		boolean isStatic = false;
+		boolean isFinal = false;
+		boolean isAbstract = false;
+		boolean isOther = false;
+		
+		// Attribute Declaration Regular Expression
+		String attributeRgEx=
+				// Group 1: Access Modifier
+				"(public|private|protected)?\\s?"
+				// Group 2: isStatic
+				+ "(static)?\\s?"
+				// Group 3: isFinal
+				+ "(final)?\\s?"
+				// Group 4: isAbstract
+				+ "(abstract)?\\s?"
+				// Group 5: isOther
+				+ "(native|synchronized|transient)?\\s?"
+				// Group 6: Variable Type
+				+ "([\\$_\\w\\<\\>\\[\\]]*)\\s+"
+				// Group 7: Variable Name
+				+ "([\\$_\\w]+)"
+				// Group 8: Variable Definition or Assignment
+				+ "(\\s=|;)";
+		
+		// Loop through all the file lines
+		for(int i=0; i < line.length; i++) {
 			currentLn = line[i];
 			count++;
 			Pattern p = Pattern.compile(attributeRgEx);
@@ -311,18 +367,38 @@ public class ParseSource {
 			if(m.find())
 			{
 				System.out.println("Found an Attribute in line " + count + " " + m.group() + "" + currentLn);
-				for(int y = 0; y < m.groupCount(); y++) {
-					System.out.println(m.group(y));
+				for(int y = 1; y <= m.groupCount(); y++) {
+					if(m.group(y) != null) {
+						System.out.println("Group: " + y + " = " + m.group(y));
+						switch(y) {
+						case 2:
+							isStatic = true;
+							break;
+						case 3:
+							isFinal = true;
+							break;
+						case 4:
+							isAbstract = true;
+							break;
+						case 5:
+							isOther = true;
+							break;
+						default:						
+						}					
+					}
 				}
 				
-				//String[] tokens = m.group().split("(;|\\s+)");
-				//for(String token: tokens) {
-				//	System.out.println(token);
-				//}
-				//if(tokens.length == 3)
-				//	this.db.NewSourceAttribute(name, count, this.className, tokens[0], tokens[1], tokens[2]);
-				//else
-				//	return false;
+				this.db.NewSourceAttribute(name, count, this.className, m.group(1), m.group(6), m.group(7));
+				
+				/* OLD METHOD
+				String[] tokens = m.group().split("(;|\\s+)");
+				for(String token: tokens) {
+					System.out.println(token);
+				}
+				if(tokens.length == 3)
+					this.db.NewSourceAttribute(name, count, this.className, tokens[0], tokens[1], tokens[2]);
+				else
+					return false;*/
 			}
 			
 		}
@@ -341,12 +417,35 @@ public class ParseSource {
 	 */
 	private boolean findClassMeth(String[] line, String name){
 	
-		int count = 0;
-		//String classRgEx="((public\\s|private\\s)?(static\\s)?([a-zA-Z0-9]+)+\\s+([a-zA-Z0-9_]+)+\\s?(\\(.+\\))?\\s?\\{)";
-		String methodRgEx="((public|private|protected|static|final|native|synchronized|abstract|transient)+\\s)+[\\$_\\w\\<\\>\\[\\]]*\\s+[\\$_\\w]+\\([^\\)]*\\)?\\s*\\{?[^\\}]*\\}?";
 		String currentLn="";
-		new ArrayList<String>();
-		for (int i=0; i<line.length; i++){
+		int count = 0;
+		boolean isStatic = false;
+		boolean isFinal = false;
+		boolean isAbstract = false;
+		boolean isOther = false;
+		
+		// Method Declaration Regular Expression
+		String methodRgEx=
+				// Group 1: Access Modifier
+				"(public|private|protected)?\\s?"
+				// Group 2: isStatic
+				+ "(static)?\\s?"
+				// Group 3: isFinal
+				+ "(final)?\\s?"
+				// Group 4: isAbstract
+				+ "(abstract)?\\s?"
+				// Group 5: isOther
+				+ "(native|synchronized|transient)?\\s?"
+				// Group 6: Method Return Type
+				+ "([\\$\\w\\<\\>\\[\\]]*)\\s?"
+				// Group 7: Method Name
+				+ "([\\$\\w]+)\\s?"
+				// Group 8: Method Arguments
+				+ "\\(([^\\)]*)\\)";
+				// "\\s*\\{?[^\\}]*\\}?" - don't need the extra info
+		
+		// Loop through all the file lines
+		for(int i=0; i < line.length; i++){
 			currentLn = line[i];
 			count++;
 			Pattern p = Pattern.compile(methodRgEx);
@@ -354,6 +453,30 @@ public class ParseSource {
 			if(m.find())
 			{
 				System.out.println("Found a Method in line " + count + " " + m.group() + "" + currentLn);
+				for(int y = 1; y <= m.groupCount(); y++) {
+					if(m.group(y) != null) {
+						System.out.println("Group: " + y + " = " + m.group(y));
+						switch(y) {
+						case 2:
+							isStatic = true;
+							break;
+						case 3:
+							isFinal = true;
+							break;
+						case 4:
+							isAbstract = true;
+							break;
+						case 5:
+							isOther = true;
+							break;
+						default:						
+						}					
+					}
+				}
+				
+				this.db.NewSourceMethod(name, count, this.className, m.group(1), m.group(6), m.group(7), m.group(8));
+				
+				/* OLD METHOD
 				String[] tokens = m.group().split("(\\(|\\)|\\{|\\s)");
 				
 				for(String token: tokens) {
@@ -364,7 +487,7 @@ public class ParseSource {
 				else if(tokens.length == 3)
 					this.db.NewSourceMethod(name, count, this.className, tokens[0], tokens[1], tokens[2], "");
 				else
-					return false;
+					return false;*/
 			}
 			
 		}
