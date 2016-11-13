@@ -14,8 +14,8 @@ public class perspectives implements IPerspectiveFactory {
 		addViewShortcuts(layout);
 		addPerspectiveShortcuts(layout);
 		 
-		layout.addView(ViewOpen.ID, IPageLayout.BOTTOM, 0.2f, editorArea); 
-	        layout.addView(ViewResult.ID, IPageLayout.TOP, 0.2f, editorArea); 
+		layout.addView(ViewOpenMenu.ID, IPageLayout.BOTTOM, 0.2f, editorArea); 
+	    layout.addView(ViewResult.ID, IPageLayout.TOP, 0.5f, IPageLayout.ID_EDITOR_AREA); 
 
 	}
 
