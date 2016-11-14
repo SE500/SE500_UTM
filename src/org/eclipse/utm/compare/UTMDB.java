@@ -4,6 +4,7 @@ import java.io.File;
 import java.sql.*;
 
 public final class UTMDB {
+	
 	private Connection _c = null;
 	
 	private static boolean _isInit = false;
@@ -605,6 +606,43 @@ public final class UTMDB {
 			stmntUpdateMethodUML.close();
 			stmntUpdateReferenceCode.close();
 			stmntUpdateReferenceUML.close();
+			
+			String strUpdateCodeClassMismatch = "Update CodeClass Set NumMismatched = ( Select Case When CodeClass.AccessType = UMLClass.AccessType Then 0 Else 1 End + Case When CodeClass.IsStatic = UMLClass.IsStatic Then 0 Else 1 End + Case When CodeClass.IsAbstract = UMLClass.IsAbstract Then 0 Else 1 End + Case When CodeClass.IsFinal = UMLClass.IsFinal Then 0 Else 1 End From UMLClass Where CodeClass.Other_ID = UMLClass.Class_ID )";
+			String strUpdateUMLClassMismatch = "Update UMLClass Set NumMismatched = ( Select Case When CodeClass.AccessType = UMLClass.AccessType Then 0 Else 1 End + Case When CodeClass.IsStatic = UMLClass.IsStatic Then 0 Else 1 End + Case When CodeClass.IsAbstract = UMLClass.IsAbstract Then 0 Else 1 End + Case When CodeClass.IsFinal = UMLClass.IsFinal Then 0 Else 1 End From CodeClass Where CodeClass.Other_ID = UMLClass.Class_ID )";
+			String strUpdateCodeAttributeMismatch = "Update CodeAttribute Set NumMismatched = ( Select Case When CodeAttribute.AccessType = UMLAttribute.AccessType Then 0 Else 1 End + Case When CodeAttribute.Type = UMLAttribute.Type Then 0 Else 1 End From UMLAttribute Where UMLAttribute.Other_ID = CodeAttribute.Attribute_ID )";
+			String strUpdateUMLAttributeMismatch = "Update UMLAttribute Set NumMismatched = ( Select Case When CodeAttribute.AccessType = UMLAttribute.AccessType Then 0 Else 1 End + Case When CodeAttribute.Type = UMLAttribute.Type Then 0 Else 1 End From CodeAttribute Where CodeAttribute.Other_ID = UMLAttribute.Attribute_ID )";
+			String strUpdateCodeMethodMismatch = "Update CodeMethod Set NumMismatched = ( Select Case When CodeMethod.AccessType = UMLMethod.AccessType Then 0 Else 1 End + Case When CodeMethod.Type = UMLMethod.Type Then 0 Else 1 End + Case When CodeMethod.Parameters = UMLMethod.Parameters Then 0 Else 1 End From UMLMethod Where UMLMethod.Other_ID = CodeMethod.Method_ID )";
+			String strUpdateUMLMethodMismatch = "Update UMLMethod Set NumMismatched = ( Select Case When CodeMethod.AccessType = UMLMethod.AccessType Then 0 Else 1 End + Case When CodeMethod.Type = UMLMethod.Type Then 0 Else 1 End + Case When CodeMethod.Parameters = UMLMethod.Parameters Then 0 Else 1 End From CodeMethod Where CodeMethod.Other_ID = UMLMethod.Method_ID )";
+			String strUpdateCodeReferenceMismatch = "Update CodeReference Set NumMismatched = ( Select Case When CodeReference.AccessType = UMLReference.AccessType Then 0 Else 1 End From UMLReference Where UMLReference.Other_ID = CodeReference.Reference_ID )";
+			String strUpdateUMLReferenceMismatch = "Update UMLReference Set NumMismatched = ( Select Case When CodeReference.AccessType = UMLReference.AccessType Then 0 Else 1 End From CodeReference Where CodeReference.Other_ID = UMLReference.Reference_ID )";
+			
+			Statement stmntUpdateCodeClassMismatch = this._c.createStatement();
+			Statement stmntUpdateUMLClassMismatch = this._c.createStatement();
+			Statement stmntUpdateCodeAttributeMismatch = this._c.createStatement();
+			Statement stmntUpdateUMLAttributeMismatch = this._c.createStatement();
+			Statement stmntUpdateCodeMethodMismatch = this._c.createStatement();
+			Statement stmntUpdateUMLMethodMismatch = this._c.createStatement();
+			Statement stmntUpdateCodeReferenceMismatch = this._c.createStatement();
+			Statement stmntUpdateUMLReferenceMismatch = this._c.createStatement();
+			
+			stmntUpdateCodeClassMismatch.executeUpdate(strUpdateCodeClassMismatch);
+			stmntUpdateUMLClassMismatch.executeUpdate(strUpdateUMLClassMismatch);
+			stmntUpdateCodeAttributeMismatch.executeUpdate(strUpdateCodeAttributeMismatch);
+			stmntUpdateUMLAttributeMismatch.executeUpdate(strUpdateUMLAttributeMismatch);
+			stmntUpdateCodeMethodMismatch.executeUpdate(strUpdateCodeMethodMismatch);
+			stmntUpdateUMLMethodMismatch.executeUpdate(strUpdateUMLMethodMismatch);
+			stmntUpdateCodeReferenceMismatch.executeUpdate(strUpdateCodeReferenceMismatch);
+			stmntUpdateUMLReferenceMismatch.executeUpdate(strUpdateUMLReferenceMismatch);
+			
+			stmntUpdateCodeClassMismatch.close();
+			stmntUpdateUMLClassMismatch.close();
+			stmntUpdateCodeAttributeMismatch.close();
+			stmntUpdateUMLAttributeMismatch.close();
+			stmntUpdateCodeMethodMismatch.close();
+			stmntUpdateUMLMethodMismatch.close();
+			stmntUpdateCodeReferenceMismatch.close();
+			stmntUpdateUMLReferenceMismatch.close();
+			
 		}
 		catch(Exception e)
 		{
@@ -637,7 +675,7 @@ public final class UTMDB {
 			
 			String strMatchTracking = 
 					"Other_ID		Integer		Null Default -1," +
-					"IsExactMatch	Boolean		Null Default 0"
+					"NumMismatched	Integer		Null Default 0"
 			;
 			
 			// Table Sources
