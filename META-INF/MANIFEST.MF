@@ -3,7 +3,10 @@ Bundle-ManifestVersion: 2
 Bundle-Name: org.eclipse.utm
 Bundle-SymbolicName: org.eclipse.utm;singleton:=true
 Bundle-Version: 1.0.0.qualifier
+Bundle-ClassPath: .
 Bundle-Activator: org.eclipse.utm.Activator
+Export-Package: org.eclipse.utm.parseUML.main,
+ org.eclipse.utm.views
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
  org.eclipse.ui.ide,
@@ -19,9 +22,8 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.jdt.core,
  org.eclipse.jdt.launching,
  org.eclipse.text,
- com.google.guava;bundle-version="15.0.0"
+ com.google.guava;bundle-version="15.0.0",
+ org.eclipse.ui,
+ org.eclipse.core.runtime
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
-Export-Package: org.eclipse.utm.parseUML.main
-Bundle-ClassPath: .
-
