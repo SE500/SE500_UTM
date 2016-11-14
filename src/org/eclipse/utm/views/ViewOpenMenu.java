@@ -1,6 +1,11 @@
 package org.eclipse.utm.views;
+/**
+ * @author junqianfeng
+ */
 
 import java.io.File;
+import java.io.IOException;
+
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
@@ -14,6 +19,8 @@ import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.part.ViewPart;
+import org.eclipse.utm.parseSource.ParseSource;
+import org.eclipse.utm.parseUML.ParseUML;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -119,12 +126,17 @@ public class ViewOpenMenu extends ViewPart {
 
  private void computeTraceability(Boolean compute) {
 	 parseUML();
-     parseJava(compute);
- //    UTMDB.Match(); or Compare.compare();
+     parseSource();
+     Compare();
      showResultsView();
 	
 }
  
+private void Compare() {
+	// TODO Auto-generated method stub
+	
+}
+
 private void showResultsView() {
 	IWorkbenchPage page = getSite().getPage();
 	IViewPart resultsView = page.findView(ViewResult.ID);
@@ -143,13 +155,23 @@ private void showResultsView() {
 }
 
 
-private void parseJava(boolean compute) {
-	
+private void parseSource() {
+	File selectedSource = ParseSource.selectSource();
+	ParseSource readfile = new ParseSource(selectedSource);
+	readfile.launch();
 }
 
 private void parseUML() {
-	
+	File selectedModel = ParseUML.selectUmlFile();
+	ParseUML umlFile = new ParseUML(selectedModel);
+	try {
+		umlFile.launch(true);
+	} catch (IOException e) {
+		e.printStackTrace();
+	}
+		
 }
+	
 
  private void emptyDirectory(File thisDir) {
 	 File[] listOfFiles = thisDir.listFiles();

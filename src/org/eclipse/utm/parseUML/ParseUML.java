@@ -11,9 +11,8 @@ package org.eclipse.utm.parseUML;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
+import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import javax.swing.JFileChooser;
 import javax.swing.UIManager;
@@ -166,12 +165,6 @@ public class ParseUML {
 				}
 
 			}
-			//this.db.Relate();
-			//this.db.Match();
-			//this.db.Commit();
-			//System.out.println("UML Class Count:" + this.db.CountUMLClasses());
-			//System.out.println("UML Attribute Count:" + this.db.CountUMLAttributes());
-			//System.out.println("UML Method Count:" + this.db.CountUMLMethods());
 		}
 		return true;
 	}
@@ -184,10 +177,9 @@ public class ParseUML {
 	 * @throws IOException
 	 */
 	private boolean processGenFile(File file) throws IOException {
-		FileInputStream fis = new FileInputStream(file);
-		 
-		//Construct BufferedReader from InputStreamReader
-		BufferedReader br = new BufferedReader(new InputStreamReader(fis));
+				 
+		//Construct BufferedReader from FileReader
+		BufferedReader br = new BufferedReader(new FileReader(file));
 	 
 		String line = null;
 		int lineNumber = 0;

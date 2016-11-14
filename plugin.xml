@@ -21,13 +21,18 @@
       <view
             class="org.eclipse.utm.views.ViewOpen"
             id="org.eclipse.utm.views.ViewOpen"
-            name="UML Trace Magic(OpenMenu)">
+            name="UML Trace Magic">
       </view>
       <view
             class="org.eclipse.utm.views.ViewResult"
             id="org.eclipse.utm.views.ViewResult"
-            name="UML Trace Magic(Results)"
+            name="UML Trace Magic"
             restorable="true">
+      </view>
+      <view
+            class="org.eclipse.utm.views.testview"
+            id="org.eclipse.utm.views.testview"
+            name="New ViewPart">
       </view>
    </extension>
    <extension
@@ -35,7 +40,7 @@
       <perspective
             class="org.eclipse.utm.views.perspectives"
             id="org.eclipse.utm.views.perspectives"
-            name="utm Perspective">
+            name="New Perspective">
       </perspective>
    </extension>
 

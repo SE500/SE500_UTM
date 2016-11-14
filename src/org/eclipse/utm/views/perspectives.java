@@ -1,4 +1,7 @@
 package org.eclipse.utm.views;
+/**
+ * @author junqianfeng
+ */
 
 import org.eclipse.ui.IPageLayout;
 import org.eclipse.ui.IPerspectiveFactory;

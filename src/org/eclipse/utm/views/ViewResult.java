@@ -13,7 +13,7 @@ import org.eclipse.swt.*;
 
 public class ViewResult extends ViewPart {
 
-	public static final String ID = "org.eclipse.utm.views.ViewResult";
+	public static final String ID = "org.eclipse.utm.views.ViewResult"; 
 
 	Tree tree;
 	Composite parent;
