@@ -400,6 +400,8 @@ public final class UTMDB {
 				
 				list.add(udb);
 			}
+			
+			stmntSelect.close();
 		}
 		catch(Exception e)
 		{
@@ -434,6 +436,8 @@ public final class UTMDB {
 				
 				list.add(udb);
 			}
+			
+			stmntSelect.close();
 		}
 		catch(Exception e)
 		{
@@ -443,6 +447,220 @@ public final class UTMDB {
 		return list;
 	}
 
+	public ArrayList<UTMDBAttribute> GetSourceAttributesList(int ClassID)
+	{
+		ArrayList<UTMDBAttribute> list = new ArrayList<UTMDBAttribute>();
+		
+		try
+		{
+			Statement stmntSelect = this._c.createStatement();
+			ResultSet r = stmntSelect.executeQuery("Select Attribute_ID, Class_ID, Filename, LineNumber, ClassName, AccessType, Name, Type, Other_ID, NumMismatched From CodeAttribute Where Class_ID = " + ClassID);
+		
+			while(r.next())
+			{
+				UTMDBAttribute udb = new UTMDBAttribute();
+				udb.AttributeID = r.getInt(1);
+				udb.ClassID = r.getInt(2);
+				udb.Filename = r.getString(3);
+				udb.LineNumber = r.getInt(4);
+				udb.ClassName = r.getString(5);
+				udb.AccessType = r.getString(6);
+				udb.Name = r.getString(7);
+				udb.Type = r.getString(8);
+				udb.OtherID = r.getInt(9);
+				udb.NumMismatched = r.getInt(10);
+				
+				list.add(udb);
+			}
+			
+			stmntSelect.close();
+		}
+		catch(Exception e)
+		{
+			System.out.println( e.getClass().getName() + ": " + e.getMessage() );
+		}
+		
+		return list;
+	}
+	
+	public ArrayList<UTMDBAttribute> GetUMLAttributesList(int ClassID)
+	{
+		ArrayList<UTMDBAttribute> list = new ArrayList<UTMDBAttribute>();
+		
+		try
+		{
+			Statement stmntSelect = this._c.createStatement();
+			ResultSet r = stmntSelect.executeQuery("Select Attribute_ID, Class_ID, ClassName, AccessType, Name, Type, Other_ID, NumMismatched From UMLAttribute Where Class_ID = " + ClassID);
+		
+			while(r.next())
+			{
+				UTMDBAttribute udb = new UTMDBAttribute();
+				udb.AttributeID = r.getInt(1);
+				udb.ClassID = r.getInt(2);
+				udb.Filename = "UML";
+				udb.LineNumber = 0;
+				udb.ClassName = r.getString(3);
+				udb.AccessType = r.getString(4);
+				udb.Name = r.getString(5);
+				udb.Type = r.getString(6);
+				udb.OtherID = r.getInt(7);
+				udb.NumMismatched = r.getInt(8);
+				
+				list.add(udb);
+			}
+			
+			stmntSelect.close();
+		}
+		catch(Exception e)
+		{
+			System.out.println( e.getClass().getName() + ": " + e.getMessage() );
+		}
+		
+		return list;
+	}
+	
+	public ArrayList<UTMDBMethod> GetSourceMethodsList(int ClassID)
+	{
+		ArrayList<UTMDBMethod> list = new ArrayList<UTMDBMethod>();
+		
+		try
+		{
+			Statement stmntSelect = this._c.createStatement();
+			ResultSet r = stmntSelect.executeQuery("Select Method_ID, Class_ID, Filename, LineNumber, ClassName, AccessType, Type, Name, Parameters, Other_ID, NumMismatched From CodeMethod Where Class_ID = " + ClassID);
+		
+			while(r.next())
+			{
+				UTMDBMethod udb = new UTMDBMethod();
+				udb.MethodID = r.getInt(1);
+				udb.ClassID = r.getInt(2);
+				udb.Filename = r.getString(3);
+				udb.LineNumber = r.getInt(4);
+				udb.ClassName = r.getString(5);
+				udb.AccessType = r.getString(6);
+				udb.Type = r.getString(7);
+				udb.Name = r.getString(8);
+				udb.Parameters = r.getString(9);
+				udb.OtherID = r.getInt(10);
+				udb.NumMismatched = r.getInt(11);
+				
+				list.add(udb);
+			}
+			
+			stmntSelect.close();
+		}
+		catch(Exception e)
+		{
+			System.out.println( e.getClass().getName() + ": " + e.getMessage() );
+		}
+		
+		return list;
+	}
+	
+	public ArrayList<UTMDBMethod> GetUMLMethodsList(int ClassID)
+	{
+		ArrayList<UTMDBMethod> list = new ArrayList<UTMDBMethod>();
+		
+		try
+		{
+			Statement stmntSelect = this._c.createStatement();
+			ResultSet r = stmntSelect.executeQuery("Select Method_ID, Class_ID, ClassName, AccessType, Type, Name, Parameters, Other_ID, NumMismatched From UMLMethod Where Class_ID = " + ClassID);
+		
+			while(r.next())
+			{
+				UTMDBMethod udb = new UTMDBMethod();
+				udb.MethodID = r.getInt(1);
+				udb.ClassID = r.getInt(2);
+				udb.Filename = "UML";
+				udb.LineNumber = 0;
+				udb.ClassName = r.getString(3);
+				udb.AccessType = r.getString(4);
+				udb.Type = r.getString(5);
+				udb.Name = r.getString(6);
+				udb.Parameters = r.getString(7);
+				udb.OtherID = r.getInt(8);
+				udb.NumMismatched = r.getInt(9);
+				
+				list.add(udb);
+			}
+			
+			stmntSelect.close();
+		}
+		catch(Exception e)
+		{
+			System.out.println( e.getClass().getName() + ": " + e.getMessage() );
+		}
+		
+		return list;
+	}
+	
+	public ArrayList<UTMDBReference> GetSourceReferencesList(int ClassID)
+	{
+		ArrayList<UTMDBReference> list = new ArrayList<UTMDBReference>();
+		
+		try
+		{
+			Statement stmntSelect = this._c.createStatement();
+			ResultSet r = stmntSelect.executeQuery("Select Reference_ID, Class_ID, ClassName, AccessType, Ref_Class_ID, RefClassName, Other_ID, NumMismatched From CodeReference Where Class_ID = " + ClassID);
+		
+			while(r.next())
+			{
+				UTMDBReference udb = new UTMDBReference();
+				udb.ReferenceID = r.getInt(1);
+				udb.ClassID = r.getInt(2);
+				udb.ClassName = r.getString(3);
+				udb.AccessType = r.getString(4);
+				udb.ReferenceClassID = r.getInt(5);
+				udb.ReferenceClassName = r.getString(6);
+				udb.OtherID = r.getInt(7);
+				udb.NumMismatched = r.getInt(8);
+				
+				list.add(udb);
+			}
+			
+			stmntSelect.close();
+		}
+		catch(Exception e)
+		{
+			System.out.println( e.getClass().getName() + ": " + e.getMessage() );
+		}
+		
+		return list;
+	}
+	
+	public ArrayList<UTMDBReference> GetUMLReferencesList(int ClassID)
+	{
+		ArrayList<UTMDBReference> list = new ArrayList<UTMDBReference>();
+		
+		try
+		{
+			Statement stmntSelect = this._c.createStatement();
+			ResultSet r = stmntSelect.executeQuery("Select Reference_ID, Class_ID, ClassName, AccessType, Ref_Class_ID, RefClassName, Other_ID, NumMismatched From UMLReference Where Class_ID = " + ClassID);
+		
+			while(r.next())
+			{
+				UTMDBReference udb = new UTMDBReference();
+				udb.ReferenceID = r.getInt(1);
+				udb.ClassID = r.getInt(2);
+				udb.ClassName = r.getString(3);
+				udb.AccessType = r.getString(4);
+				udb.ReferenceClassID = r.getInt(5);
+				udb.ReferenceClassName = r.getString(6);
+				udb.OtherID = r.getInt(7);
+				udb.NumMismatched = r.getInt(8);
+				
+				list.add(udb);
+			}
+			
+			stmntSelect.close();
+		}
+		catch(Exception e)
+		{
+			System.out.println( e.getClass().getName() + ": " + e.getMessage() );
+		}
+		
+		return list;
+	}
+	
 	public int NewUMLClass(String Filename, String ClassName, String AccessType, boolean IsStatic, boolean IsAbstract, boolean IsFinal)
 	{
 		return this.newClass(true, Filename, 0, ClassName, AccessType, IsStatic, IsAbstract, IsFinal);
