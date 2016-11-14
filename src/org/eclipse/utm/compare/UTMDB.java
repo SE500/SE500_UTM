@@ -2,6 +2,7 @@ package org.eclipse.utm.compare;
 
 import java.io.File;
 import java.sql.*;
+import java.util.ArrayList;
 
 public final class UTMDB {
 	
@@ -374,6 +375,74 @@ public final class UTMDB {
 		return count;
 	}
 	
+	public ArrayList<UTMDBClass> GetSourceClassList()
+	{
+		ArrayList<UTMDBClass> list = new ArrayList<UTMDBClass>();
+		
+		try
+		{
+			Statement stmntSelect = this._c.createStatement();
+			ResultSet r = stmntSelect.executeQuery("Select Class_ID, Filename, LineNumber, ClassName, AccessType, IsStatic, IsAbstract, IsFinal, Other_ID, NumMismatched From CodeClass");
+		
+			while(r.next())
+			{
+				UTMDBClass udb = new UTMDBClass();
+				udb.ClassID = r.getInt(1);
+				udb.Filename = r.getString(2);
+				udb.LineNumber = r.getInt(3);
+				udb.ClassName = r.getString(4);
+				udb.AccessType = r.getString(5);
+				udb.IsStatic = r.getBoolean(6);
+				udb.IsAbstract = r.getBoolean(7);
+				udb.IsFinal = r.getBoolean(8);
+				udb.OtherID = r.getInt(9);
+				udb.NumMismatched = r.getInt(10);
+				
+				list.add(udb);
+			}
+		}
+		catch(Exception e)
+		{
+			System.out.println( e.getClass().getName() + ": " + e.getMessage() );
+		}
+		
+		return list;
+	}
+	
+	public ArrayList<UTMDBClass> GetUMLClassList()
+	{
+		ArrayList<UTMDBClass> list = new ArrayList<UTMDBClass>();
+		
+		try
+		{
+			Statement stmntSelect = this._c.createStatement();
+			ResultSet r = stmntSelect.executeQuery("Select Class_ID, ClassName, AccessType, IsStatic, IsAbstract, IsFinal, Other_ID, NumMismatched From UMLClass");
+		
+			while(r.next())
+			{
+				UTMDBClass udb = new UTMDBClass();
+				udb.ClassID = r.getInt(1);
+				udb.Filename = "UML";
+				udb.LineNumber = 0;
+				udb.ClassName = r.getString(2);
+				udb.AccessType = r.getString(3);
+				udb.IsStatic = r.getBoolean(4);
+				udb.IsAbstract = r.getBoolean(5);
+				udb.IsFinal = r.getBoolean(6);
+				udb.OtherID = r.getInt(7);
+				udb.NumMismatched = r.getInt(8);
+				
+				list.add(udb);
+			}
+		}
+		catch(Exception e)
+		{
+			System.out.println( e.getClass().getName() + ": " + e.getMessage() );
+		}
+		
+		return list;
+	}
+
 	public int NewUMLClass(String Filename, String ClassName, String AccessType, boolean IsStatic, boolean IsAbstract, boolean IsFinal)
 	{
 		return this.newClass(true, Filename, 0, ClassName, AccessType, IsStatic, IsAbstract, IsFinal);
@@ -508,7 +577,7 @@ public final class UTMDB {
 	
 	public boolean IsInitialized()
 	{
-		return _isInit;
+		return this._isInit;
 	}
 	
 	public boolean IsOpen()
