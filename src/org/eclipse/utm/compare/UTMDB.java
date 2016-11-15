@@ -2,8 +2,10 @@ package org.eclipse.utm.compare;
 
 import java.io.File;
 import java.sql.*;
+import java.util.ArrayList;
 
 public final class UTMDB {
+	
 	private Connection _c = null;
 	
 	private static boolean _isInit = false;
@@ -373,6 +375,292 @@ public final class UTMDB {
 		return count;
 	}
 	
+	public ArrayList<UTMDBClass> GetSourceClassList()
+	{
+		ArrayList<UTMDBClass> list = new ArrayList<UTMDBClass>();
+		
+		try
+		{
+			Statement stmntSelect = this._c.createStatement();
+			ResultSet r = stmntSelect.executeQuery("Select Class_ID, Filename, LineNumber, ClassName, AccessType, IsStatic, IsAbstract, IsFinal, Other_ID, NumMismatched From CodeClass");
+		
+			while(r.next())
+			{
+				UTMDBClass udb = new UTMDBClass();
+				udb.ClassID = r.getInt(1);
+				udb.Filename = r.getString(2);
+				udb.LineNumber = r.getInt(3);
+				udb.ClassName = r.getString(4);
+				udb.AccessType = r.getString(5);
+				udb.IsStatic = r.getBoolean(6);
+				udb.IsAbstract = r.getBoolean(7);
+				udb.IsFinal = r.getBoolean(8);
+				udb.OtherID = r.getInt(9);
+				udb.NumMismatched = r.getInt(10);
+				
+				list.add(udb);
+			}
+			
+			stmntSelect.close();
+		}
+		catch(Exception e)
+		{
+			System.out.println( e.getClass().getName() + ": " + e.getMessage() );
+		}
+		
+		return list;
+	}
+	
+	public ArrayList<UTMDBClass> GetUMLClassList()
+	{
+		ArrayList<UTMDBClass> list = new ArrayList<UTMDBClass>();
+		
+		try
+		{
+			Statement stmntSelect = this._c.createStatement();
+			ResultSet r = stmntSelect.executeQuery("Select Class_ID, ClassName, AccessType, IsStatic, IsAbstract, IsFinal, Other_ID, NumMismatched From UMLClass");
+		
+			while(r.next())
+			{
+				UTMDBClass udb = new UTMDBClass();
+				udb.ClassID = r.getInt(1);
+				udb.Filename = "UML";
+				udb.LineNumber = 0;
+				udb.ClassName = r.getString(2);
+				udb.AccessType = r.getString(3);
+				udb.IsStatic = r.getBoolean(4);
+				udb.IsAbstract = r.getBoolean(5);
+				udb.IsFinal = r.getBoolean(6);
+				udb.OtherID = r.getInt(7);
+				udb.NumMismatched = r.getInt(8);
+				
+				list.add(udb);
+			}
+			
+			stmntSelect.close();
+		}
+		catch(Exception e)
+		{
+			System.out.println( e.getClass().getName() + ": " + e.getMessage() );
+		}
+		
+		return list;
+	}
+
+	public ArrayList<UTMDBAttribute> GetSourceAttributesList(int ClassID)
+	{
+		ArrayList<UTMDBAttribute> list = new ArrayList<UTMDBAttribute>();
+		
+		try
+		{
+			Statement stmntSelect = this._c.createStatement();
+			ResultSet r = stmntSelect.executeQuery("Select Attribute_ID, Class_ID, Filename, LineNumber, ClassName, AccessType, Name, Type, Other_ID, NumMismatched From CodeAttribute Where Class_ID = " + ClassID);
+		
+			while(r.next())
+			{
+				UTMDBAttribute udb = new UTMDBAttribute();
+				udb.AttributeID = r.getInt(1);
+				udb.ClassID = r.getInt(2);
+				udb.Filename = r.getString(3);
+				udb.LineNumber = r.getInt(4);
+				udb.ClassName = r.getString(5);
+				udb.AccessType = r.getString(6);
+				udb.Name = r.getString(7);
+				udb.Type = r.getString(8);
+				udb.OtherID = r.getInt(9);
+				udb.NumMismatched = r.getInt(10);
+				
+				list.add(udb);
+			}
+			
+			stmntSelect.close();
+		}
+		catch(Exception e)
+		{
+			System.out.println( e.getClass().getName() + ": " + e.getMessage() );
+		}
+		
+		return list;
+	}
+	
+	public ArrayList<UTMDBAttribute> GetUMLAttributesList(int ClassID)
+	{
+		ArrayList<UTMDBAttribute> list = new ArrayList<UTMDBAttribute>();
+		
+		try
+		{
+			Statement stmntSelect = this._c.createStatement();
+			ResultSet r = stmntSelect.executeQuery("Select Attribute_ID, Class_ID, ClassName, AccessType, Name, Type, Other_ID, NumMismatched From UMLAttribute Where Class_ID = " + ClassID);
+		
+			while(r.next())
+			{
+				UTMDBAttribute udb = new UTMDBAttribute();
+				udb.AttributeID = r.getInt(1);
+				udb.ClassID = r.getInt(2);
+				udb.Filename = "UML";
+				udb.LineNumber = 0;
+				udb.ClassName = r.getString(3);
+				udb.AccessType = r.getString(4);
+				udb.Name = r.getString(5);
+				udb.Type = r.getString(6);
+				udb.OtherID = r.getInt(7);
+				udb.NumMismatched = r.getInt(8);
+				
+				list.add(udb);
+			}
+			
+			stmntSelect.close();
+		}
+		catch(Exception e)
+		{
+			System.out.println( e.getClass().getName() + ": " + e.getMessage() );
+		}
+		
+		return list;
+	}
+	
+	public ArrayList<UTMDBMethod> GetSourceMethodsList(int ClassID)
+	{
+		ArrayList<UTMDBMethod> list = new ArrayList<UTMDBMethod>();
+		
+		try
+		{
+			Statement stmntSelect = this._c.createStatement();
+			ResultSet r = stmntSelect.executeQuery("Select Method_ID, Class_ID, Filename, LineNumber, ClassName, AccessType, Type, Name, Parameters, Other_ID, NumMismatched From CodeMethod Where Class_ID = " + ClassID);
+		
+			while(r.next())
+			{
+				UTMDBMethod udb = new UTMDBMethod();
+				udb.MethodID = r.getInt(1);
+				udb.ClassID = r.getInt(2);
+				udb.Filename = r.getString(3);
+				udb.LineNumber = r.getInt(4);
+				udb.ClassName = r.getString(5);
+				udb.AccessType = r.getString(6);
+				udb.Type = r.getString(7);
+				udb.Name = r.getString(8);
+				udb.Parameters = r.getString(9);
+				udb.OtherID = r.getInt(10);
+				udb.NumMismatched = r.getInt(11);
+				
+				list.add(udb);
+			}
+			
+			stmntSelect.close();
+		}
+		catch(Exception e)
+		{
+			System.out.println( e.getClass().getName() + ": " + e.getMessage() );
+		}
+		
+		return list;
+	}
+	
+	public ArrayList<UTMDBMethod> GetUMLMethodsList(int ClassID)
+	{
+		ArrayList<UTMDBMethod> list = new ArrayList<UTMDBMethod>();
+		
+		try
+		{
+			Statement stmntSelect = this._c.createStatement();
+			ResultSet r = stmntSelect.executeQuery("Select Method_ID, Class_ID, ClassName, AccessType, Type, Name, Parameters, Other_ID, NumMismatched From UMLMethod Where Class_ID = " + ClassID);
+		
+			while(r.next())
+			{
+				UTMDBMethod udb = new UTMDBMethod();
+				udb.MethodID = r.getInt(1);
+				udb.ClassID = r.getInt(2);
+				udb.Filename = "UML";
+				udb.LineNumber = 0;
+				udb.ClassName = r.getString(3);
+				udb.AccessType = r.getString(4);
+				udb.Type = r.getString(5);
+				udb.Name = r.getString(6);
+				udb.Parameters = r.getString(7);
+				udb.OtherID = r.getInt(8);
+				udb.NumMismatched = r.getInt(9);
+				
+				list.add(udb);
+			}
+			
+			stmntSelect.close();
+		}
+		catch(Exception e)
+		{
+			System.out.println( e.getClass().getName() + ": " + e.getMessage() );
+		}
+		
+		return list;
+	}
+	
+	public ArrayList<UTMDBReference> GetSourceReferencesList(int ClassID)
+	{
+		ArrayList<UTMDBReference> list = new ArrayList<UTMDBReference>();
+		
+		try
+		{
+			Statement stmntSelect = this._c.createStatement();
+			ResultSet r = stmntSelect.executeQuery("Select Reference_ID, Class_ID, ClassName, AccessType, Ref_Class_ID, RefClassName, Other_ID, NumMismatched From CodeReference Where Class_ID = " + ClassID);
+		
+			while(r.next())
+			{
+				UTMDBReference udb = new UTMDBReference();
+				udb.ReferenceID = r.getInt(1);
+				udb.ClassID = r.getInt(2);
+				udb.ClassName = r.getString(3);
+				udb.AccessType = r.getString(4);
+				udb.ReferenceClassID = r.getInt(5);
+				udb.ReferenceClassName = r.getString(6);
+				udb.OtherID = r.getInt(7);
+				udb.NumMismatched = r.getInt(8);
+				
+				list.add(udb);
+			}
+			
+			stmntSelect.close();
+		}
+		catch(Exception e)
+		{
+			System.out.println( e.getClass().getName() + ": " + e.getMessage() );
+		}
+		
+		return list;
+	}
+	
+	public ArrayList<UTMDBReference> GetUMLReferencesList(int ClassID)
+	{
+		ArrayList<UTMDBReference> list = new ArrayList<UTMDBReference>();
+		
+		try
+		{
+			Statement stmntSelect = this._c.createStatement();
+			ResultSet r = stmntSelect.executeQuery("Select Reference_ID, Class_ID, ClassName, AccessType, Ref_Class_ID, RefClassName, Other_ID, NumMismatched From UMLReference Where Class_ID = " + ClassID);
+		
+			while(r.next())
+			{
+				UTMDBReference udb = new UTMDBReference();
+				udb.ReferenceID = r.getInt(1);
+				udb.ClassID = r.getInt(2);
+				udb.ClassName = r.getString(3);
+				udb.AccessType = r.getString(4);
+				udb.ReferenceClassID = r.getInt(5);
+				udb.ReferenceClassName = r.getString(6);
+				udb.OtherID = r.getInt(7);
+				udb.NumMismatched = r.getInt(8);
+				
+				list.add(udb);
+			}
+			
+			stmntSelect.close();
+		}
+		catch(Exception e)
+		{
+			System.out.println( e.getClass().getName() + ": " + e.getMessage() );
+		}
+		
+		return list;
+	}
+	
 	public int NewUMLClass(String Filename, String ClassName, String AccessType, boolean IsStatic, boolean IsAbstract, boolean IsFinal)
 	{
 		return this.newClass(true, Filename, 0, ClassName, AccessType, IsStatic, IsAbstract, IsFinal);
@@ -507,7 +795,7 @@ public final class UTMDB {
 	
 	public boolean IsInitialized()
 	{
-		return _isInit;
+		return this._isInit;
 	}
 	
 	public boolean IsOpen()
@@ -605,6 +893,43 @@ public final class UTMDB {
 			stmntUpdateMethodUML.close();
 			stmntUpdateReferenceCode.close();
 			stmntUpdateReferenceUML.close();
+			
+			String strUpdateCodeClassMismatch = "Update CodeClass Set NumMismatched = ( Select Case When CodeClass.AccessType = UMLClass.AccessType Then 0 Else 1 End + Case When CodeClass.IsStatic = UMLClass.IsStatic Then 0 Else 1 End + Case When CodeClass.IsAbstract = UMLClass.IsAbstract Then 0 Else 1 End + Case When CodeClass.IsFinal = UMLClass.IsFinal Then 0 Else 1 End From UMLClass Where CodeClass.Other_ID = UMLClass.Class_ID )";
+			String strUpdateUMLClassMismatch = "Update UMLClass Set NumMismatched = ( Select Case When CodeClass.AccessType = UMLClass.AccessType Then 0 Else 1 End + Case When CodeClass.IsStatic = UMLClass.IsStatic Then 0 Else 1 End + Case When CodeClass.IsAbstract = UMLClass.IsAbstract Then 0 Else 1 End + Case When CodeClass.IsFinal = UMLClass.IsFinal Then 0 Else 1 End From CodeClass Where CodeClass.Other_ID = UMLClass.Class_ID )";
+			String strUpdateCodeAttributeMismatch = "Update CodeAttribute Set NumMismatched = ( Select Case When CodeAttribute.AccessType = UMLAttribute.AccessType Then 0 Else 1 End + Case When CodeAttribute.Type = UMLAttribute.Type Then 0 Else 1 End From UMLAttribute Where UMLAttribute.Other_ID = CodeAttribute.Attribute_ID )";
+			String strUpdateUMLAttributeMismatch = "Update UMLAttribute Set NumMismatched = ( Select Case When CodeAttribute.AccessType = UMLAttribute.AccessType Then 0 Else 1 End + Case When CodeAttribute.Type = UMLAttribute.Type Then 0 Else 1 End From CodeAttribute Where CodeAttribute.Other_ID = UMLAttribute.Attribute_ID )";
+			String strUpdateCodeMethodMismatch = "Update CodeMethod Set NumMismatched = ( Select Case When CodeMethod.AccessType = UMLMethod.AccessType Then 0 Else 1 End + Case When CodeMethod.Type = UMLMethod.Type Then 0 Else 1 End + Case When CodeMethod.Parameters = UMLMethod.Parameters Then 0 Else 1 End From UMLMethod Where UMLMethod.Other_ID = CodeMethod.Method_ID )";
+			String strUpdateUMLMethodMismatch = "Update UMLMethod Set NumMismatched = ( Select Case When CodeMethod.AccessType = UMLMethod.AccessType Then 0 Else 1 End + Case When CodeMethod.Type = UMLMethod.Type Then 0 Else 1 End + Case When CodeMethod.Parameters = UMLMethod.Parameters Then 0 Else 1 End From CodeMethod Where CodeMethod.Other_ID = UMLMethod.Method_ID )";
+			String strUpdateCodeReferenceMismatch = "Update CodeReference Set NumMismatched = ( Select Case When CodeReference.AccessType = UMLReference.AccessType Then 0 Else 1 End From UMLReference Where UMLReference.Other_ID = CodeReference.Reference_ID )";
+			String strUpdateUMLReferenceMismatch = "Update UMLReference Set NumMismatched = ( Select Case When CodeReference.AccessType = UMLReference.AccessType Then 0 Else 1 End From CodeReference Where CodeReference.Other_ID = UMLReference.Reference_ID )";
+			
+			Statement stmntUpdateCodeClassMismatch = this._c.createStatement();
+			Statement stmntUpdateUMLClassMismatch = this._c.createStatement();
+			Statement stmntUpdateCodeAttributeMismatch = this._c.createStatement();
+			Statement stmntUpdateUMLAttributeMismatch = this._c.createStatement();
+			Statement stmntUpdateCodeMethodMismatch = this._c.createStatement();
+			Statement stmntUpdateUMLMethodMismatch = this._c.createStatement();
+			Statement stmntUpdateCodeReferenceMismatch = this._c.createStatement();
+			Statement stmntUpdateUMLReferenceMismatch = this._c.createStatement();
+			
+			stmntUpdateCodeClassMismatch.executeUpdate(strUpdateCodeClassMismatch);
+			stmntUpdateUMLClassMismatch.executeUpdate(strUpdateUMLClassMismatch);
+			stmntUpdateCodeAttributeMismatch.executeUpdate(strUpdateCodeAttributeMismatch);
+			stmntUpdateUMLAttributeMismatch.executeUpdate(strUpdateUMLAttributeMismatch);
+			stmntUpdateCodeMethodMismatch.executeUpdate(strUpdateCodeMethodMismatch);
+			stmntUpdateUMLMethodMismatch.executeUpdate(strUpdateUMLMethodMismatch);
+			stmntUpdateCodeReferenceMismatch.executeUpdate(strUpdateCodeReferenceMismatch);
+			stmntUpdateUMLReferenceMismatch.executeUpdate(strUpdateUMLReferenceMismatch);
+			
+			stmntUpdateCodeClassMismatch.close();
+			stmntUpdateUMLClassMismatch.close();
+			stmntUpdateCodeAttributeMismatch.close();
+			stmntUpdateUMLAttributeMismatch.close();
+			stmntUpdateCodeMethodMismatch.close();
+			stmntUpdateUMLMethodMismatch.close();
+			stmntUpdateCodeReferenceMismatch.close();
+			stmntUpdateUMLReferenceMismatch.close();
+			
 		}
 		catch(Exception e)
 		{
@@ -637,7 +962,7 @@ public final class UTMDB {
 			
 			String strMatchTracking = 
 					"Other_ID		Integer		Null Default -1," +
-					"IsExactMatch	Boolean		Null Default 0"
+					"NumMismatched	Integer		Null Default 0"
 			;
 			
 			// Table Sources

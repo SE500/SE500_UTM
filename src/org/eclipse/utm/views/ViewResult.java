@@ -1,227 +1,71 @@
 package org.eclipse.utm.views;
-
-import java.util.ArrayList;
+/**
+ * @author junqianfeng
+ */
 
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.Tree;
+import org.eclipse.swt.widgets.TreeColumn;
+import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.ui.part.*;
-import org.eclipse.utm.views.ViewResult.TreeObject;
-import org.eclipse.jface.viewers.*;
-import org.eclipse.swt.graphics.Image;
-import org.eclipse.jface.action.*;
-import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.ui.*;
+import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.*;
-import org.eclipse.core.runtime.IAdaptable;
 
 public class ViewResult extends ViewPart {
-	public ViewResult() {
-	}
 
+	public static final String ID = "org.eclipse.utm.views.ViewResult"; 
+
+	Tree tree;
+	Composite parent;
 	/**
-	 * The ID of the view as specified by the extension.
+	 * Create contents of the view part.
+	 * @param parent
 	 */
-	public static final String ID = "org.eclipse.utm.views.ViewResult";
-
-
-	Composite mainPanel;
-	private TreeViewer viewer;
-	private DrillDownAdapter drillDownAdapter;
-		 
-	class TreeObject implements IAdaptable {
-		private String name;
-		private TreeParent parent;
-		
-		public TreeObject(String name) {
-			this.name = name;
-		}
-		public String getName() {
-			return name;
-		}
-		public void setParent(TreeParent parent) {
-			this.parent = parent;
-		}
-		public TreeParent getParent() {
-			return parent;
-		}
-		public String toString() {
-			return getName();
-		}
-		public <T> T getAdapter(Class<T> key) {
-			return null;
-		}
-	}
-	
-	class TreeParent extends TreeObject {
-		private ArrayList<TreeObject> children;
-		public TreeParent(String name) {
-			super(name);
-			children = new ArrayList<TreeObject>();
-		}
-		public void addChild(TreeObject child) {
-			children.add(child);
-			child.setParent(this);
-		}
-		public void removeChild(TreeObject child) {
-			children.remove(child);
-			child.setParent(null);
-		}
-		public TreeObject [] getChildren() {
-			return (TreeObject [])children.toArray(new TreeObject[children.size()]);
-		}
-		public boolean hasChildren() {
-			return children.size()>0;
-		}
-	}
-
-	class ViewContentProvider implements ITreeContentProvider {
-		private TreeParent invisibleRoot;
-
-		public Object[] getElements(Object parent) {
-			if (parent.equals(getViewSite())) {
-				if (invisibleRoot==null) initialize();
-				return getChildren(invisibleRoot);
-			}
-			return getChildren(parent);
-		}
-		public Object getParent(Object child) {
-			if (child instanceof TreeObject) {
-				return ((TreeObject)child).getParent();
-			}
-			return null;
-		}
-		public Object [] getChildren(Object parent) {
-			if (parent instanceof TreeParent) {
-				return ((TreeParent)parent).getChildren();
-			}
-			return new Object[0];
-		}
-		public boolean hasChildren(Object parent) {
-			if (parent instanceof TreeParent)
-				return ((TreeParent)parent).hasChildren();
-			return false;
-		}
-
-		private void initialize() {
-			invisibleRoot = new TreeParent("Results:");
-		}
-	}
-
-	class ViewLabelProvider extends LabelProvider {
-		public String getText(Object obj) {
-			return obj.toString();
-		}
-		public Image getImage(Object obj) {
-			String imageKey = ISharedImages.IMG_OBJ_ELEMENT;
-			if (obj instanceof TreeParent)
-			   imageKey = ISharedImages.IMG_OBJ_FOLDER;
-			return PlatformUI.getWorkbench().getSharedImages().getImage(imageKey);
-		}
-	}
-
-
+	@Override
 	public void createPartControl(Composite parent) {
-		viewer = new TreeViewer(this.mainPanel, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
-		drillDownAdapter = new DrillDownAdapter(viewer);
-		viewer.setContentProvider(new ViewContentProvider());
-		viewer.setInput(getViewSite());
-		viewer.setLabelProvider(new ViewLabelProvider());
-		
-		TreeObject to1 = new TreeObject("Method 1");
-		TreeObject to2 = new TreeObject("Method 2");
-		TreeObject to3 = new TreeObject("Method 3");
-		TreeParent p1 = new TreeParent("Class 1");
-		p1.addChild(to1);
-		p1.addChild(to2);
-		p1.addChild(to3);
-		
-		TreeObject to4 = new TreeObject("Method 4");
-		TreeObject to5 = new TreeObject("Method 5");
-		TreeParent p2 = new TreeParent("Class 2");
-		p2.addChild(to4);
-		p2.addChild(to5);
-		
-		TreeObject to6 = new TreeObject("Method 6");
-		TreeObject to7 = new TreeObject("Method 7");
-		TreeParent p3 = new TreeParent("Class 3");
-		p3.addChild(to7);
-		p3.addChild(to6);
-		
-		
-		TreeParent root = new TreeParent("Results:");
-		root.addChild(p1);
-		root.addChild(p2);
-		root.addChild(p3);
-				
+		 parent.setLayout(new FillLayout(SWT.HORIZONTAL));
+		 Tree tree = new Tree(parent,SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL);
+		 tree.setHeaderVisible(true);
+		 TreeColumn columnClass = new TreeColumn(tree, SWT.CENTER);
+		    columnClass.setText("                 Column 1");
+		    columnClass.setWidth(200);
+		    TreeColumn column2 = new TreeColumn(tree, SWT.CENTER);
+		    column2.setText("Column 2");
+		    column2.setWidth(200);
+		    TreeColumn columnLocation = new TreeColumn(tree, SWT.CENTER);
+		    columnLocation.setText("Column 3");
+		    columnLocation.setWidth(190);
+    //////////////////////////Test case/////////////////////////////   
+		    TreeItem item1 = new TreeItem(tree, SWT.NONE);
+		    item1.setText(new String[]{"               item1","yes","32"});
+		    TreeItem subItem1 = new TreeItem(item1, SWT.NONE);
+		    subItem1.setText(new String[]{"               subItem1","yes","55"});
+		    TreeItem subsubItem1 = new TreeItem(subItem1, SWT.NONE);
+		    subsubItem1.setText(new String[]{"               subsubitem1","No","88"});
+		    TreeItem item2 = new TreeItem(tree, SWT.NONE);
+		    item2.setText(new String[]{"               item2","yes","62"});  
+		    TreeItem subItem2 = new TreeItem(item2, SWT.NONE);
+		    subItem2.setText(new String[]{"               subItem2","no","99"});
+	////////////////////////////////////////////////////////////////////// 
 	}
 	
 	public void showResults(){
+		tree.removeAll();
+//		for(CompareResults thisResult : Compare.results){
+//			String matchFound, attrMatches, matchLocation;
+//			if(thisResult.matchFound) matchFound = "Yes";
+//			else matchFound = "No";
+//		TreeItem item = new TreeItem(tree, SWT.NONE);
+//		item.setText(new String[]{"            "+thisResult.className, matchFound,matchLocation});
+//		TreeItem subitem = new TreeItem(item, SWT.NONE);
+//		subitem.setText(new String[]{"            "+thisResult.methodName, matchFound,matchLocation});
+		}
 		
-//		viewer.removeAll;
-//		for (CompareResults thisResult : Compare.results) {
-//		String matchFound, attrMatches, methMatches;
-//		if (thisResult.matchFound) matchFound = "Yes";
-//		else matchFound = "No";
-//		attrMatches = thisResult.attributesFound+"/"+thisResult.attributesTotal;
-//		methMatches = thisResult.methodsFound+"/"+thisResult.methodsTotal;
-//		TableItem item = new TableItem(table, SWT.NONE);
-//		item.setText(new String[] { thisResult.className, matchFound, attrMatches, methMatches });
-//		}
-
-		
-	}
-
-	private void hookContextMenu() {
-		MenuManager menuMgr = new MenuManager("#PopupMenu");
-		menuMgr.setRemoveAllWhenShown(true);
-		menuMgr.addMenuListener(new IMenuListener() {
-			public void menuAboutToShow(IMenuManager manager) {
-				ViewResult.this.fillContextMenu(manager);
-			}
-		});
-		Menu menu = menuMgr.createContextMenu(viewer.getControl());
-		viewer.getControl().setMenu(menu);
-		getSite().registerContextMenu(menuMgr, viewer);
-	}
-
-	private void contributeToActionBars() {
-		IActionBars bars = getViewSite().getActionBars();
-		fillLocalPullDown(bars.getMenuManager());
-		fillLocalToolBar(bars.getToolBarManager());
-	}
-
-	private void fillLocalPullDown(IMenuManager manager) {
-	
-	}
-
-	private void fillContextMenu(IMenuManager manager) {
-		
-		manager.add(new Separator());
-		drillDownAdapter.addNavigationActions(manager);
-		// Other plug-ins can contribute there actions here
-		manager.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
-	}
-	
-	private void fillLocalToolBar(IToolBarManager manager) {
-	
-		manager.add(new Separator());
-		drillDownAdapter.addNavigationActions(manager);
-	}
-
-
-	private void showMessage(String message) {
-		MessageDialog.openInformation(
-			viewer.getControl().getShell(),
-			"Results",
-			message);
-	}
 
 	/**
 	 * Passing the focus request to the viewer's control.
 	 */
 	public void setFocus() {
-		viewer.getControl().setFocus();
-		mainPanel.setFocus();
-
+		parent.setFocus();
 	}
 }

@@ -31,6 +31,8 @@ public class ParseSource {
 	private UTMDB db = null;
 	private boolean isUml = false;
 	private String umlName = null;
+	private int classLinNumber;
+	private int methodLinNumber;
 	
 	/**
 	 * Empty Constructor
@@ -208,8 +210,8 @@ public class ParseSource {
 			}
 			scanner2.close();
 			if(findClass(lines, fileName.getName()))
-				if(findClassAttributes(lines, fileName.getName()))
-					if(findClassMethods(lines, fileName.getName()))
+				if(findClassMethods(lines, fileName.getName()))
+					if(findClassAttributes(lines, fileName.getName()))
 						return true;
 					else return false;
 				else return false;
@@ -327,6 +329,7 @@ public class ParseSource {
 				for(int y = 1; y <= m.groupCount(); y++) {
 					if(m.group(y) != null) {
 						System.out.println("Group: " + y + " = " + m.group(y));
+						this.classLinNumber = lineNumber;
 						switch(y) {
 						case 2:
 							isStatic = true;
@@ -350,14 +353,14 @@ public class ParseSource {
 					this.db.NewSourceClass(name, lineNumber, this.className, m.group(1), isStatic, isAbstract, isFinal);
 					if(isReference)
 					{
-						this.db.NewSourceReference(this.className, m.group(9), m.group(11));
+						//this.db.NewSourceReference(this.className, m.group(9), m.group(11));
 					}
 				} 
 				else {
 					this.db.NewUMLClass(this.umlName, this.className, m.group(1), isStatic, isAbstract, isFinal);
 					if(isReference)
 					{
-						this.db.NewUMLReference(this.className, m.group(9), m.group(11));
+						//this.db.NewUMLReference(this.className, m.group(9), m.group(11));
 					}
 				}
 				return true;
@@ -401,11 +404,13 @@ public class ParseSource {
 				+ "([\\$_\\w\\<\\>\\[\\]]*)\\s+"
 				// Group 7: Variable Name
 				+ "([\\$_\\w]+)"
+				
+				+ "([\\s\\$\\w,]*)"
 				// Group 8: Variable Definition or Assignment
 				+ "(\\s=|;)";
 		
 		// Loop through all the file lines
-		for(int i=0; i < line.length; i++) {
+		for(int i=classLinNumber; i < methodLinNumber; i++) {
 			currentLn = line[i];
 			lineNumber++;
 			Pattern p = Pattern.compile(attributeRgEx);
@@ -493,6 +498,8 @@ public class ParseSource {
 				System.out.println("Found a Method in line " + lineNumber + " " + m.group() + "" + currentLn);
 				for(int y = 1; y <= m.groupCount(); y++) {
 					if(m.group(y) != null) {
+						if (methodLinNumber == 0)
+							this.methodLinNumber = lineNumber;
 						System.out.println("Group: " + y + " = " + m.group(y));
 						switch(y) {
 						case 2:
