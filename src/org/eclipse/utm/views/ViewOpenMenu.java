@@ -4,8 +4,6 @@ package org.eclipse.utm.views;
  */
 
 import java.io.File;
-import java.io.IOException;
-
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
@@ -27,8 +25,7 @@ import org.eclipse.swt.events.SelectionEvent;
 //import org.eclipse.wb.swt.SWTResourceManager;
 
 public class ViewOpenMenu extends ViewPart {
-	public ViewOpenMenu() {}
-
+	
 	public static final String ID = "org.eclipse.utm.views.ViewOpenMenu";
 	
 	private Text textUML;
@@ -41,6 +38,10 @@ public class ViewOpenMenu extends ViewPart {
 	File umlFile,javaFile,projectDirectory;
 	Display display = new Display();
 	Shell shell = new Shell(display);
+	
+	public ViewOpenMenu() {
+		
+	}
 	
 	@Override
 	public void createPartControl(Composite parent) {

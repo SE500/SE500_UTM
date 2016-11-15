@@ -795,7 +795,7 @@ public final class UTMDB {
 	
 	public boolean IsInitialized()
 	{
-		return this._isInit;
+		return _isInit;
 	}
 	
 	public boolean IsOpen()

@@ -5,8 +5,6 @@ import org.eclipse.ui.part.ViewPart;
 import org.eclipse.utm.parseUML.ParseUML;
 
 import java.io.File;
-import java.io.IOException;
-
 import javax.swing.JFileChooser;
 import javax.swing.UIManager;
 import org.eclipse.swt.SWT;

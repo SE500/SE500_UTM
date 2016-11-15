@@ -2,30 +2,30 @@ package org.eclipse.utm.views;
 
 import java.io.File;
 
-import javax.swing.JFileChooser;
+//import javax.swing.JFileChooser;
 
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.DirectoryDialog;
-import org.eclipse.swt.widgets.FileDialog;
+//import org.eclipse.swt.widgets.DirectoryDialog;
+//import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PartInitException;
-import org.eclipse.ui.PlatformUI;
+//import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
 import org.eclipse.utm.compare.UTMDB;
 import org.eclipse.utm.parseSource.ParseSource;
 import org.eclipse.utm.parseUML.ParseUML;
 import org.eclipse.swt.widgets.Button;
-import org.eclipse.swt.widgets.Text;
+//import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.layout.GridData;
+//import org.eclipse.swt.layout.GridLayout;
+//import org.eclipse.swt.layout.GridData;
 
 public class ViewOpen extends ViewPart {
 	
