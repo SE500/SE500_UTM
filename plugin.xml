@@ -34,9 +34,9 @@
       </view>
       <view
             category="org.eclipse.utm"
-            class="org.eclipse.utm.views.testview"
-            id="org.eclipse.utm.views.testview"
-            name="New ViewPart"
+            class="org.eclipse.utm.views.ViewOpenMenu"
+            id="org.eclipse.utm.views.ViewOpenMenu"
+            name="UML Trace Magic - Menu"
             restorable="true">
       </view>
       <view
@@ -85,7 +85,7 @@
                relative="org.eclipse.ui.views.ProblemView">
          </view>
          <view
-               id="org.eclipse.utm.views.testview"
+               id="org.eclipse.utm.views.ViewOpenMenu"
                minimized="true"
                ratio="0.5"
                relationship="stack"
