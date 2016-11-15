@@ -66,12 +66,7 @@ public class TestGui extends ViewPart{
 			public void widgetSelected(SelectionEvent e) {
 				if(selectedUmlFile != null) {
 					ParseUML test = new ParseUML(selectedUmlFile);
-					try {
-						test.launch(true);
-					} catch (IOException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					}
+					test.launch(true);
 					
 				}
 				else {

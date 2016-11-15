@@ -11,14 +11,11 @@ package org.eclipse.utm.parseUML;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import javax.swing.JFileChooser;
 import javax.swing.UIManager;
-//import javax.swing.JFrame;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import org.eclipse.acceleo.common.utils.ModelUtils;
@@ -64,11 +61,16 @@ public class ParseUML {
 		
 	/**
 	 * Launch the process to parse the UML into the SQL database
-	 * @throws IOException
 	 */
-	public boolean launch() throws IOException {
-		Generate uml2java = new Generate(this.model, this.tempGenFolder, new ArrayList<Object>());
-		uml2java.doGenerate(new BasicMonitor());
+	public boolean launch() {
+		Generate uml2java;
+		try {
+			uml2java = new Generate(this.model, this.tempGenFolder, new ArrayList<Object>());
+			uml2java.doGenerate(new BasicMonitor());
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		return processGenDir(this.tempGenFolder);		
 	}
 	
@@ -76,11 +78,16 @@ public class ParseUML {
 	 * Launch the process to parse the UML into the SQL database
 	 * and cleans up temporary files if argument is true
 	 * @param withCleanUp
-	 * @throws IOException
 	 */
-	public boolean launch(boolean withCleanUp) throws IOException {
-		Generate uml2java = new Generate(this.model, this.tempGenFolder, new ArrayList<Object>());
-		uml2java.doGenerate(new BasicMonitor());
+	public boolean launch(boolean withCleanUp){
+		Generate uml2java;
+		try {
+			uml2java = new Generate(this.model, this.tempGenFolder, new ArrayList<Object>());
+			uml2java.doGenerate(new BasicMonitor());
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		boolean success = processGenDir(this.tempGenFolder);
 		if(withCleanUp)
 			this.cleanUp();

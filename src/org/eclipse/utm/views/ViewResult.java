@@ -15,11 +15,13 @@ import org.eclipse.swt.*;
 import org.eclipse.core.runtime.IAdaptable;
 
 public class ViewResult extends ViewPart {
+	public ViewResult() {
+	}
 
 	/**
 	 * The ID of the view as specified by the extension.
 	 */
-	public static final String ID = "com.free.view.treeview.views.ViewResult";
+	public static final String ID = "org.eclipse.utm.views.ViewResult";
 
 
 	Composite mainPanel;

@@ -19,29 +19,79 @@
    <extension
          point="org.eclipse.ui.views">
       <view
+            category="org.eclipse.utm"
             class="org.eclipse.utm.views.ViewOpen"
             id="org.eclipse.utm.views.ViewOpen"
-            name="UML Trace Magic">
-      </view>
-      <view
-            class="org.eclipse.utm.views.ViewResult"
-            id="org.eclipse.utm.views.ViewResult"
-            name="UML Trace Magic"
+            name="UML Trace Magic - Input"
             restorable="true">
       </view>
       <view
+            category="org.eclipse.utm"
+            class="org.eclipse.utm.views.ViewResult"
+            id="org.eclipse.utm.views.ViewResult"
+            name="UML Trace Magic - Result"
+            restorable="true">
+      </view>
+      <view
+            category="org.eclipse.utm"
             class="org.eclipse.utm.views.testview"
             id="org.eclipse.utm.views.testview"
-            name="New ViewPart">
+            name="New ViewPart"
+            restorable="true">
       </view>
+      <view
+            category="org.eclipse.utm"
+            class="org.eclipse.utm.views.TestGui"
+            id="org.eclipse.utm.views.TestGui"
+            name="Test GUI"
+            restorable="true">
+      </view>
+      <category
+            id="org.eclipse.utm"
+            name="UML Trace Magic">
+      </category>
    </extension>
    <extension
          point="org.eclipse.ui.perspectives">
       <perspective
             class="org.eclipse.utm.views.perspectives"
             id="org.eclipse.utm.views.perspectives"
-            name="New Perspective">
+            name="UML Trace Magic">
       </perspective>
+   </extension>
+   <extension
+         point="org.eclipse.ui.perspectiveExtensions">
+      <perspectiveExtension
+            targetID="org.eclipse.jdt.ui.JavaPerspective">
+         <view
+               id="org.eclipse.utm.views.ViewOpen"
+               minimized="false"
+               ratio="0.5"
+               relationship="stack"
+               relative="org.eclipse.ui.views.ProblemView">
+         </view>
+         <view
+               id="org.eclipse.utm.views.TestGui"
+               minimized="true"
+               ratio="0.5"
+               relationship="stack"
+               relative="org.eclipse.ui.views.ProblemView">
+         </view>
+         <view
+               id="org.eclipse.utm.views.ViewResult"
+               minimized="true"
+               ratio="0.5"
+               relationship="stack"
+               relative="org.eclipse.ui.views.ProblemView">
+         </view>
+         <view
+               id="org.eclipse.utm.views.testview"
+               minimized="true"
+               ratio="0.5"
+               relationship="stack"
+               relative="org.eclipse.ui.views.ProblemView">
+         </view>
+      </perspectiveExtension>
    </extension>
 
 </plugin>
