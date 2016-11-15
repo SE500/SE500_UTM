@@ -24,7 +24,7 @@ import org.eclipse.utm.parseUML.ParseUML;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.wb.swt.SWTResourceManager;
+//import org.eclipse.wb.swt.SWTResourceManager;
 
 public class ViewOpenMenu extends ViewPart {
 	public ViewOpenMenu() {}
@@ -49,7 +49,7 @@ public class ViewOpenMenu extends ViewPart {
    		container.setLayout(null);
 	
 		grpTraceUml = new Group(container, SWT.BORDER | SWT.SHADOW_ETCHED_OUT);
-		grpTraceUml.setFont(SWTResourceManager.getFont("Times New Roman", 13, SWT.BOLD));
+		//grpTraceUml.setFont(SWTResourceManager.getFont("Times New Roman", 13, SWT.BOLD));
 		grpTraceUml.setText("Input");
 		grpTraceUml.setBounds(22, 30, 408, 96);
 		
@@ -97,12 +97,12 @@ public class ViewOpenMenu extends ViewPart {
 		textJAVA.setBounds(200, 10, 171, 28);
 		
 		Label lblWelcome = new Label(container, SWT.NONE);
-		lblWelcome.setFont(SWTResourceManager.getFont("Times New Roman", 12, SWT.NORMAL));
+		//lblWelcome.setFont(SWTResourceManager.getFont("Times New Roman", 12, SWT.NORMAL));
 		lblWelcome.setBounds(141, 10, 151, 26);
 		lblWelcome.setText("Welcome to Trace Magic");
 		
 		grpOutput = new Group(container, SWT.NONE);
-		grpOutput.setFont(SWTResourceManager.getFont("Times New Roman", 13, SWT.BOLD));
+		//grpOutput.setFont(SWTResourceManager.getFont("Times New Roman", 13, SWT.BOLD));
 		grpOutput.setText("Output");
 		grpOutput.setBounds(22, 124, 408, 58);
 		
@@ -164,11 +164,8 @@ private void parseSource() {
 private void parseUML() {
 	File selectedModel = ParseUML.selectUmlFile();
 	ParseUML umlFile = new ParseUML(selectedModel);
-	try {
-		umlFile.launch(true);
-	} catch (IOException e) {
-		e.printStackTrace();
-	}
+	umlFile.launch(true);
+
 		
 }
 	
