@@ -26,7 +26,6 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.layout.GridData;
-import org.eclipse.wb.swt.SWTResourceManager;
 
 public class ViewOpen extends ViewPart {
 	
@@ -60,7 +59,6 @@ public class ViewOpen extends ViewPart {
 		grpUml.setText("UML Class Diagram");
 		grpUml.setLayout(null);
 		Label lblFilenameUML = new Label (grpUml, SWT.NONE);
-		lblFilenameUML.setFont(SWTResourceManager.getFont("Segoe UI", 9, SWT.NORMAL));
 		lblFilenameUML.setBounds(175, 25, 170, 15);
 		lblFilenameUML.setText("No file selected");
 		lblFilenameUML.setEnabled(false);
