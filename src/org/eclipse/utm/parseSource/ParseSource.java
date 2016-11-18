@@ -16,7 +16,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import org.eclipse.utm.compare.UTMDB;
 /**
  * 
- * @author Thomas Colborne
+ * @authors Thomas Colborne, Ziyad Daghriri
  * 
  * A class that parses source files and enters relevant information into
  * the UTMDB - an SQL database
@@ -291,6 +291,10 @@ public class ParseSource {
 		boolean isFinal = false;
 		boolean isAbstract = false;
 		boolean isReference = false;
+		String firstPart ="";
+		String secondPart ="";
+		String classDeclaration ="";
+		String classModifier = "";
 		
 		// Class Declaration Regular Expression
 		String classRgEx= 
@@ -324,46 +328,80 @@ public class ParseSource {
 			lineNumber++;
 			Pattern p = Pattern.compile(classRgEx);
 			Matcher m = p.matcher(currentLn);
-			if(m.find()) {
-				System.out.println("Found a Class in line " + lineNumber + " " + m.group() + "" + currentLn);
-				for(int y = 1; y <= m.groupCount(); y++) {
-					if(m.group(y) != null) {
-						System.out.println("Group: " + y + " = " + m.group(y));
+			// To get rid of comments 
+			if (currentLn.trim().startsWith("/*") == false 
+					&& currentLn.trim().startsWith("//") == false 
+					&&  currentLn.trim().startsWith("*") == false)
+				{
+					if(m.find()) {
+						// To combined class declaration 	
+						 if (currentLn.endsWith("{") )
+							{
+								firstPart = currentLn.trim();
+							}else
+							{						
+								secondPart= currentLn.trim() + line[i+1].trim();
+							}
+						 classDeclaration = firstPart+ " " + secondPart;		
+						System.out.println("Found a Class in line " + lineNumber + " " + classDeclaration);
 						this.classLinNumber = lineNumber;
-						switch(y) {
-						case 2:
-							isStatic = true;
-							break;
-						case 3:
-							isFinal = true;
-							break;
-						case 4:
+						/*for(int y = 1; y <= m.groupCount(); y++) {
+							if(m.group(y) != null) {
+								 System.out.println("Group: " + y + " = " + m.group(y));
+								this.classLinNumber = lineNumber;
+								switch(y) {
+								case 2:
+									isStatic = true;
+									break;
+								case 3:
+									isFinal = true;
+									break;
+								case 4:
+									isAbstract = true;
+									break;
+								case 7:
+									this.className = m.group(y);
+								case 8:
+									isReference = true;
+									break;
+								default:						
+								}					
+							}
+						}*/  	
+						
+						if (classDeclaration.contains("abstract"))
 							isAbstract = true;
-							break;
-						case 7:
-							this.className = m.group(y);
-						case 8:
+						if (classDeclaration.contains("final"))
+							isFinal = true;
+						if (classDeclaration.contains("reference"))
 							isReference = true;
-							break;
-						default:						
-						}					
-					}
+						if (classDeclaration.contains("public"))
+							classModifier = "public";
+						if (classDeclaration.contains("private"))
+							classModifier = "private";
+						this.className = name.substring(0, name.indexOf("."));
+						if(!isUml) {
+							////this.db.NewSourceClass(name, lineNumber, this.className, m.group(1), isStatic, isAbstract, isFinal);
+						System.out.println( this.className + lineNumber + this.className + classModifier + isStatic + isAbstract + isFinal);
+						
+						//public int NewSourceClass(String Filename, int LineNumber, String ClassName, String AccessType, boolean IsStatic, boolean IsAbstract, boolean IsFinal)
+						
+							this.db.NewSourceClass(this.className, lineNumber, this.className, classModifier, isStatic, isAbstract, isFinal);
+							if(isReference)
+							{
+								//this.db.NewSourceReference(this.className, m.group(9), m.group(11));
+							}
+						} 
+						else {
+							this.db.NewUMLClass(this.umlName, this.className, m.group(1), isStatic, isAbstract, isFinal);
+							if(isReference)
+							{
+								//this.db.NewUMLReference(this.className, m.group(9), m.group(11));
+							}
+						}
+						return true;
 				}
-				if(!isUml) {
-					this.db.NewSourceClass(name, lineNumber, this.className, m.group(1), isStatic, isAbstract, isFinal);
-					if(isReference)
-					{
-						//this.db.NewSourceReference(this.className, m.group(9), m.group(11));
-					}
-				} 
-				else {
-					this.db.NewUMLClass(this.umlName, this.className, m.group(1), isStatic, isAbstract, isFinal);
-					if(isReference)
-					{
-						//this.db.NewUMLReference(this.className, m.group(9), m.group(11));
-					}
-				}
-				return true;
+				
 			}
 		}
 		return false;
@@ -385,11 +423,16 @@ public class ParseSource {
 		int lineNumber = 0;
 		boolean isStatic = false;
 		boolean isFinal = false;
-		boolean isAbstract = false;
 		boolean isOther = false;
+		String attributesModifier = "";
+		String attributesName = "";
+		String attributeType= "";
+		
+		String attributeRgEx="((public\\s|private\\s)?(static\\s)?([a-zA-Z0-9]+)+\\s+([a-zA-Z0-9_]+)+\\s?(.+)?\\s?;)";
+		
 		
 		// Attribute Declaration Regular Expression
-		String attributeRgEx=
+		/*String attributeRgEx=
 				// Group 1: Access Modifier
 				"(public|private|protected)?\\s?"
 				// Group 2: isStatic
@@ -408,42 +451,80 @@ public class ParseSource {
 				+ "([\\s\\$\\w,]*)"
 				// Group 8: Variable Definition or Assignment
 				+ "(\\s=|;)";
-		
+		*/
 		// Loop through all the file lines
 		for(int i=classLinNumber; i < methodLinNumber; i++) {
 			currentLn = line[i];
 			lineNumber++;
 			Pattern p = Pattern.compile(attributeRgEx);
 			Matcher m =p.matcher(currentLn);
-			if(m.find())
+			if (currentLn.trim().startsWith("/*") == false 
+					&& currentLn.trim().startsWith("//") == false 
+					&&  currentLn.trim().startsWith("*") == false)
 			{
-				System.out.println("Found an Attribute in line " + lineNumber + " " + m.group() + "" + currentLn);
-				for(int y = 1; y <= m.groupCount(); y++) {
-					if(m.group(y) != null) {
-						System.out.println("Group: " + y + " = " + m.group(y));
-						switch(y) {
-						case 2:
-							isStatic = true;
-							break;
-						case 3:
-							isFinal = true;
-							break;
-						case 4:
-							isAbstract = true;
-							break;
-						case 5:
-							isOther = true;
-							break;
-						default:						
-						}					
-					}
+				if(m.find())
+				{
+				/*//	System.out.println("Found an Attribute in line " + lineNumber + " " + m.group() + "" + currentLn);
+					for(int y = 1; y <= m.groupCount(); y++) {
+						if(m.group(y) != null) {
+						//	System.out.println("Group: " + y + " = " + m.group(y));
+							switch(y) {
+							case 2:
+								isStatic = true;
+								break;
+							case 3:
+								isFinal = true;
+								break;
+							case 4:
+								isAbstract = true;
+								break;
+							case 5:
+								isOther = true;
+								break;
+							default:						
+							}					
+						}
+					}*/
+					
+					
+					
+					
+					this.className = name.substring(0, name.indexOf("."));
+					// Methods modifiers
+					if (currentLn.contains("public"))
+						{attributesModifier = "public"; currentLn = currentLn.replaceFirst("public", "").trim();}
+					
+					if (currentLn.contains("private"))
+						{attributesModifier = "private"; currentLn = currentLn.replaceFirst("private", "").trim();}
+					
+					if (currentLn.contains("protected"))
+						{attributesModifier = "protected"; currentLn = currentLn.replaceFirst("protected", "").trim();}
+					
+					if (currentLn.contains("static"))
+						{isStatic = true; currentLn = currentLn.replaceFirst("static", "").trim();}
+					
+					if (currentLn.contains("final"))
+						{isFinal = true; currentLn = currentLn.replaceFirst("final", "").trim();}
+					
+				
+					attributeType = currentLn.substring(0, currentLn.indexOf(" ") );currentLn = currentLn.replaceFirst(attributeType, "").trim();
+					attributesName = currentLn.substring(0,currentLn.indexOf(" "));
+					System.out.println("Current lin : " + line[i].trim());
+					System.out.println("Name 1: " + attributesName);
+					System.out.println("modifier : " + attributesModifier);
+					System.out.println("Type : " + attributeType);
+					System.out.println(lineNumber);
+					//public int NewSourceMethod(String Filename, int LineNumber, String ClassName, String AccessType, String Type, String Name, String Params)
+					//System.out.println(this.className + lineNumber + this.className + methodModifier + methodType + methodName + methodParameter);
+					if(!isUml)
+						//public int NewSourceAttribute(String Filename, int LineNumber, String ClassName, String AccessType, String Type, String Name)
+						{this.db.NewSourceAttribute(this.className, lineNumber, this.className, attributesModifier, attributeType, attributesName);}
+					else
+						{this.db.NewUMLAttribute(this.umlName, this.className, m.group(1), m.group(6), m.group(7));}
+					
 				}
-				if(!isUml)
-					this.db.NewSourceAttribute(name, lineNumber, this.className, m.group(1), m.group(6), m.group(7));
-				else
-					this.db.NewUMLAttribute(this.umlName, this.className, m.group(1), m.group(6), m.group(7));
 			}
-			
+	
 		}
 		return true;
 	}
@@ -464,11 +545,16 @@ public class ParseSource {
 		int lineNumber = 0;
 		boolean isStatic = false;
 		boolean isFinal = false;
-		boolean isAbstract = false;
 		boolean isOther = false;
+		String methodModifier = "";
+		String methodReturnType = "";
+		String methodName = "";
+		String methodParameter = "";
+		String methodType= "";
 		
 		// Method Declaration Regular Expression
-		String methodRgEx=
+		String methodRgEx="((public\\s|private\\s)?(static\\s)?([a-zA-Z0-9]+)+\\s+([a-zA-Z0-9_]+)+\\s?\\((.+)?\\)\\s?\\{)";
+/*		String methodRgEx=
 				// Group 1: Access Modifier
 				"(public|private|protected)?\\s?"
 				// Group 2: isStatic
@@ -485,46 +571,123 @@ public class ParseSource {
 				+ "([\\$\\w]+)\\s?"
 				// Group 8: Method Arguments
 				+ "\\(([^\\)]*)\\)";
-				// "\\s*\\{?[^\\}]*\\}?" - don't need the extra info
+		*/		// "\\s*\\{?[^\\}]*\\}?" - don't need the extra info
 		
 		// Loop through all the file lines
 		for(int i=0; i < line.length; i++){
-			currentLn = line[i];
+			currentLn = line[i].trim();
 			lineNumber++;
 			Pattern p = Pattern.compile(methodRgEx);
 			Matcher m =p.matcher(currentLn);
-			if(m.find())
-			{
-				System.out.println("Found a Method in line " + lineNumber + " " + m.group() + "" + currentLn);
-				for(int y = 1; y <= m.groupCount(); y++) {
-					if(m.group(y) != null) {
-						if (methodLinNumber == 0)
+			if (currentLn.startsWith("/*") == false 
+					&& currentLn.startsWith("//") == false 
+					&&  currentLn.startsWith("*") == false)
+				{	
+					if(m.find())
+					{
+						if ((line[i-1].endsWith("{") == false 
+								|| (line[i-1].endsWith("{") && (i == this.classLinNumber || i == this.classLinNumber + 1))
+								) 
+								&& line[i-1].endsWith("(") == false
+								&& currentLn.contains("else") == false
+								&& currentLn.contains("if") == false
+								&& currentLn.contains("try") == false
+								&& currentLn.contains("catch") == false
+								&& currentLn.contains("}") == false
+								&& currentLn.contains("SwingUtilities") == false)
+						{
+					//	System.out.println("Found a Method in line " + lineNumber + " " + m.group() + "" + currentLn);
+						/*for(int y = 1; y <= m.groupCount(); y++) {
+							if(m.group(y) != null) {
+								if (methodLinNumber == 0)
+									this.methodLinNumber = lineNumber;
+							//	System.out.println("Group: " + y + " = " + m.group(y));
+								switch(y) {
+								case 2:
+									isStatic = true;
+									break;
+								case 3:
+									isFinal = true;
+									break;
+								case 4:
+									isAbstract = true;
+									break;
+								case 5:
+									isOther = true;
+									break;
+								default:						
+								}					
+							}
+						}*/
+							if (this.methodLinNumber == 0)
 							this.methodLinNumber = lineNumber;
-						System.out.println("Group: " + y + " = " + m.group(y));
-						switch(y) {
-						case 2:
-							isStatic = true;
-							break;
-						case 3:
-							isFinal = true;
-							break;
-						case 4:
-							isAbstract = true;
-							break;
-						case 5:
-							isOther = true;
-							break;
-						default:						
-						}					
+							
+							this.className = name.substring(0, name.indexOf("."));
+							// Methods modifiers
+							if (currentLn.contains("public"))
+								{methodModifier = "public"; currentLn = currentLn.replaceFirst("public", "").trim();}
+							
+							if (currentLn.contains("private"))
+								{methodModifier = "private"; currentLn = currentLn.replaceFirst("private", "").trim();}
+							
+							if (currentLn.contains("protected"))
+								{methodModifier = "protected"; currentLn = currentLn.replaceFirst("protected", "").trim();}
+							
+							if (currentLn.contains("static"))
+								{isStatic = true; currentLn = currentLn.replaceFirst("static", "").trim();}
+							
+							if (currentLn.contains("final"))
+								{isFinal = true; currentLn = currentLn.replaceFirst("final", "").trim();}
+							
+							if (currentLn.contains("void"))
+							{
+								methodReturnType = ""; currentLn = currentLn.replaceFirst("void", "").trim();
+							}else if (currentLn.contains(this.className) == false) {
+								methodReturnType = currentLn.substring(0,currentLn.indexOf(" ")); currentLn = currentLn.replaceFirst(currentLn.substring(0,currentLn.indexOf(" ")), "");
+								//	methodReturnType = currentLn.split(" ")[0]; currentLn = currentLn.replace(currentLn.split(" ")[0], "");
+							}
+							methodParameter = currentLn.substring(currentLn.indexOf("("), currentLn.indexOf(")") + 1 );
+							
+							methodName = currentLn.substring(0,currentLn.indexOf("("));
+							System.out.println("Current lin : " + line[i].trim());
+							System.out.println("Name : " +methodName);																								
+							System.out.println("Para : " + methodParameter);
+							System.out.println("modifier : " + methodModifier);
+							System.out.println("Return Type : " + methodReturnType);
+							System.out.println("method Name : " + methodName);
+							System.out.println(lineNumber);
+							//public int NewSourceMethod(String Filename, int LineNumber, String ClassName, String AccessType, String Type, String Name, String Params)
+							//System.out.println(this.className + lineNumber + this.className + methodModifier + methodType + methodName + methodParameter);
+							
+							
+							if(!isUml)
+							{
+									//this.db.NewSourceMethod(name, lineNumber, this.className, m.group(1), m.group(6), m.group(7), m.group(8));
+									this.db.NewSourceMethod(this.className , lineNumber , this.className , methodModifier , methodType , methodName , methodParameter);
+							}else
+								
+								{this.db.NewUMLMethod(this.umlName, this.className, m.group(1), m.group(6), m.group(7), m.group(8));
+								}
+					
+							}
 					}
 				}
-				if(!isUml)
-					this.db.NewSourceMethod(name, lineNumber, this.className, m.group(1), m.group(6), m.group(7), m.group(8));
-				else
-					this.db.NewUMLMethod(this.umlName, this.className, m.group(1), m.group(6), m.group(7), m.group(8));
-			}
-			
 		}
 		return true;
 	}
+	
+	
+	
+	/**
+     * To split the class's attributes  
+     * @param String attr
+     * @return String[]
+     */
+	private String[] attributeSpliter (String attr)
+	{
+		 String[] attributes = attr.split(",");
+		 return attributes;
+	
+	}
+	
 }
