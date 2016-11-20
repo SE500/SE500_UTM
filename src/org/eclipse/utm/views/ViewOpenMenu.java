@@ -1,14 +1,10 @@
 package org.eclipse.utm.views;
-/**
- * @author junqianfeng
- */
 
 import java.io.File;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
@@ -22,7 +18,7 @@ import org.eclipse.utm.parseUML.ParseUML;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-//import org.eclipse.wb.swt.SWTResourceManager;
+
 
 public class ViewOpenMenu extends ViewPart {
 	
@@ -35,22 +31,22 @@ public class ViewOpenMenu extends ViewPart {
 	private Button btnTraceabilityMatrix;
 	private Group grpTraceUml;
 	private Group grpOutput;
-	File umlFile,javaFile,projectDirectory;
+	File umlFile = null,javaFile = null,projectDirectory;
+//	private UTMDB db = null;
+	boolean sourceParsed = false;
+	boolean umlParsed = false;
+	
 	Display display = new Display();
 	Shell shell = new Shell(display);
 	
-	public ViewOpenMenu() {
-		
-	}
+	public ViewOpenMenu() {}
 	
 	@Override
 	public void createPartControl(Composite parent) {
-		
 		Composite container = new Composite(parent, SWT.NONE);
    		container.setLayout(null);
 	
 		grpTraceUml = new Group(container, SWT.BORDER | SWT.SHADOW_ETCHED_OUT);
-		//grpTraceUml.setFont(SWTResourceManager.getFont("Times New Roman", 13, SWT.BOLD));
 		grpTraceUml.setText("Input");
 		grpTraceUml.setBounds(22, 30, 408, 96);
 		
@@ -58,15 +54,19 @@ public class ViewOpenMenu extends ViewPart {
 		btnChooseUmlFile.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				FileDialog browse = new FileDialog(btnChooseUmlFile.getShell(),SWT.OPEN);
-				browse.setText("Choose UML File");
-				final String[] filterEx = {"*.uml","*.java"};
-				browse.setFilterExtensions(filterEx);
-				String selected = browse.open();
-				if(selected == null)  textUML.setText("No UML File selected!");		
-				else textUML.setText(browse.getFileName());
+//				FileDialog browse = new FileDialog(btnChooseUmlFile.getShell(),SWT.OPEN);
+//				browse.setText("Choose UML File");
+//				final String[] filterEx = {"*.uml","*.java"};
+//				browse.setFilterExtensions(filterEx);
+//				String selected = browse.open();
+//				if(selected == null)  textUML.setText("No UML File selected!");		
+//				else textUML.setText(browse.getFileName());
+//				textUML.setEnabled(true);
+//				umlFile=new File(selected);
+				
+				umlFile = ParseUML.selectUmlFile();
+				textUML.setText(umlFile.getName());
 				textUML.setEnabled(true);
-				umlFile=new File(selected);
 			}
 		});
 		btnChooseUmlFile.setBounds(20, 44, 159, 28);
@@ -76,20 +76,22 @@ public class ViewOpenMenu extends ViewPart {
 		btnChooseSourceCode.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				FileDialog browse = new FileDialog(btnChooseSourceCode.getShell(),SWT.OPEN);
-				browse.setText("Choose Java Source Files");
-				final String[] filterEx = {"*.uml","*.java"};
-				browse.setFilterExtensions(filterEx);
-				String selected = browse.open();
-				if(selected == null)  textJAVA.setText("No Java Source File selected!");		
-				else textJAVA.setText(browse.getFileName());
+//				FileDialog browse = new FileDialog(btnChooseSourceCode.getShell(),SWT.OPEN);
+//				browse.setText("Choose Java Source Files");
+//				final String[] filterEx = {"*.uml","*.java"};
+//				browse.setFilterExtensions(filterEx);
+//				String selected = browse.open();
+//				if(selected == null)  textJAVA.setText("No Java Source File selected!");		
+//				else textJAVA.setText(browse.getFileName());
+//				textJAVA.setEnabled(true);
+//				javaFile=new File(selected);
+				javaFile = ParseSource.selectSource();
+				textJAVA.setText(javaFile.getName());
 				textJAVA.setEnabled(true);
-				javaFile=new File(selected);
-				
 			}
 		});
 		btnChooseSourceCode.setBounds(200, 44, 171, 28);
-		btnChooseSourceCode.setText("Choose Source Code");
+		btnChooseSourceCode.setText("Choose Java Source");
 		
 		textUML = new Text(grpTraceUml, SWT.BORDER);
 		textUML.setBounds(20, 10, 159, 28);
@@ -98,26 +100,23 @@ public class ViewOpenMenu extends ViewPart {
 		textJAVA.setBounds(200, 10, 171, 28);
 		
 		Label lblWelcome = new Label(container, SWT.NONE);
-		//lblWelcome.setFont(SWTResourceManager.getFont("Times New Roman", 12, SWT.NORMAL));
 		lblWelcome.setBounds(141, 10, 151, 26);
 		lblWelcome.setText("Welcome to Trace Magic");
 		
 		grpOutput = new Group(container, SWT.NONE);
-		//grpOutput.setFont(SWTResourceManager.getFont("Times New Roman", 13, SWT.BOLD));
 		grpOutput.setText("Output");
 		grpOutput.setBounds(22, 124, 408, 58);
-		
-		Label lblStartTrace = new Label(grpOutput, SWT.NONE);
-		lblStartTrace.setBounds(10, 13, 87, 14);
-		lblStartTrace.setText("Start Trace");
 		
 		btnTraceabilityMatrix = new Button(grpOutput, SWT.NONE);
 		btnTraceabilityMatrix.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				Boolean compute = null;
-				if(umlFile == null || javaFile ==null){MessageDialog.openWarning(shell, "Warning", "Please Select an UML File or Java Source Code Files!");}
-				else{compute = true;}
+				if(umlFile == null || javaFile ==null){
+					MessageDialog.openWarning(shell, "Warning", 
+							"Please Select an UML File or Java Source Code Files!");
+					}
+				else compute = true;
 				computeTraceability(compute);
 				}
 		});
@@ -128,13 +127,7 @@ public class ViewOpenMenu extends ViewPart {
  private void computeTraceability(Boolean compute) {
 	 parseUML();
      parseSource();
-     Compare();
      showResultsView();
-	
-}
- 
-private void Compare() {
-	// TODO Auto-generated method stub
 	
 }
 
@@ -156,31 +149,14 @@ private void showResultsView() {
 }
 
 
-private void parseSource() {
-	File selectedSource = ParseSource.selectSource();
-	ParseSource readfile = new ParseSource(selectedSource);
-	readfile.launch();
+private void parseSource() {	
+	ParseSource parseSource = new ParseSource(javaFile);
+	sourceParsed = parseSource.launch();
 }
 
 private void parseUML() {
-	File selectedModel = ParseUML.selectUmlFile();
-	ParseUML umlFile = new ParseUML(selectedModel);
-	umlFile.launch(true);
-
-		
-}
-	
-
- private void emptyDirectory(File thisDir) {
-	 File[] listOfFiles = thisDir.listFiles();
-	 for (int i = 0; i < listOfFiles.length; i++) {
-	 if (listOfFiles[i].isFile()) {
-	 listOfFiles[i].delete();
-	} else if (listOfFiles[i].isDirectory()) {
-	emptyDirectory(listOfFiles[i]);
-	listOfFiles[i].delete();
-	 }
-	 }
+	ParseUML parseUML = new ParseUML(umlFile);
+	umlParsed = parseUML.launch(true);		
 }
 	 
 public void setFocus() {
