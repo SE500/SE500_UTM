@@ -428,7 +428,7 @@ public class ParseSource {
 		String attributesName = "";
 		String attributeType= "";
 		
-		String attributeRgEx="((public\\s|private\\s)?(static\\s)?([a-zA-Z0-9]+)+\\s+([a-zA-Z0-9_]+)+\\s?(.+)?\\s?;)";
+		String attributeRgEx="((public\\s|private\\s)?(static\\s|final\\s)?([a-zA-Z0-9]+)+\\s+([a-zA-Z0-9_]+)+\\s?(.+)?\\s?;)";
 		
 		
 		// Attribute Declaration Regular Expression
@@ -454,7 +454,7 @@ public class ParseSource {
 		*/
 		// Loop through all the file lines
 		for(int i=classLinNumber; i < methodLinNumber; i++) {
-			currentLn = line[i];
+			currentLn = line[i].trim();
 			lineNumber++;
 			Pattern p = Pattern.compile(attributeRgEx);
 			Matcher m =p.matcher(currentLn);
@@ -490,7 +490,7 @@ public class ParseSource {
 					
 					
 					this.className = name.substring(0, name.indexOf("."));
-					// Methods modifiers
+					// Attributes modifiers
 					if (currentLn.contains("public"))
 						{attributesModifier = "public"; currentLn = currentLn.replaceFirst("public", "").trim();}
 					
@@ -506,22 +506,46 @@ public class ParseSource {
 					if (currentLn.contains("final"))
 						{isFinal = true; currentLn = currentLn.replaceFirst("final", "").trim();}
 					
-				
 					attributeType = currentLn.substring(0, currentLn.indexOf(" ") );currentLn = currentLn.replaceFirst(attributeType, "").trim();
-					attributesName = currentLn.substring(0,currentLn.indexOf(" "));
+					// To split variables if declared in one line.
+					if (currentLn.contains(","))
+					{
+						while (currentLn.contains(","))
+						{
+							attributesName = currentLn.substring(0,currentLn.indexOf(","));
+							currentLn = currentLn.replaceFirst(attributesName, "").trim();
+							currentLn = currentLn.replaceFirst(",", "").trim();
+							System.out.println("Name zzz : " + attributesName);
+							this.db.NewSourceAttribute(this.className, lineNumber, this.className, attributesModifier, attributeType, attributesName);
+							
+						} 
+						if (currentLn.contains(" "))
+						attributesName = currentLn.substring(0,currentLn.indexOf(" "));
+						else 
+							attributesName = currentLn.substring(0,currentLn.indexOf(";"));
+						this.db.NewSourceAttribute(this.className, lineNumber, this.className, attributesModifier, attributeType, attributesName);
+						
+					}else {
+						if (currentLn.contains(" "))
+						attributesName = currentLn.substring(0,currentLn.indexOf(" "));
+						else 
+							attributesName = currentLn.substring(0,currentLn.indexOf(";"));
+							
+						
+						if(!isUml)
+							//public int NewSourceAttribute(String Filename, int LineNumber, String ClassName, String AccessType, String Type, String Name)
+							{this.db.NewSourceAttribute(this.className, lineNumber, this.className, attributesModifier, attributeType, attributesName);}
+						else
+							{this.db.NewUMLAttribute(this.umlName, this.className, m.group(1), m.group(6), m.group(7));}
+					}
 					System.out.println("Current lin : " + line[i].trim());
 					System.out.println("Name 1: " + attributesName);
 					System.out.println("modifier : " + attributesModifier);
 					System.out.println("Type : " + attributeType);
 					System.out.println(lineNumber);
-					//public int NewSourceMethod(String Filename, int LineNumber, String ClassName, String AccessType, String Type, String Name, String Params)
-					//System.out.println(this.className + lineNumber + this.className + methodModifier + methodType + methodName + methodParameter);
-					if(!isUml)
-						//public int NewSourceAttribute(String Filename, int LineNumber, String ClassName, String AccessType, String Type, String Name)
-						{this.db.NewSourceAttribute(this.className, lineNumber, this.className, attributesModifier, attributeType, attributesName);}
-					else
-						{this.db.NewUMLAttribute(this.umlName, this.className, m.group(1), m.group(6), m.group(7));}
 					
+					//public int NewSourceMethod(String Filename, int LineNumber, String ClassName, String AccessType, String Type, String Name, String Params)
+					attributesModifier = "";	attributesName = "";	attributeType= ""; isStatic = false;	isFinal = false;	isOther = false;
 				}
 			}
 	
@@ -644,7 +668,6 @@ public class ParseSource {
 								methodReturnType = ""; currentLn = currentLn.replaceFirst("void", "").trim();
 							}else if (currentLn.contains(this.className) == false) {
 								methodReturnType = currentLn.substring(0,currentLn.indexOf(" ")); currentLn = currentLn.replaceFirst(currentLn.substring(0,currentLn.indexOf(" ")), "");
-								//	methodReturnType = currentLn.split(" ")[0]; currentLn = currentLn.replace(currentLn.split(" ")[0], "");
 							}
 							methodParameter = currentLn.substring(currentLn.indexOf("("), currentLn.indexOf(")") + 1 );
 							
@@ -662,14 +685,16 @@ public class ParseSource {
 							
 							if(!isUml)
 							{
-									//this.db.NewSourceMethod(name, lineNumber, this.className, m.group(1), m.group(6), m.group(7), m.group(8));
-									this.db.NewSourceMethod(this.className , lineNumber , this.className , methodModifier , methodType , methodName , methodParameter);
-							}else
-								
-								{this.db.NewUMLMethod(this.umlName, this.className, m.group(1), m.group(6), m.group(7), m.group(8));
-								}
-					
+								//this.db.NewSourceMethod(name, lineNumber, this.className, m.group(1), m.group(6), m.group(7), m.group(8));
+								this.db.NewSourceMethod(this.className , lineNumber , this.className , methodModifier , methodType , methodName , methodParameter);
+							}else{
+								this.db.NewUMLMethod(this.umlName, this.className, m.group(1), m.group(6), m.group(7), m.group(8));
 							}
+							// To clean the variables
+							methodModifier = "";	methodReturnType = "";	methodName = "";	methodParameter = "";	methodType= "";
+							isStatic = false;	isFinal = false;	isOther = false;
+							
+						}
 					}
 				}
 		}
