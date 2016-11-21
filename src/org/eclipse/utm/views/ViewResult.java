@@ -1,6 +1,9 @@
 package org.eclipse.utm.views;
 
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.MenuItem;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.swt.widgets.TreeItem;
@@ -11,9 +14,15 @@ import org.eclipse.utm.compare.UTMDBClass;
 import org.eclipse.utm.compare.UTMDBMethod;
 import org.eclipse.swt.layout.FillLayout;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
 import java.util.ArrayList;
 
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.*;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 
 public class ViewResult extends ViewPart {
 
@@ -21,6 +30,7 @@ public class ViewResult extends ViewPart {
 
 	Tree tree;
 	Composite parent;
+	Shell shell;
 	/**
 	 * Create contents of the view part.
 	 * @param parent
@@ -155,6 +165,66 @@ public class ViewResult extends ViewPart {
 		}
 		
 		db.Close();
+		
+		// Save output as .txt file
+		Menu menu = new Menu(tree);
+		tree.setMenu(menu);
+		
+		MenuItem mntmSave = new MenuItem(menu, SWT.NONE);
+		mntmSave.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				try{
+	    			String content = "This is the content to write into file\n";
+	    			System.out.println(" ");
+	    			File file = new File("/Users/junqianfeng/Desktop/Output.txt");
+	    			if(!file.exists()){
+	    			file.createNewFile();
+	    		}	
+	    		FileWriter fw = new FileWriter(file.getAbsolutePath());
+	    		BufferedWriter bw = new BufferedWriter(fw);
+	    		bw.newLine();
+	    		bw.write(content);
+	    		int rowCount = tree.getItemCount(); //rowNum: 2
+	    
+	    		for(int row = 0; row <rowCount;row++){
+	    			TreeItem item = tree.getItem(row);   //row1, row2
+	                bw.write(item.getText());   //row1, row2
+	    			bw.newLine();
+	    	        int subCount = item.getItemCount(); //2  to check if current row has sub rows
+	    	        
+	    	        if(subCount >= 1){	  
+	    	        for(int subRow = 0; subRow< subCount; subRow++){	
+	    	  
+	    			TreeItem subItem = item.getItem(subRow); //1sub1row1, 1sub1row2, 2sub1row1
+	    			bw.write(" ");
+	    			bw.write(subItem.getText(0));
+	    			bw.newLine();
+	    			int subsubRowCount= subItem.getItemCount();  //2
+	    			if(subsubRowCount >= 1){
+
+	    			for(int subsubRow = 0; subsubRow< subsubRowCount; subsubRow++){	
+	 	    			TreeItem subsubItem = subItem.getItem(subsubRow);
+	 	    			 bw.write("  ");
+	 	    			bw.write(subsubItem.getText(0));
+	 	    			bw.newLine();
+	    		}
+	    	 }
+	    }
+	    }
+	    }
+	    	bw.close();
+	    	fw.close();
+	    	System.out.printf("Done");
+	    	MessageDialog.openConfirm(shell, "Save as Text File", "Data Exported");	
+	    	}catch(Exception ex){
+	    		ex.printStackTrace();
+	    		}				
+				
+			}
+		});
+		mntmSave.setText("save");
+		
 		
 		}	
 
