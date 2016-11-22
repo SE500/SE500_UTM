@@ -31,8 +31,8 @@ public class ParseSource {
 	private UTMDB db = null;
 	private boolean isUml = false;
 	private String umlName = null;
-	private int classLinNumber;
-	private int methodLinNumber;
+	private int classLinNumber = 0;
+	private int methodLinNumber = 0;
 	
 	/**
 	 * Empty Constructor
@@ -181,6 +181,8 @@ public class ParseSource {
 	        System.out.println(file.getName());
 			if(!readFile(file))
 				return false;
+			this.classLinNumber = 0;
+			this.methodLinNumber = 0;
 	    }
 		return true;
 	}
@@ -420,7 +422,7 @@ public class ParseSource {
 	private boolean findClassAttributes(String[] line, String name){
 	
 		String currentLn="";
-		int lineNumber = 0;
+		int lineNumber = classLinNumber;
 		boolean isStatic = false;
 		boolean isFinal = false;
 		boolean isOther = false;
@@ -515,7 +517,7 @@ public class ParseSource {
 							attributesName = currentLn.substring(0,currentLn.indexOf(","));
 							currentLn = currentLn.replaceFirst(attributesName, "").trim();
 							currentLn = currentLn.replaceFirst(",", "").trim();
-							System.out.println("Name zzz : " + attributesName);
+							System.out.println("Name Second var : " + attributesName);
 							this.db.NewSourceAttribute(this.className, lineNumber, this.className, attributesModifier, attributeType, attributesName);
 							
 						} 
@@ -536,7 +538,7 @@ public class ParseSource {
 							//public int NewSourceAttribute(String Filename, int LineNumber, String ClassName, String AccessType, String Type, String Name)
 							{this.db.NewSourceAttribute(this.className, lineNumber, this.className, attributesModifier, attributeType, attributesName);}
 						else
-							{this.db.NewUMLAttribute(this.umlName, this.className, m.group(1), m.group(6), m.group(7));}
+							{this.db.NewUMLAttribute(this.umlName, this.className, attributesModifier, attributeType, attributesName);}
 					}
 					System.out.println("Current lin : " + line[i].trim());
 					System.out.println("Name 1: " + attributesName);
@@ -575,6 +577,7 @@ public class ParseSource {
 		String methodName = "";
 		String methodParameter = "";
 		String methodType= "";
+		int bracketCount = 0;
 		
 		// Method Declaration Regular Expression
 		String methodRgEx="((public\\s|private\\s)?(static\\s)?([a-zA-Z0-9]+)+\\s+([a-zA-Z0-9_]+)+\\s?\\((.+)?\\)\\s?\\{)";
@@ -663,10 +666,11 @@ public class ParseSource {
 							if (currentLn.contains("final"))
 								{isFinal = true; currentLn = currentLn.replaceFirst("final", "").trim();}
 							
-							if (currentLn.contains("void"))
+							/*if (currentLn.contains("void"))
 							{
-								methodReturnType = ""; currentLn = currentLn.replaceFirst("void", "").trim();
-							}else if (currentLn.contains(this.className) == false) {
+								methodReturnType = "void"; currentLn = currentLn.replaceFirst("void", "").trim();
+							}else*/ 
+							if (currentLn.contains(this.className) == false) {
 								methodReturnType = currentLn.substring(0,currentLn.indexOf(" ")); currentLn = currentLn.replaceFirst(currentLn.substring(0,currentLn.indexOf(" ")), "");
 							}
 							methodParameter = currentLn.substring(currentLn.indexOf("("), currentLn.indexOf(")") + 1 );
@@ -688,7 +692,8 @@ public class ParseSource {
 								//this.db.NewSourceMethod(name, lineNumber, this.className, m.group(1), m.group(6), m.group(7), m.group(8));
 								this.db.NewSourceMethod(this.className , lineNumber , this.className , methodModifier , methodType , methodName , methodParameter);
 							}else{
-								this.db.NewUMLMethod(this.umlName, this.className, m.group(1), m.group(6), m.group(7), m.group(8));
+								//public int NewUMLMethod(String Filename, String ClassName, String AccessType, String Type, String Name, String Params)
+								this.db.NewUMLMethod(this.umlName, this.className, methodModifier , methodType , methodName , methodParameter);
 							}
 							// To clean the variables
 							methodModifier = "";	methodReturnType = "";	methodName = "";	methodParameter = "";	methodType= "";
@@ -702,17 +707,6 @@ public class ParseSource {
 	}
 	
 	
-	
-	/**
-     * To split the class's attributes  
-     * @param String attr
-     * @return String[]
-     */
-	private String[] attributeSpliter (String attr)
-	{
-		 String[] attributes = attr.split(",");
-		 return attributes;
-	
-	}
+
 	
 }
