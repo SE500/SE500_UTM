@@ -37,7 +37,8 @@ public class ViewResult extends ViewPart {
 	 */
 	@Override
 	public void createPartControl(Composite parent) {
-		 parent.setLayout(new FillLayout(SWT.HORIZONTAL));
+		this.parent = parent;
+		parent.setLayout(new FillLayout(SWT.HORIZONTAL));
 		 Tree tree = new Tree(parent,SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL);
 		 tree.setHeaderVisible(true);
 		 tree.setLinesVisible(true);
