@@ -1,6 +1,7 @@
 package org.eclipse.utm.views;
 
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Shell;
@@ -39,7 +40,7 @@ public class ViewResult extends ViewPart {
 	public void createPartControl(Composite parent) {
 		this.parent = parent;
 		parent.setLayout(new FillLayout(SWT.HORIZONTAL));
-		 Tree tree = new Tree(parent,SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL);
+		 tree = new Tree(parent,SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL);
 		 tree.setHeaderVisible(true);
 		 tree.setLinesVisible(true);
 		 
@@ -62,8 +63,7 @@ public class ViewResult extends ViewPart {
 	}
 	
 	public void showResults(){
-		tree.removeAll();
-		
+				
 		UTMDB db = new UTMDB();
 		db.Open();
 		db.InitDatabase();
@@ -88,7 +88,7 @@ public class ViewResult extends ViewPart {
 			 * 			Attribute Node
 			 * 			MethodNode
 			 */
-			Tree tree = new Tree(parent,SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL);
+			//tree = new Tree(parent,SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL);
 			tree.setHeaderVisible(true);
 			
 			ArrayList<UTMDBClass> classList = new ArrayList<UTMDBClass>();
@@ -176,9 +176,16 @@ public class ViewResult extends ViewPart {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				try{
-	    			String content = "This is the content to write into file\n";
+					FileDialog fd = new FileDialog(mntmSave.getParent().getShell(), SWT.SAVE);
+			        fd.setText("Save");
+			        fd.setFilterPath(System.getProperty("user.dir"));
+			        String[] filterExt = { "*.txt", "*.doc", ".rtf", "*.*" };
+			        fd.setFilterExtensions(filterExt);
+			        String selected = fd.open();
+			        System.out.println(selected);
+					String content = "This is the content to write into file\n";
 	    			System.out.println(" ");
-	    			File file = new File("/Users/junqianfeng/Desktop/Output.txt");
+	    			File file = new File(selected);
 	    			if(!file.exists()){
 	    			file.createNewFile();
 	    		}	
