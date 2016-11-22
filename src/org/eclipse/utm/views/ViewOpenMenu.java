@@ -50,7 +50,7 @@ public class ViewOpenMenu extends ViewPart {
 
 		grpTraceUml = new Group(container, SWT.BORDER | SWT.SHADOW_ETCHED_OUT);
 		grpTraceUml.setText("Input");
-		grpTraceUml.setBounds(22, 30, 408, 96);
+		grpTraceUml.setBounds(20, 30, 400, 95);
 
 		btnChooseUmlFile = new Button(grpTraceUml, SWT.NONE);
 		btnChooseUmlFile.addSelectionListener(new SelectionAdapter() {
@@ -71,7 +71,7 @@ public class ViewOpenMenu extends ViewPart {
 				textUML.setEnabled(true);
 			}
 		});
-		btnChooseUmlFile.setBounds(20, 44, 159, 28);
+		btnChooseUmlFile.setBounds(20, 50, 175, 25);
 		btnChooseUmlFile.setText("Choose UML File");
 
 		btnChooseSourceCode = new Button(grpTraceUml, SWT.NONE);
@@ -92,22 +92,22 @@ public class ViewOpenMenu extends ViewPart {
 				textJAVA.setEnabled(true);
 			}
 		});
-		btnChooseSourceCode.setBounds(200, 44, 171, 28);
+		btnChooseSourceCode.setBounds(200, 50, 175, 25);
 		btnChooseSourceCode.setText("Choose Java Source");
 
 		textUML = new Text(grpTraceUml, SWT.BORDER);
-		textUML.setBounds(20, 10, 159, 28);
+		textUML.setBounds(20, 20, 175, 25);
 
 		textJAVA = new Text(grpTraceUml, SWT.BORDER);
-		textJAVA.setBounds(200, 10, 171, 28);
+		textJAVA.setBounds(200, 20, 175, 25);
 
 		Label lblWelcome = new Label(container, SWT.NONE);
-		lblWelcome.setBounds(141, 10, 151, 26);
+		lblWelcome.setBounds(141, 10, 151, 15);
 		lblWelcome.setText("Welcome to Trace Magic");
 
 		grpOutput = new Group(container, SWT.NONE);
 		grpOutput.setText("Output");
-		grpOutput.setBounds(22, 124, 408, 58);
+		grpOutput.setBounds(22, 125, 400, 60);
 
 		btnTraceabilityMatrix = new Button(grpOutput, SWT.NONE);
 		btnTraceabilityMatrix.addSelectionListener(new SelectionAdapter() {
@@ -122,7 +122,7 @@ public class ViewOpenMenu extends ViewPart {
 				computeTraceability(compute);
 			}
 		});
-		btnTraceabilityMatrix.setBounds(91, 6, 171, 28);
+		btnTraceabilityMatrix.setBounds(105, 20, 175, 25);
 		btnTraceabilityMatrix.setText("Start");
 	}
 
