@@ -2,6 +2,8 @@ package org.eclipse.utm.views;
 
 import java.io.File;
 
+import org.eclipse.core.runtime.NullProgressMonitor;
+
 //import javax.swing.JFileChooser;
 
 import org.eclipse.jface.action.IMenuManager;
@@ -147,10 +149,10 @@ public class ViewOpen extends ViewPart {
 		   			return;
 		   		
 		   		ParseSource parseSource = new ParseSource(javaFile);
-				sourceParsed = parseSource.launch();
+				sourceParsed = parseSource.launch(new NullProgressMonitor());
 				
 				ParseUML parseUML = new ParseUML(umlFile);
-				umlParsed = parseUML.launch(true);
+				umlParsed = parseUML.launch(new NullProgressMonitor(),true);
 		   		
 				if(sourceParsed && umlParsed) {
 					db = new UTMDB();

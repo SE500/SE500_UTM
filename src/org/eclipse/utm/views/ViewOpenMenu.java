@@ -1,6 +1,9 @@
 package org.eclipse.utm.views;
 
 import java.io.File;
+
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
@@ -13,6 +16,7 @@ import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.part.ViewPart;
+import org.eclipse.ui.progress.IProgressService;
 import org.eclipse.utm.parseSource.ParseSource;
 import org.eclipse.utm.parseUML.ParseUML;
 import org.eclipse.swt.widgets.Button;
@@ -36,6 +40,11 @@ public class ViewOpenMenu extends ViewPart {
 	boolean sourceParsed = false;
 	boolean umlParsed = false;
 	Composite parent;
+//	private Button btnShowResults;
+	private ParseUML parseUMLJob;
+	private ParseSource parseSourceJob;
+	IProgressMonitor UTMProgressGroupMonitor;
+	IProgressService progressService;
 
 	//Display display = new Display();
 	//Shell shell = new Shell(display);
@@ -113,22 +122,50 @@ public class ViewOpenMenu extends ViewPart {
 		btnTraceabilityMatrix.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				Boolean compute = null;
-				if(umlFile == null || javaFile ==null){
+				if(umlFile == null || javaFile == null){
 					MessageDialog.openWarning(null, "Warning", 
 							"Please Select an UML File or Java Source Code Files!");
 				}
-				else compute = true;
-				computeTraceability(compute);
+				else computeTraceability();
 			}
 		});
 		btnTraceabilityMatrix.setBounds(105, 20, 175, 25);
 		btnTraceabilityMatrix.setText("Start");
+		
+//		btnShowResults = new Button(grpOutput, SWT.NONE);
+//		btnShowResults.addSelectionListener(new SelectionAdapter() {
+//			@Override
+//			public void widgetSelected(SelectionEvent e) {
+//				showResultsView();
+//			}
+//		});
+//		btnShowResults.setText("Show Results");
+//		btnShowResults.setBounds(200, 20, 175, 25);
 	}
 
-	private void computeTraceability(Boolean compute) {
+	private void computeTraceability() {
+		UTMProgressGroupMonitor = Job.getJobManager().createProgressGroup();
+		progressService = (IProgressService) getSite().getService(IProgressService.class);
 		parseUML();
 		parseSource();
+		
+		try {
+			UTMProgressGroupMonitor.beginTask("Starting", 100);
+			parseUMLJob.setProgressGroup(UTMProgressGroupMonitor, 67);
+			progressService.showInDialog(btnTraceabilityMatrix.getShell(), parseUMLJob);
+			parseUMLJob.schedule();
+			parseSourceJob.setProgressGroup(UTMProgressGroupMonitor, 33);
+			progressService.showInDialog(btnTraceabilityMatrix.getShell(), parseSourceJob);
+			parseSourceJob.schedule();
+			parseUMLJob.join();
+			parseSourceJob.join();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			UTMProgressGroupMonitor.done();
+		}
+
 		showResultsView();
 
 	}
@@ -152,15 +189,15 @@ public class ViewOpenMenu extends ViewPart {
 
 
 	private void parseSource() {	
-		ParseSource parseSource = new ParseSource(javaFile);
-		sourceParsed = parseSource.launch();
+		parseSourceJob = new ParseSource(javaFile);
+//		sourceParsed = parseSourceJob.launch(UTMProgressGroupMonitor);
 	}
 
 	private void parseUML() {
-		ParseUML parseUML = new ParseUML(umlFile);
-		umlParsed = parseUML.launch(true);		
+		parseUMLJob = new ParseUML(umlFile);
+//		umlParsed = parseUMLJob.launch(UTMProgressGroupMonitor);
 	}
-
+	
 	public void setFocus() {
 		parent.setFocus();
 	}

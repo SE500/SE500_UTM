@@ -3,6 +3,7 @@ package org.eclipse.utm.test;
 import java.io.File;
 import java.io.IOException;
 
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.utm.compare.UTMDB;
 import org.eclipse.utm.parseSource.ParseSource;
 import org.eclipse.utm.parseUML.ParseUML;
@@ -25,14 +26,14 @@ public class TestCompare {
 		
 		if(selectedSource != null) {
 			ParseSource parseSource = new ParseSource(selectedSource);
-			sourceParsed = parseSource.launch();
+			sourceParsed = parseSource.launch(new NullProgressMonitor());
 		}
 		else {
 			System.err.println("Error: No Source File or Folder selected.");
 		}
 		if(selectedModel != null) {
 			ParseUML parseUML = new ParseUML(selectedModel);
-			umlParsed = parseUML.launch(true);
+			umlParsed = parseUML.launch(new NullProgressMonitor(),true);
 		}
 		else {
 			System.err.println("Error: No UML File selected.");

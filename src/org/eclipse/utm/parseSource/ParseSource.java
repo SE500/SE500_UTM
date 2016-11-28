@@ -13,20 +13,26 @@ import javax.swing.JFileChooser;
 import javax.swing.UIManager;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.utm.UTMActivator;
 import org.eclipse.utm.compare.UTMDB;
 /**
- * 
- * @authors Thomas Colborne, Ziyad Daghriri
- * 
  * A class that parses source files and enters relevant information into
  * the UTMDB - an SQL database
+ * @authors Thomas Colborne, Ziyad Daghriri
+ * 
  */
-public class ParseSource {
+public class ParseSource extends Job {
 	
 	/*
 	 * Variable declarations
 	 */
 	private File sourceCode;
+	private IFile umlSource = null;
 	private String className = null;
 	private UTMDB db = null;
 	private boolean isUml = false;
@@ -39,7 +45,8 @@ public class ParseSource {
 	 * If used initialize must be called before launch
 	 */
 	public ParseSource() {
-		
+		super("Parsing the Source Code");
+		setUser(true);
 	}
 	
 	/**
@@ -48,6 +55,8 @@ public class ParseSource {
 	 * 		The file or directory to be parsed
 	 */
 	public ParseSource(File source) {
+		super("Parsing the Source Code: "+ source.getName());
+		setUser(true);
 		initialize(source);
 	}
 	
@@ -58,7 +67,9 @@ public class ParseSource {
 	 * @param umlName
 	 * 		The name of the UML diagram that the source code was generated from
 	 */
-	public ParseSource(File source, String umlName) {
+	public ParseSource(IFile source, String umlName) {
+		super("Parsing the UML generated Source Code: "+ umlName);
+		setSystem(true);
 		initialize(source, umlName);
 	}
 	
@@ -80,8 +91,8 @@ public class ParseSource {
 	 * @param source
 	 * @param umlName
 	 */
-	private void initialize(File source, String umlName) {
-		this.sourceCode = source;
+	private void initialize(IFile source, String umlName) {
+		this.umlSource = source;
 		this.umlName = umlName;
 		this.isUml = true;
 		this.db = new UTMDB();
@@ -89,11 +100,56 @@ public class ParseSource {
 		this.db.InitDatabase();
 	}
 	
-	public boolean launch() {
-		boolean success = processDirectoryFiles(this.sourceCode);
-		this.db.Commit();
-		this.db.Close();
-		return success;
+	@Override
+	protected IStatus run(IProgressMonitor monitor) {
+		monitor.beginTask("Source Code Parsing begins", 1);
+		boolean success = false;
+		IStatus status = null;
+		try {
+			if (monitor.isCanceled())
+				return Status.CANCEL_STATUS;
+			if(this.umlSource != null) {
+				this.sourceCode = new File(this.umlSource.getLocation().toOSString());
+				UTMActivator.log("New File created from IFile");
+			}
+			if(this.sourceCode.exists()){
+				success = processDirectoryFiles(this.sourceCode);
+				this.db.Commit();
+				this.db.Close();
+				if(success)
+					status = Status.OK_STATUS;
+				else
+					status = new Status(IStatus.ERROR, UTMActivator.PLUGIN_ID,
+							"Source Code Parsing failed for: "+ super.getName());
+			} else if(this.umlName != null){
+				schedule(5000);
+				status = new Status(IStatus.WARNING, UTMActivator.PLUGIN_ID,
+						"Source Code Parsing rescheduled for file/directory: \n" 
+						+ this.sourceCode.getPath()
+						+ "\nDoes this file exist? " + this.sourceCode.exists() 
+						+ "\nJob : " + super.getName());
+			} else {
+				status = new Status(IStatus.ERROR, UTMActivator.PLUGIN_ID,
+						"Source Code Parsing failed for: "+ super.getName());
+			}
+		} catch (NullPointerException e) {
+			schedule(5000);
+			status = new Status(IStatus.WARNING, UTMActivator.PLUGIN_ID,
+					"Source Code Parsing rescheduled for file/directory: \n" 
+					+ this.umlSource.getFullPath().toOSString()
+					+ "\nDoes this file exist? " + this.umlSource.exists() 
+					+ "\nJob : " + super.getName());
+		} finally {
+			monitor.done();
+		}
+		return status;
+		
+	}	
+	
+	public boolean launch(IProgressMonitor monitor) {
+		if(this.run(monitor) == Status.OK_STATUS)
+			return true;
+		return false;
 	}
 	
 	/**
@@ -129,9 +185,11 @@ public class ParseSource {
 	 * 		Returns false on failure
 	 */
 	private boolean processDirectoryFiles(File directoryOrFile){
-		if(directoryOrFile == null||!directoryOrFile.exists())
+		if(directoryOrFile == null||!directoryOrFile.exists()){
+			UTMActivator.log(directoryOrFile.getName() +
+					" : File or Directory not initialized or doesn't exit");
 			return false;
-		
+		}
 		// create new filename filter
         FilenameFilter fileNameFilter = new FilenameFilter() {
   
@@ -217,11 +275,10 @@ public class ParseSource {
 						return true;
 					else return false;
 				else return false;
-			else return false;
+			else return true; //false
 		}
 		catch(FileNotFoundException ex) {
-		    System.out.println(
-		        "Unable to open file '" + 
+			UTMActivator.log("Unable to open file '" + 
 		    		fileName.getName() + "'");
 		    return false;
 		}
@@ -231,48 +288,48 @@ public class ParseSource {
 	//System.err.println(file.getName() 
 	//+ " could not be opened for reading");
 	
-	private boolean processFile(File file) throws IOException {
-		
-		//Construct BufferedReader from FileReader
-		BufferedReader br = new BufferedReader(new FileReader(file));
-	 
-		String line = null;
-		int lineNumber = 0;
-		while ((line = br.readLine()) != null) {
-			lineNumber++;
-			if(!processFileLine(line, lineNumber, file.getName())){
-				System.err.printf("File %1$s: Line %2$d: Line Processing Failed",
-						file.getName(), lineNumber);
-				br.close();
-				return false;
-			}
-				
-		}
-		br.close();	
-		return true;
-	}
-	 
-	private boolean processFileLine(String line, int lineNumber, String name) {
-		if(!findClass(line, lineNumber, name))
-			if(!findClassAttributes(line, lineNumber, name))
-				findClassMethods(line, lineNumber, name);
-		return true;
-	}
-
-	private boolean findClass(String line, int lineNumber, String name) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	private boolean findClassAttributes(String line, int lineNumber, String name) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	private boolean findClassMethods(String line, int lineNumber, String name) {
-		// TODO Auto-generated method stub
-		return false;
-	}
+//	private boolean processFile(File file) throws IOException {
+//		
+//		//Construct BufferedReader from FileReader
+//		BufferedReader br = new BufferedReader(new FileReader(file));
+//	 
+//		String line = null;
+//		int lineNumber = 0;
+//		while ((line = br.readLine()) != null) {
+//			lineNumber++;
+//			if(!processFileLine(line, lineNumber, file.getName())){
+//				System.err.printf("File %1$s: Line %2$d: Line Processing Failed",
+//						file.getName(), lineNumber);
+//				br.close();
+//				return false;
+//			}
+//				
+//		}
+//		br.close();	
+//		return true;
+//	}
+//	 
+//	private boolean processFileLine(String line, int lineNumber, String name) {
+//		if(!findClass(line, lineNumber, name))
+//			if(!findClassAttributes(line, lineNumber, name))
+//				findClassMethods(line, lineNumber, name);
+//		return true;
+//	}
+//
+//	private boolean findClass(String line, int lineNumber, String name) {
+//		// TODO Auto-generated method stub
+//		return false;
+//	}
+//
+//	private boolean findClassAttributes(String line, int lineNumber, String name) {
+//		// TODO Auto-generated method stub
+//		return false;
+//	}
+//
+//	private boolean findClassMethods(String line, int lineNumber, String name) {
+//		// TODO Auto-generated method stub
+//		return false;
+//	}
 
 	/**
 	 * This method finds the class declaration  
@@ -378,6 +435,7 @@ public class ParseSource {
 				
 			}
 		}
+		UTMActivator.log("No Class Declaration found within '" + name + "'");
 		return false;
 	}
 	
@@ -574,5 +632,5 @@ public class ParseSource {
 				}
 		}
 		return true;
-	}	
+	}
 }

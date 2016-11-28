@@ -7,6 +7,8 @@ import org.eclipse.utm.parseUML.ParseUML;
 import java.io.File;
 import javax.swing.JFileChooser;
 import javax.swing.UIManager;
+
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -64,7 +66,7 @@ public class TestGui extends ViewPart{
 			public void widgetSelected(SelectionEvent e) {
 				if(selectedUmlFile != null) {
 					ParseUML test = new ParseUML(selectedUmlFile);
-					test.launch(true);
+					test.launch(new NullProgressMonitor(), false);
 					
 				}
 				else {

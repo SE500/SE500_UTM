@@ -2,6 +2,8 @@ package org.eclipse.utm.test;
 
 import java.io.File;
 import java.io.IOException;
+
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.utm.parseUML.ParseUML;
 /**
  * 
@@ -15,7 +17,7 @@ public class TestParseUML {
 		File selectedModel = ParseUML.selectUmlFile();
 		if(selectedModel != null) {
 			ParseUML test = new ParseUML(selectedModel);
-			test.launch(true);
+			test.launch(new NullProgressMonitor(), false);
 			
 		}
 		else {
