@@ -1,39 +1,39 @@
 package org.eclipse.utm.views;
 
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.FileDialog;
-import org.eclipse.swt.widgets.Menu;
-import org.eclipse.swt.widgets.MenuItem;
-import org.eclipse.swt.widgets.Shell;
-import org.eclipse.swt.widgets.Tree;
-import org.eclipse.swt.widgets.TreeColumn;
-import org.eclipse.swt.widgets.TreeItem;
+import org.eclipse.swt.widgets.*;
 import org.eclipse.ui.part.*;
-import org.eclipse.utm.compare.UTMDB;
-import org.eclipse.utm.compare.UTMDBAttribute;
-import org.eclipse.utm.compare.UTMDBClass;
-import org.eclipse.utm.compare.UTMDBMethod;
+import org.eclipse.utm.compare.*;
 import org.eclipse.swt.layout.FillLayout;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
+import java.io.*;
 import java.util.ArrayList;
 
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.*;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.*;
+/**
+ * The output view part of UML Trace Magic plug-in application that displays the result
+ * of parsing UML and parsing Source Code in a tree view.
+ * 
+ * 
+ * @version Neon.1a Release (4.6.1)
+ * @author junqianfeng, Thomas Colborne
+ * @since 2016-09
+ *
+ */
 
 public class ViewResult extends ViewPart {
+	public ViewResult() {}
 	public static final String ID = "org.eclipse.utm.views.ViewResult"; 
 
 	Tree tree1, tree2, tree3;
 	Composite container;
 	Shell shell;
 	/**
-	 * Create contents of the view part.
-	 * @param container
+	 * Create contents of the output view part. Initialize three trees show the result of
+	 * parse UML, parse Source Code, Comparison, respectively. 
+	 *  
+	 * @param container, parent
 	 */
 	@Override
 
@@ -59,278 +59,20 @@ public class ViewResult extends ViewPart {
 		tree3.setHeaderVisible(true);
 		tree3.setLinesVisible(true);
 
-		// Tree 1
+		// initialize Tree 1
 		TreeColumn columnSourceClasses = new TreeColumn(tree1, SWT.CENTER);
 		columnSourceClasses.setText("Class/Atrribute/Method Found within Source");
 		columnSourceClasses.setWidth(300);
 
-		//Tree 2
-		TreeColumn columnUmlClasses = new TreeColumn(tree2, SWT.CENTER);
-		columnUmlClasses.setText("Class/Atrribute/Method Found within UML");
-		columnUmlClasses.setWidth(300);
-
-		//Tree 3
-		TreeColumn columnCompare = new TreeColumn(tree3, SWT.CENTER);
-		columnCompare.setText("Compare Result");
-		columnCompare.setWidth(300);
-
-		//////////////////////////Test case///////////////////////////////////////////////////////////   
-		//		    TreeItem item1 = new TreeItem(tree, SWT.NONE);
-		//		    item1.setText(new String[]{"               item1","yes","32"});
-		//		    TreeItem subItem1 = new TreeItem(item1, SWT.NONE);
-		//		    subItem1.setText(new String[]{"               subItem1","yes","55"});
-		//		    TreeItem subsubItem1 = new TreeItem(subItem1, SWT.NONE);
-		//		    subsubItem1.setText(new String[]{"               subsubitem1","No","88"});
-		//		    TreeItem item2 = new TreeItem(tree, SWT.NONE);
-		//		    item2.setText(new String[]{"               item2","yes","62"});  
-		//		    TreeItem subItem2 = new TreeItem(item2, SWT.NONE);
-		//		    subItem2.setText(new String[]{"               subItem2","no","99"});
-		//////////////////////////////////////////////////////////////////////////////////////////////// 
-	}
-
-	public void showResults(){
-
-		UTMDB db = new UTMDB();
-		db.Open();
-		db.InitDatabase();
-		db.Relate();
-		db.Match();
-		db.Commit();
-
-		if(db.IsInitialized())
-		{
-			//Create Tree Root
-			/*
-			 * Tree Root
-			 * 		Class Node
-			 * 			Attribute Node (public String SomeAttr1)
-			 * 				Filename
-			 * 				LineNumber
-			 * 			Attribute Node
-			 * 			Attribute Node
-			 * 			Method Node
-			 * 			Method Node
-			 * 		Class Node
-			 * 			Attribute Node
-			 * 			MethodNode
-			 */
-			//tree = new Tree(parent,SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL);
-			//			tree1.setHeaderVisible(true);
-
-			ArrayList<UTMDBClass> classList = new ArrayList<UTMDBClass>();
-			classList = db.GetSourceClassList();
-			for(UTMDBClass utmclass : classList)
-			{
-				String abstractType = "";
-				String finalType = "";
-				String staticType = "";
-				System.out.print(utmclass);
-				if(utmclass.IsAbstract)
-					abstractType = "abstract ";
-				if(utmclass.IsStatic)
-					staticType = "static ";
-				if(utmclass.IsFinal)
-					finalType = "final ";
-
-				String classNodeText = 
-						utmclass.LineNumber + ": " 
-								+ utmclass.AccessType + " " 
-								+ staticType
-								+ abstractType
-								+ finalType
-								+ utmclass.ClassName + " "
-								+ utmclass.NumMismatched;
-
-				// Create Class Node
-				TreeItem item = new TreeItem(tree1, SWT.NONE);
-				item.setText(new String[] {classNodeText});
-
-				ArrayList<UTMDBAttribute> attributeList = new ArrayList<UTMDBAttribute>();
-				attributeList = db.GetSourceAttributesList(utmclass.ClassID);
-				for(UTMDBAttribute utmattr : attributeList)
-				{
-					//					System.out.print(utmattr); 
-					String NodeText = 
-							utmattr.LineNumber + ": " 
-									+ utmattr.AccessType + " " 
-									+ utmattr.Name + " " 
-									+ utmattr.NumMismatched;
-
-					// Create Attribute Node && Add Attribute Node to Class Node
-					TreeItem subItemAttr = new TreeItem(item, SWT.NONE);
-					subItemAttr.setText(new String[] {NodeText});
-					item.setExpanded(true);
-
-					// Create Filename Node && Add Filename Node to Attribute Node
-					TreeItem subsubItemAttrFileName = new TreeItem(subItemAttr, SWT.NONE);
-					subsubItemAttrFileName.setText("File Name: " + utmattr.Filename);
-					subItemAttr.setExpanded(true);
-
-					//Create LineNum Node && Add LineNum Node to Attribute Node
-					TreeItem subsubItemAttrID = new TreeItem(subItemAttr, SWT.NONE);
-					subsubItemAttrID.setText("AttributeID: " + String.valueOf(utmattr.AttributeID));
-					subItemAttr.setExpanded(true);
-
-					//Create ClassID Node && Add ClassID Node to Attribute Node
-					TreeItem subsubItemAttrClassID = new TreeItem(subItemAttr, SWT.NONE);
-					subsubItemAttrClassID.setText("ClassID: " + String.valueOf(utmattr.ClassID));
-					subItemAttr.setExpanded(true);
-				}
-
-				ArrayList<UTMDBMethod> methodList = new ArrayList<UTMDBMethod>();
-				db.GetSourceMethodsList(utmclass.ClassID);
-				for(UTMDBMethod utmmeth : methodList)
-				{
-					System.out.print(utmmeth);
-					// Create Method Node && Add Method Node to Class Node
-					TreeItem subItemMethod = new TreeItem(item, SWT.NONE);
-					String MethodNodeText = 
-							utmmeth.LineNumber + " " 
-									+ utmmeth.AccessType + " " 
-									+ utmmeth.Name + " " 
-									+ utmmeth.NumMismatched;
-
-					subItemMethod.setText(MethodNodeText);
-					item.setExpanded(true);
-
-					// Create Filename Node && Add Filename Node to Attribute Node
-					TreeItem subsubItemMethFileName = new TreeItem(subItemMethod, SWT.NONE);
-					subsubItemMethFileName.setText("File Name: "+ utmmeth.Filename);
-					subItemMethod.setExpanded(true);
-
-					//Create LineNum Node && Add LineNum Node to Attribute Node
-					TreeItem subsubItemMethID = new TreeItem(subItemMethod, SWT.NONE);
-					subsubItemMethID.setText("MethodID: " + String.valueOf(utmmeth.MethodID));
-					subItemMethod.setExpanded(true);
-
-					//Create ClassID Node && Add ClassID Node to Attribute Node
-					TreeItem subsubItemMethClassID = new TreeItem(subItemMethod, SWT.NONE);
-					subsubItemMethClassID.setText("ClassID: " + String.valueOf(utmmeth.ClassID));
-					subItemMethod.setExpanded(true);
-
-					//Create Parameters Node && Add Parameters Node to Attribute Node
-					TreeItem subsubItemMethPara = new TreeItem(subItemMethod, SWT.NONE);
-					subsubItemMethPara.setText("Parameters: " + utmmeth.Parameters);
-					subItemMethod.setExpanded(true);			
-				}
-			}
-
-			//tree 2 Parse UML
-			ArrayList<UTMDBClass> classList2 = new ArrayList<UTMDBClass>();
-			classList2 = db.GetUMLClassList();
-			for(UTMDBClass utmclass : classList2)
-			{
-				String abstractType = "";
-				String finalType = "";
-				String staticType = "";
-				System.out.print(utmclass);
-				if(utmclass.IsAbstract)
-					abstractType = "abstract ";
-				if(utmclass.IsStatic)
-					staticType = "static ";
-				if(utmclass.IsFinal)
-					finalType = "final ";
-
-				String classNodeText = 
-						utmclass.LineNumber + ": " 
-								+ utmclass.AccessType + " " 
-								+ staticType
-								+ abstractType
-								+ finalType
-								+ utmclass.ClassName + " "
-								+ utmclass.NumMismatched;
-
-				// Create Class Node
-				TreeItem item2 = new TreeItem(tree2, SWT.NONE);
-				item2.setText(new String[] {classNodeText});
-
-				ArrayList<UTMDBAttribute> attributeList2 = new ArrayList<UTMDBAttribute>();
-				attributeList2 = db.GetUMLAttributesList(utmclass.ClassID);
-				for(UTMDBAttribute utmattr : attributeList2)
-				{
-					//					System.out.print(utmattr); 
-					String NodeText = 
-							utmattr.LineNumber + ": " 
-									+ utmattr.AccessType + " " 
-									+ utmattr.Name + " " 
-									+ utmattr.NumMismatched;
-
-					// Create Attribute Node && Add Attribute Node to Class Node
-					TreeItem subItemAttr = new TreeItem(item2, SWT.NONE);
-					subItemAttr.setText(new String[] {NodeText});
-					item2.setExpanded(true);
-
-					// Create Filename Node && Add Filename Node to Attribute Node
-					TreeItem subsubItemAttrFileName = new TreeItem(subItemAttr, SWT.NONE);
-					subsubItemAttrFileName.setText("File Name: " + utmattr.Filename);
-					subItemAttr.setExpanded(true);
-
-					//Create LineNum Node && Add LineNum Node to Attribute Node
-					TreeItem subsubItemAttrID = new TreeItem(subItemAttr, SWT.NONE);
-					subsubItemAttrID.setText("AttributeID: " + String.valueOf(utmattr.AttributeID));
-					subItemAttr.setExpanded(true);
-
-					//Create ClassID Node && Add ClassID Node to Attribute Node
-					TreeItem subsubItemAttrClassID = new TreeItem(subItemAttr, SWT.NONE);
-					subsubItemAttrClassID.setText("ClassID: " + String.valueOf(utmattr.ClassID));
-					subItemAttr.setExpanded(true);
-				}
-
-				ArrayList<UTMDBMethod> methodList2 = new ArrayList<UTMDBMethod>();
-				db.GetUMLMethodsList(utmclass.ClassID);
-				for(UTMDBMethod utmmeth : methodList2)
-				{
-					System.out.print(utmmeth);
-					// Create Method Node && Add Method Node to Class Node
-					TreeItem subItemMethod = new TreeItem(item2, SWT.NONE);
-					String MethodNodeText = 
-							utmmeth.LineNumber + " " 
-									+ utmmeth.AccessType + " " 
-									+ utmmeth.Name + " " 
-									+ utmmeth.NumMismatched;
-
-					subItemMethod.setText(MethodNodeText);
-					item2.setExpanded(true);
-
-					// Create Filename Node && Add Filename Node to Attribute Node
-					TreeItem subsubItemMethFileName = new TreeItem(subItemMethod, SWT.NONE);
-					subsubItemMethFileName.setText("File Name: "+ utmmeth.Filename);
-					subItemMethod.setExpanded(true);
-
-					//Create LineNum Node && Add LineNum Node to Attribute Node
-					TreeItem subsubItemMethID = new TreeItem(subItemMethod, SWT.NONE);
-					subsubItemMethID.setText("MethodID: " + String.valueOf(utmmeth.MethodID));
-					subItemMethod.setExpanded(true);
-
-					//Create ClassID Node && Add ClassID Node to Attribute Node
-					TreeItem subsubItemMethClassID = new TreeItem(subItemMethod, SWT.NONE);
-					subsubItemMethClassID.setText("ClassID: " + String.valueOf(utmmeth.ClassID));
-					subItemMethod.setExpanded(true);
-
-					//Create Parameters Node && Add Parameters Node to Attribute Node
-					TreeItem subsubItemMethPara = new TreeItem(subItemMethod, SWT.NONE);
-					subsubItemMethPara.setText("Parameters: " + utmmeth.Parameters);
-					subItemMethod.setExpanded(true);			
-				}
-			}
-
-			//tree 3
-
-		}
-
-		db.Close();
-
-		// Save output as .txt file for tree 1
-		Menu menu = new Menu(tree1);
-		tree1.setMenu(menu);
-
-		MenuItem mntmSave = new MenuItem(menu, SWT.NONE);
-		mntmSave.addSelectionListener(new SelectionAdapter() {
+		Menu menu_1 = new Menu(tree1);
+		tree1.setMenu(menu_1);
+		MenuItem mntmSave_1 = new MenuItem(menu_1, SWT.NONE);
+		mntmSave_1.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				try{
-					FileDialog fd = new FileDialog(mntmSave.getParent().getShell(), SWT.SAVE);
-					fd.setText("Save");
+					FileDialog fd = new FileDialog(mntmSave_1.getParent().getShell(), SWT.SAVE);
+					fd.setText("Save as...");
 					fd.setFilterPath(System.getProperty("user.dir"));
 					String[] filterExt = { "*.txt", "*.doc", ".rtf", "*.*" };
 					fd.setFilterExtensions(filterExt);
@@ -384,19 +126,21 @@ public class ViewResult extends ViewPart {
 
 			}
 		});
-		mntmSave.setText("save");
+		mntmSave_1.setText("Save as...");
 
+		//Initialize Tree 2
+		TreeColumn columnUmlClasses = new TreeColumn(tree2, SWT.CENTER);
+		columnUmlClasses.setText("Class/Atrribute/Method Found within UML");
+		columnUmlClasses.setWidth(300);
 
-		// Save output as .txt file for tree 2
-		Menu menu2 = new Menu(tree2);
-		tree2.setMenu(menu2);
-
-		MenuItem mntmSave2 = new MenuItem(menu2, SWT.NONE);
-		mntmSave2.addSelectionListener(new SelectionAdapter() {
+		Menu menu_2 = new Menu(tree2);
+		tree2.setMenu(menu_2);
+		MenuItem mntmSave_2 = new MenuItem(menu_2, SWT.NONE);
+		mntmSave_2.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				try{
-					FileDialog fd = new FileDialog(mntmSave2.getParent().getShell(), SWT.SAVE);
+					FileDialog fd = new FileDialog(mntmSave_2.getParent().getShell(), SWT.SAVE);
 					fd.setText("Save");
 					fd.setFilterPath(System.getProperty("user.dir"));
 					String[] filterExt = { "*.txt", "*.doc", ".rtf", "*.*" };
@@ -451,19 +195,22 @@ public class ViewResult extends ViewPart {
 
 			}
 		});
-		mntmSave2.setText("save");
+		mntmSave_2.setText("Save as...");
 
+		//Initialize Tree 3
+		TreeColumn columnCompare = new TreeColumn(tree3, SWT.CENTER);
+		columnCompare.setText("Compare Result");
+		columnCompare.setWidth(300);
 
-		// Save output as .txt file for tree 3
-		Menu menu3 = new Menu(tree3);
-		tree1.setMenu(menu3);
+		Menu menu_3 = new Menu(tree3);
+		tree3.setMenu(menu_3);
 
-		MenuItem mntmSave3 = new MenuItem(menu3, SWT.NONE);
-		mntmSave.addSelectionListener(new SelectionAdapter() {
+		MenuItem mntmSave_3 = new MenuItem(menu_3, SWT.NONE);
+		mntmSave_3.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				try{
-					FileDialog fd = new FileDialog(mntmSave3.getParent().getShell(), SWT.SAVE);
+					FileDialog fd = new FileDialog(mntmSave_3.getParent().getShell(), SWT.SAVE);
 					fd.setText("Save");
 					fd.setFilterPath(System.getProperty("user.dir"));
 					String[] filterExt = { "*.txt", "*.doc", ".rtf", "*.*" };
@@ -518,8 +265,313 @@ public class ViewResult extends ViewPart {
 
 			}
 		});
-		mntmSave3.setText("save");
+		mntmSave_3.setText("Save as...");
 
+		//////////////////////////Test case///////////////////////////////////////////////////////////   
+		//		    TreeItem item1 = new TreeItem(tree, SWT.NONE);
+		//		    item1.setText(new String[]{"               item1","yes","32"});
+		//		    TreeItem subItem1 = new TreeItem(item1, SWT.NONE);
+		//		    subItem1.setText(new String[]{"               subItem1","yes","55"});
+		//		    TreeItem subsubItem1 = new TreeItem(subItem1, SWT.NONE);
+		//		    subsubItem1.setText(new String[]{"               subsubitem1","No","88"});
+		//		    TreeItem item2 = new TreeItem(tree, SWT.NONE);
+		//		    item2.setText(new String[]{"               item2","yes","62"});  
+		//		    TreeItem subItem2 = new TreeItem(item2, SWT.NONE);
+		//		    subItem2.setText(new String[]{"               subItem2","no","99"});
+		//////////////////////////////////////////////////////////////////////////////////////////////// 
+	}
+
+	/**
+	 * this method used in ViewOpenMenu class, and call UTMDB database to get the 
+	 * data into the output view, which includes Class info and Attrubute info as 
+	 * well as Method info.
+	 * 
+	 */
+	public void showResults(){
+
+		UTMDB db = new UTMDB();
+		db.Open();
+		db.InitDatabase();
+		db.Relate();
+		db.Match();
+		db.Commit();
+
+		if(db.IsInitialized())
+		{
+			//Create Tree Root
+			/*
+			 * Tree Root
+			 * 		Class Node
+			 * 			Attribute Node (public String SomeAttr1)
+			 * 				Filename
+			 * 				LineNumber
+			 * 			Attribute Node
+			 * 			Attribute Node
+			 * 			Method Node
+			 * 			Method Node
+			 * 		Class Node
+			 * 			Attribute Node
+			 * 			MethodNode
+			 */
+			//tree = new Tree(parent,SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL);
+			//			tree1.setHeaderVisible(true);
+
+			//Tree 1 parse source code.
+			ArrayList<UTMDBClass> classList = new ArrayList<UTMDBClass>();
+			classList = db.GetSourceClassList();
+			for(UTMDBClass utmclass : classList)
+			{
+				String abstractType = "";
+				String finalType = "";
+				String staticType = "";
+				System.out.print(utmclass);
+				if(utmclass.IsAbstract)
+					abstractType = "abstract ";
+				if(utmclass.IsStatic)
+					staticType = "static ";
+				if(utmclass.IsFinal)
+					finalType = "final ";
+
+				String classNodeText1 = 
+						utmclass.LineNumber + ": " 
+								+ utmclass.ClassName + " "
+								+ utmclass.AccessType + " " 
+								+ staticType
+								+ abstractType
+								+ finalType
+								+ utmclass.NumMismatched 
+								+ "(NumMismatched)";
+				
+				// Create Class Node
+				TreeItem item1 = new TreeItem(tree1, SWT.NONE);
+				item1.setText(new String[] {classNodeText1});
+
+				ArrayList<UTMDBAttribute> attributeList1 = new ArrayList<UTMDBAttribute>();
+				attributeList1 = db.GetSourceAttributesList(utmclass.ClassID);
+				for(UTMDBAttribute utmattr : attributeList1)
+				{
+					//					System.out.print(utmattr); 
+					String NodeText1 = 
+							utmattr.LineNumber + ": " 
+									+ utmattr.AccessType + " " 
+									+ utmattr.Name + " " 
+									+ utmattr.Type;
+
+					// Create Attribute Node && Add Attribute Node to Class Node
+					TreeItem subItemAttr1 = new TreeItem(item1, SWT.NONE);
+					subItemAttr1.setText(new String[] {NodeText1});
+					item1.setExpanded(true);
+
+					// Create Filename Node && Add Filename Node to Attribute Node
+					TreeItem subsubItemAttrFileName1 = new TreeItem(subItemAttr1, SWT.NONE);
+					subsubItemAttrFileName1.setText("File Name: " + utmattr.Filename);
+					subItemAttr1.setExpanded(true);
+
+					//Create LineNum Node && Add LineNum Node to Attribute Node
+					TreeItem subsubItemAttrID1 = new TreeItem(subItemAttr1, SWT.NONE);
+					subsubItemAttrID1.setText("AttributeID: " + String.valueOf(utmattr.AttributeID));
+					subItemAttr1.setExpanded(true);
+
+					//Create ClassID Node && Add ClassID Node to Attribute Node
+					TreeItem subsubItemAttrClassID1 = new TreeItem(subItemAttr1, SWT.NONE);
+					subsubItemAttrClassID1.setText("Class Name: " + String.valueOf(utmattr.ClassName));
+					subItemAttr1.setExpanded(true);
+
+					//Create NumMismatched Node && Add NumMismatched Node to Attribute Node
+					TreeItem subsubItemAttrNumMismatched1 = new TreeItem(subItemAttr1, SWT.NONE);
+					subsubItemAttrNumMismatched1.setText("Number MisMatched: " + String.valueOf(utmattr.NumMismatched));
+					subItemAttr1.setExpanded(true);
+				}
+
+				ArrayList<UTMDBMethod> methodList1 = new ArrayList<UTMDBMethod>();
+				db.GetSourceMethodsList(utmclass.ClassID);
+				for(UTMDBMethod utmmeth : methodList1)
+				{
+					//					System.out.print(utmmeth);
+					// Create Method Node && Add Method Node to Class Node
+					TreeItem subItemMethod1 = new TreeItem(item1, SWT.NONE);
+					String MethodNodeText1 = 
+							utmmeth.LineNumber + " " 
+									+ utmmeth.AccessType + " " 
+									+ utmmeth.Name + " " 
+									+ utmmeth.Type;
+
+					subItemMethod1.setText(MethodNodeText1);
+					item1.setExpanded(true);
+
+					// Create Filename Node && Add Filename Node to Method Node
+					TreeItem subsubItemMethFileName1 = new TreeItem(subItemMethod1, SWT.NONE);
+					subsubItemMethFileName1.setText("File Name: "+ utmmeth.Filename);
+					subItemMethod1.setExpanded(true);
+
+					//Create LineNum Node && Add LineNum Node to Method Node
+					TreeItem subsubItemMethID1 = new TreeItem(subItemMethod1, SWT.NONE);
+					subsubItemMethID1.setText("MethodID: " + String.valueOf(utmmeth.MethodID));
+					subItemMethod1.setExpanded(true);
+
+					//Create ClassID Node && Add ClassID Node to Method Node
+					TreeItem subsubItemMethClassID1 = new TreeItem(subItemMethod1, SWT.NONE);
+					subsubItemMethClassID1.setText("ClassID: " + String.valueOf(utmmeth.ClassID));
+					subItemMethod1.setExpanded(true);
+
+					//Create Parameters Node && Add Parameters Node to Method Node
+					TreeItem subsubItemMethPara1 = new TreeItem(subItemMethod1, SWT.NONE);
+					subsubItemMethPara1.setText("Parameters: " + utmmeth.Parameters);
+					subItemMethod1.setExpanded(true);		
+
+					//Create NumMismatched Node && Add NumMismatched Node to Method Node
+					TreeItem subsubItemAttrNumMismatched1 = new TreeItem(subItemMethod1, SWT.NONE);
+					subsubItemAttrNumMismatched1.setText("Number MisMatched: " + String.valueOf(utmmeth.NumMismatched));
+					subItemMethod1.setExpanded(true);
+				}
+			}
+
+			//tree 2 Parse UML
+			ArrayList<UTMDBClass> classList2 = new ArrayList<UTMDBClass>();
+			classList2 = db.GetUMLClassList();
+			for(UTMDBClass utmclass : classList2)
+			{
+				String abstractType = "";
+				String finalType = "";
+				String staticType = "";
+				System.out.print(utmclass);
+				if(utmclass.IsAbstract)
+					abstractType = "abstract ";
+				if(utmclass.IsStatic)
+					staticType = "static ";
+				if(utmclass.IsFinal)
+					finalType = "final ";
+
+				String classNodeText2 = 
+						utmclass.LineNumber + ": " 
+								+ utmclass.AccessType + " " 
+								+ staticType
+								+ abstractType
+								+ finalType
+								+ utmclass.ClassName + " "
+								+ utmclass.NumMismatched
+								+ "(NumMismatched)";
+
+				// Create Class Node
+				TreeItem item2 = new TreeItem(tree2, SWT.NONE);
+				item2.setText(new String[] {classNodeText2});
+
+				ArrayList<UTMDBAttribute> attributeList2 = new ArrayList<UTMDBAttribute>();
+				attributeList2 = db.GetUMLAttributesList(utmclass.ClassID);
+				for(UTMDBAttribute utmattr : attributeList2)
+				{
+					//					System.out.print(utmattr); 
+					String NodeText2 = 
+							utmattr.LineNumber + ": " 
+									+ utmattr.AccessType + " " 
+									+ utmattr.Name + " " 
+									+ utmattr.Type;
+
+					// Create Attribute Node && Add Attribute Node to Class Node
+					TreeItem subItemAttr2 = new TreeItem(item2, SWT.NONE);
+					subItemAttr2.setText(new String[] {NodeText2});
+					item2.setExpanded(true);
+
+					// Create Filename Node && Add Filename Node to Attribute Node
+					TreeItem subsubItemAttrFileName2 = new TreeItem(subItemAttr2, SWT.NONE);
+					subsubItemAttrFileName2.setText("File Name: " + utmattr.Filename);
+					subItemAttr2.setExpanded(true);
+
+					//Create LineNum Node && Add LineNum Node to Attribute Node
+					TreeItem subsubItemAttrID2 = new TreeItem(subItemAttr2, SWT.NONE);
+					subsubItemAttrID2.setText("AttributeID: " + String.valueOf(utmattr.AttributeID));
+					subItemAttr2.setExpanded(true);
+
+					//Create ClassID Node && Add ClassID Node to Attribute Node
+					TreeItem subsubItemAttrClassID2 = new TreeItem(subItemAttr2, SWT.NONE);
+					subsubItemAttrClassID2.setText("ClassID: " + String.valueOf(utmattr.ClassID));
+					subItemAttr2.setExpanded(true);
+
+					//Create NumMismatched Node && Add NumMismatched Node to Attribute Node
+					TreeItem subsubItemAttrNumMismatched2 = new TreeItem(subItemAttr2, SWT.NONE);
+					subsubItemAttrNumMismatched2.setText("Number MisMatched: " + String.valueOf(utmattr.NumMismatched));
+					subItemAttr2.setExpanded(true);
+				}
+
+				ArrayList<UTMDBMethod> methodList2 = new ArrayList<UTMDBMethod>();
+				db.GetUMLMethodsList(utmclass.ClassID);
+				for(UTMDBMethod utmmeth : methodList2)
+				{
+					//					System.out.print(utmmeth);
+					// Create Method Node && Add Method Node to Class Node
+					TreeItem subItemMethod2 = new TreeItem(item2, SWT.NONE);
+					String MethodNodeText2 = 
+							utmmeth.LineNumber + " " 
+									+ utmmeth.AccessType + " " 
+									+ utmmeth.Name + " " 
+									+ utmmeth.Type;
+
+					subItemMethod2.setText(MethodNodeText2);
+					item2.setExpanded(true);
+
+					// Create Filename Node && Add Filename Node to Attribute Node
+					TreeItem subsubItemMethFileName2 = new TreeItem(subItemMethod2, SWT.NONE);
+					subsubItemMethFileName2.setText("File Name: "+ utmmeth.Filename);
+					subItemMethod2.setExpanded(true);
+
+					//Create LineNum Node && Add LineNum Node to Attribute Node
+					TreeItem subsubItemMethID2 = new TreeItem(subItemMethod2, SWT.NONE);
+					subsubItemMethID2.setText("MethodID: " + String.valueOf(utmmeth.MethodID));
+					subItemMethod2.setExpanded(true);
+
+					//Create ClassID Node && Add ClassID Node to Attribute Node
+					TreeItem subsubItemMethClassID2 = new TreeItem(subItemMethod2, SWT.NONE);
+					subsubItemMethClassID2.setText("ClassID: " + String.valueOf(utmmeth.ClassID));
+					subItemMethod2.setExpanded(true);
+
+					//Create Parameters Node && Add Parameters Node to Attribute Node
+					TreeItem subsubItemMethPara2 = new TreeItem(subItemMethod2, SWT.NONE);
+					subsubItemMethPara2.setText("Parameters: " + utmmeth.Parameters);
+					subItemMethod2.setExpanded(true);		
+
+					//Create NumMismatched Node && Add NumMismatched Node to Method Node
+					TreeItem subsubItemAttrNumMismatched2 = new TreeItem(subItemMethod2, SWT.NONE);
+					subsubItemAttrNumMismatched2.setText("Number MisMatched: " + String.valueOf(utmmeth.NumMismatched));
+					subItemMethod2.setExpanded(true);
+				}
+			}
+
+			//tree 3 compare results
+			
+			TreeItem item3_1 = new TreeItem(tree3,SWT.NONE);
+			item3_1.setText("UML Class Count");
+			TreeItem subitem3_1 = new TreeItem(item3_1,SWT.NONE);
+			subitem3_1.setText(String.valueOf(db.CountUMLClasses()));
+			
+			TreeItem item3_2 = new TreeItem(tree3,SWT.NONE);
+			item3_2.setText("Source Class Count");
+			TreeItem subitem3_2 = new TreeItem(item3_2,SWT.NONE);
+			subitem3_2.setText(String.valueOf(db.CountSourceClasses()));
+			
+			TreeItem item3_3 = new TreeItem(tree3,SWT.NONE);
+			item3_3.setText("UML Attribute Count");
+			TreeItem subitem3_3 = new TreeItem(item3_3,SWT.NONE);
+			subitem3_3.setText(String.valueOf(db.CountUMLAttributes()));
+			
+			TreeItem item3_4 = new TreeItem(tree3,SWT.NONE);
+			item3_4.setText("Source Attribute Count");
+			TreeItem subitem3_4 = new TreeItem(item3_4,SWT.NONE);
+			subitem3_4.setText(String.valueOf(db.CountSourceAttributes()));
+			
+			TreeItem item3_5 = new TreeItem(tree3,SWT.NONE);
+			item3_5.setText("UML Method Count Count");
+			TreeItem subitem3_5 = new TreeItem(item3_5,SWT.NONE);
+			subitem3_5.setText(String.valueOf(db.CountUMLMethods()));
+			
+			TreeItem item3_6 = new TreeItem(tree3,SWT.NONE);
+			item3_6.setText("Source Method Count");
+			TreeItem subitem3_6 = new TreeItem(item3_6,SWT.NONE);
+			subitem3_6.setText(String.valueOf(db.CountSourceMethods()));
+			
+
+		}
+
+		db.Close();
 
 	}	
 

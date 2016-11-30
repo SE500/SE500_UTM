@@ -22,7 +22,16 @@ import org.eclipse.utm.parseUML.ParseUML;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-
+/**
+ * The input view part of UML Trace Magic plug-in application that let users input the 
+ * UML model and Source Code.
+ * 
+ * 
+ * @version Neon.1a Release (4.6.1)
+ * @author junqianfeng,Thomas Colborne
+ * @since 2016-09
+ *
+ */
 
 public class ViewOpenMenu extends ViewPart {
 
@@ -40,7 +49,7 @@ public class ViewOpenMenu extends ViewPart {
 	boolean sourceParsed = false;
 	boolean umlParsed = false;
 	Composite parent;
-//	private Button btnShowResults;
+	//	private Button btnShowResults;
 	private ParseUML parseUMLJob;
 	private ParseSource parseSourceJob;
 	IProgressMonitor UTMProgressGroupMonitor;
@@ -51,6 +60,12 @@ public class ViewOpenMenu extends ViewPart {
 
 	public ViewOpenMenu() {}
 
+	/**
+	 * The method is to create contents of the input view part.
+	 * User can select UML File and Java Source Files from directory
+	 * and trigger 'start' button to get result.
+	 * @param parent, container
+	 */
 	@Override
 	public void createPartControl(Composite parent) {
 		this.parent = parent;
@@ -131,24 +146,31 @@ public class ViewOpenMenu extends ViewPart {
 		});
 		btnTraceabilityMatrix.setBounds(105, 20, 175, 25);
 		btnTraceabilityMatrix.setText("Start");
-		
-//		btnShowResults = new Button(grpOutput, SWT.NONE);
-//		btnShowResults.addSelectionListener(new SelectionAdapter() {
-//			@Override
-//			public void widgetSelected(SelectionEvent e) {
-//				showResultsView();
-//			}
-//		});
-//		btnShowResults.setText("Show Results");
-//		btnShowResults.setBounds(200, 20, 175, 25);
-	}
 
+		//		btnShowResults = new Button(grpOutput, SWT.NONE);
+		//		btnShowResults.addSelectionListener(new SelectionAdapter() {
+		//			@Override
+		//			public void widgetSelected(SelectionEvent e) {
+		//				showResultsView();
+		//			}
+		//		});
+		//		btnShowResults.setText("Show Results");
+		//		btnShowResults.setBounds(200, 20, 175, 25);
+	}
+	/**
+	 * This method is the action when click 'start' button, a 'showResultsView' method
+	 * is used inside.
+	 * 
+	 * @exception throws InterruptedException
+	 * @param none
+	 * @return none
+	 */
 	private void computeTraceability() {
 		UTMProgressGroupMonitor = Job.getJobManager().createProgressGroup();
 		progressService = (IProgressService) getSite().getService(IProgressService.class);
 		parseUML();
 		parseSource();
-		
+
 		try {
 			UTMProgressGroupMonitor.beginTask("Starting", 100);
 			parseUMLJob.setProgressGroup(UTMProgressGroupMonitor, 67);
@@ -169,7 +191,11 @@ public class ViewOpenMenu extends ViewPart {
 		showResultsView();
 
 	}
-
+	/**
+	 * A method used to trigger output view.
+	 * 
+	 * @exception PartInitException
+	 */
 	private void showResultsView() {
 		IWorkbenchPage page = getSite().getPage();
 		IViewPart resultsView = page.findView(ViewResult.ID);
@@ -186,18 +212,27 @@ public class ViewOpenMenu extends ViewPart {
 			rv.showResults();
 		}	
 	}
-
+	/**
+	 * Method call parseScource method.
+	 */
 
 	private void parseSource() {	
 		parseSourceJob = new ParseSource(javaFile);
-//		sourceParsed = parseSourceJob.launch(UTMProgressGroupMonitor);
+		//		sourceParsed = parseSourceJob.launch(UTMProgressGroupMonitor);
 	}
+
+	/**
+	 * Method call parseUML method.
+	 */
 
 	private void parseUML() {
 		parseUMLJob = new ParseUML(umlFile);
-//		umlParsed = parseUMLJob.launch(UTMProgressGroupMonitor);
+		//		umlParsed = parseUMLJob.launch(UTMProgressGroupMonitor);
 	}
-	
+	/**
+	 * Parsing the focus request to the viewer's control.
+	 */
+
 	public void setFocus() {
 		parent.setFocus();
 	}
