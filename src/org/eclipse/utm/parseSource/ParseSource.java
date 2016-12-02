@@ -44,7 +44,7 @@ public class ParseSource extends Job {
 	private int classLinNumber = 0;
 	private int methodLinNumber = 0;
 	private String declaration ="";
-	
+
 	/**
 	 * Empty Constructor
 	 * If used initialize must be called before launch
@@ -134,9 +134,9 @@ public class ParseSource extends Job {
 				schedule(5000);
 				status = new Status(IStatus.WARNING, UTMActivator.PLUGIN_ID,
 						"Source Code Parsing rescheduled for file/directory: \n" 
-						+ this.sourceCode.getPath()
-						+ "\nDoes this file exist? " + this.sourceCode.exists() 
-						+ "\nJob : " + super.getName());
+								+ this.sourceCode.getPath()
+								+ "\nDoes this file exist? " + this.sourceCode.exists() 
+								+ "\nJob : " + super.getName());
 				UTMActivator.getDefault().getLog().log(status);
 			} else {
 				status = new Status(IStatus.ERROR, UTMActivator.PLUGIN_ID,
@@ -147,9 +147,9 @@ public class ParseSource extends Job {
 			schedule(5000);
 			status = new Status(IStatus.WARNING, UTMActivator.PLUGIN_ID,
 					"Source Code Parsing rescheduled for file/directory: \n" 
-					+ this.umlSource
-					+ "\nDoes this file exist? " + this.sourceCode.exists() 
-					+ "\nJob : " + super.getName());
+							+ this.umlSource
+							+ "\nDoes this file exist? " + this.sourceCode.exists() 
+							+ "\nJob : " + super.getName());
 			UTMActivator.getDefault().getLog().log(status);
 		} catch (CoreException e) {
 			status = new Status(IStatus.ERROR, UTMActivator.PLUGIN_ID,
@@ -161,9 +161,9 @@ public class ParseSource extends Job {
 			monitor.done();
 		}
 		return status;
-		
+
 	}	
-	
+
 	public boolean launch(IProgressMonitor monitor) {
 		if(this.run(monitor) == Status.OK_STATUS)
 			return true;
@@ -304,58 +304,13 @@ public class ParseSource extends Job {
 		}
 		catch(FileNotFoundException ex) {
 			UTMActivator.log("Unable to open file '" + 
-		    		fileName.getName() + "'");
-		    return false;
+					fileName.getName() + "'");
+			return false;
 		}
 
 	}
 
-	//System.err.println(file.getName() 
-	//+ " could not be opened for reading");
-
-//	private boolean processFile(File file) throws IOException {
-//		
-//		//Construct BufferedReader from FileReader
-//		BufferedReader br = new BufferedReader(new FileReader(file));
-//	 
-//		String line = null;
-//		int lineNumber = 0;
-//		while ((line = br.readLine()) != null) {
-//			lineNumber++;
-//			if(!processFileLine(line, lineNumber, file.getName())){
-//				System.err.printf("File %1$s: Line %2$d: Line Processing Failed",
-//						file.getName(), lineNumber);
-//				br.close();
-//				return false;
-//			}
-//				
-//		}
-//		br.close();	
-//		return true;
-//	}
-//	 
-//	private boolean processFileLine(String line, int lineNumber, String name) {
-//		if(!findClass(line, lineNumber, name))
-//			if(!findClassAttributes(line, lineNumber, name))
-//				findClassMethods(line, lineNumber, name);
-//		return true;
-//	}
-//
-//	private boolean findClass(String line, int lineNumber, String name) {
-//		// TODO Auto-generated method stub
-//		return false;
-//	}
-//
-//	private boolean findClassAttributes(String line, int lineNumber, String name) {
-//		// TODO Auto-generated method stub
-//		return false;
-//	}
-//
-//	private boolean findClassMethods(String line, int lineNumber, String name) {
-//		// TODO Auto-generated method stub
-//		return false;
-//	}
-
+	
 	/**
 	 * This method finds the class declaration  
 	 * @param line
@@ -425,21 +380,21 @@ public class ParseSource extends Job {
 				if (classDeclaration.contains("private"))
 				{modifier = "private"; classDeclaration = classDeclaration.replaceFirst("private", "").trim();}
 
-//				if (classDeclaration.contains("protected"))
-//				{modifier = "protected"; classDeclaration = classDeclaration.replaceFirst("protected", "").trim();}
-//
-//				if (classDeclaration.contains("native"))
-//				{modifier = "native"; classDeclaration = classDeclaration.replaceFirst("native", "").trim();}
-//
-//				if (classDeclaration.contains("synchronized"))
-//				{modifier = "synchronized"; classDeclaration = classDeclaration.replaceFirst("synchronized", "").trim();}
+				//				if (classDeclaration.contains("protected"))
+				//				{modifier = "protected"; classDeclaration = classDeclaration.replaceFirst("protected", "").trim();}
+				//
+				//				if (classDeclaration.contains("native"))
+				//				{modifier = "native"; classDeclaration = classDeclaration.replaceFirst("native", "").trim();}
+				//
+				//				if (classDeclaration.contains("synchronized"))
+				//				{modifier = "synchronized"; classDeclaration = classDeclaration.replaceFirst("synchronized", "").trim();}
 
 				if (classDeclaration.contains("abstract"))
 				{isAbstract = true; classDeclaration = classDeclaration.replaceFirst("abstract", "").trim();}
-				
+
 				if (classDeclaration.contains("final"))
 				{isFinal = true; classDeclaration = classDeclaration.replaceFirst("final", "").trim();}
-				
+
 				if (classDeclaration.contains("static"))
 				{isStatic = true; classDeclaration = classDeclaration.replaceFirst("static", "").trim();}
 
@@ -447,7 +402,7 @@ public class ParseSource extends Job {
 				classDeclaration = classDeclaration.replaceFirst(type, "").trim();
 				identifier = classDeclaration.substring(0, classDeclaration.indexOf(" ")).trim();
 				classDeclaration = classDeclaration.replaceFirst(identifier, "").trim();
-
+				this.className = identifier;
 				if (classDeclaration.contains("extends"))
 				{extend = true; classDeclaration = classDeclaration.replaceFirst("extends", "").trim();}
 
@@ -463,6 +418,8 @@ public class ParseSource extends Job {
 						reference = classDeclaration.substring(0,classDeclaration.indexOf(" "));
 						classDeclaration = classDeclaration.replaceFirst(reference, "").trim();
 						System.out.println("Name reference extends class  : " + reference);
+						//NewSourceReference(String ClassName, String AccessType, String RefClass)
+						this.db.NewSourceReference(this.className, "extends" , reference);
 					}
 					if (implement)
 					{
@@ -476,23 +433,22 @@ public class ParseSource extends Job {
 								classDeclaration = classDeclaration.replaceFirst(",", "").trim();
 								System.out.println("Name reference implements interface  : " + reference);
 								//db
+								this.db.NewSourceReference(this.className, "implements" , reference);
 							}
 							//second* one
 							reference = classDeclaration.substring(0,classDeclaration.indexOf(" "));
 							classDeclaration = classDeclaration.replaceFirst(reference, "").trim();
 							System.out.println("Name reference implements interface  : " + reference);
 							//db
+							this.db.NewSourceReference(this.className, "implements" , reference);
 						}else {
 							reference = classDeclaration.substring(0,classDeclaration.indexOf(" "));
 							classDeclaration = classDeclaration.replaceFirst(reference, "").trim();
 							System.out.println("Name reference implements interface  : " + reference);
 							//db
+							this.db.NewSourceReference(this.className, "implements" , reference);
 						}
-
 					}
-
-
-
 				}else if (type.contains("interface"))
 					//modifier interface identifier - extends interface_name* -
 				{
@@ -507,25 +463,25 @@ public class ParseSource extends Job {
 								classDeclaration = classDeclaration.replaceFirst(reference, "").trim();
 								classDeclaration = classDeclaration.replaceFirst(",", "").trim();
 								System.out.println("Name reference extends interface : " + reference);
-								//db
+								this.db.NewSourceReference(this.className, "extends" , reference);
 							}
 							//second* one
 							reference = classDeclaration.substring(0,classDeclaration.indexOf(" "));
 							classDeclaration = classDeclaration.replaceFirst(reference, "").trim();
 							System.out.println("Name reference implements interface  : " + reference);
-							//db
+							this.db.NewSourceReference(this.className, "extends" , reference);
 						} else 
 						{
-							reference = classDeclaration.substring(0,classDeclaration.indexOf(" "));
+							reference = classDeclaration.substring(0,classDeclaration.indexOf("{") -1);
 							classDeclaration = classDeclaration.replaceFirst(reference, "").trim();
 							System.out.println("Name reference extends interface : " + reference);
-							//db
+							this.db.NewSourceReference(this.className, "extends" , reference);
 						}
 					}
 
 				}
 
-				this.className = identifier;
+
 
 				if(!isUml) {
 					System.out.println(this.className + lineNumber + this.className + modifier + isStatic + isAbstract + isFinal);
@@ -631,7 +587,6 @@ public class ParseSource extends Job {
 						currentLn = currentLn.replaceFirst(",", "").trim();
 						System.out.println("Name Second var : " + attributesName);
 						this.db.NewSourceAttribute(this.className, lineNumber, this.className, attributesModifier, attributeType, attributesName);
-
 					} 
 					if (currentLn.contains(" "))
 						attributesName = currentLn.substring(0,currentLn.indexOf(" "));
@@ -728,29 +683,26 @@ public class ParseSource extends Job {
 						methodReturnType = currentLn.substring(0,currentLn.indexOf(" ")); 
 						currentLn = currentLn.replaceFirst(currentLn.substring(0,currentLn.indexOf(" ")), "");
 					}
+					
 					methodParameter = currentLn.substring(currentLn.indexOf("("), currentLn.indexOf(")") + 1 );
-
 					methodName = currentLn.substring(0,currentLn.indexOf("("));
-										
+
 					if(!isUml)
 						this.db.NewSourceMethod(this.className , lineNumber , this.className , methodModifier , methodReturnType , methodName , methodParameter);
 					else
 						this.db.NewUMLMethod(this.umlName, this.className, methodModifier , methodReturnType , methodName , methodParameter);
-					
+
 					System.out.println("Line "+ lineNumber + " : " + line[i].trim());
 					System.out.println("modifier : " + methodModifier);
 					System.out.println("Return Type : " + methodReturnType);
 					System.out.println("Method Name : " + methodName);																								
 					System.out.println("Para : " + methodParameter +"\n");
-					
-					// To clean the variables
 					methodModifier = "";	methodReturnType = "";	methodName = "";	methodParameter = "";
 				}
 			}
 		}
 		return true;
 	}
-
 
 	/**
 	 * To fined class's methods  
@@ -830,10 +782,7 @@ public class ParseSource extends Job {
 			}
 			javaCode.add(lines[i].trim());
 		}
-
 		String [] codeWithoutDeclaration = javaCode.toArray(new String[javaCode.size()]);
-//		for(String s : codeWithoutDeclaration)
-//			System.out.println(s);
 		return codeWithoutDeclaration;
 	}
 
@@ -874,8 +823,6 @@ public class ParseSource extends Job {
 			javaCodeMeth.add(newLine.trim());
 		}
 		String [] body = javaCodeMeth.toArray(new String[javaCodeMeth.size()]);
-//		for(String s : body)
-//			System.out.println(s);
 		return body;
 	}
 }
