@@ -380,15 +380,6 @@ public class ParseSource extends Job {
 				if (classDeclaration.contains("private"))
 				{modifier = "private"; classDeclaration = classDeclaration.replaceFirst("private", "").trim();}
 
-				//				if (classDeclaration.contains("protected"))
-				//				{modifier = "protected"; classDeclaration = classDeclaration.replaceFirst("protected", "").trim();}
-				//
-				//				if (classDeclaration.contains("native"))
-				//				{modifier = "native"; classDeclaration = classDeclaration.replaceFirst("native", "").trim();}
-				//
-				//				if (classDeclaration.contains("synchronized"))
-				//				{modifier = "synchronized"; classDeclaration = classDeclaration.replaceFirst("synchronized", "").trim();}
-
 				if (classDeclaration.contains("abstract"))
 				{isAbstract = true; classDeclaration = classDeclaration.replaceFirst("abstract", "").trim();}
 
@@ -703,12 +694,16 @@ public class ParseSource extends Job {
 		}
 		return true;
 	}
+	
 
 	/**
-	 * To fined class's methods  
-	 * @param String[] lines
-	 * @return String[]
+	 * This method removes all the class's methods declaration within the file
+	 * @param line
+	 *		An array of lines from the file 'name'
+	 * @return
+	 * 		returns lines
 	 */
+
 	public String[] removeClassMethodsDeclaration(String[] line )
 	{
 		String methodRgEx="((public\\s|private\\s|final\\s)?(static\\s)?([a-zA-Z0-9]+)+\\s+([a-zA-Z0-9_]+)+\\s?\\((.+)?\\)\\s?)";
@@ -726,9 +721,11 @@ public class ParseSource extends Job {
 	}
 
 	/**
-	 * To remove all comments and libraries 
-	 * @param String[] lines
-	 * @return String[] code
+	 * This method removes all the class's comments and libraries within the file
+	 * @param line
+	 *		An array of lines from the file 'name'
+	 * @return
+	 * 		returns lines
 	 */
 	private String[] codeCleaner (String[] lines)
 	{
@@ -757,11 +754,13 @@ public class ParseSource extends Job {
 		String [] code = javaCode.toArray(new String[javaCode.size()]);
 		return code;
 	}
-
+	
 	/**
-	 * To remove class or the interface declaration  
-	 * @param String[] lines
-	 * @return String[] codeWithoutDeclaration
+	 * This method removes the class or the interface declaration within the file
+	 * @param line
+	 *		An array of lines from the file 'name'
+	 * @return
+	 * 		returns codeWithoutDeclaration
 	 */
 	private String[] removeClassInterfaceDeclaration (String[] lines, String declaration)
 	{
@@ -787,12 +786,14 @@ public class ParseSource extends Job {
 	}
 
 	/**
-	 * To remove methods' body  
-	 * @param String[] lines
-	 * @return String[] body
+	 * This method removes the methods content within the file
+	 * @param line
+	 *		An array of lines from the file 'name'
+	 * @return
+	 * 		returns body
 	 */
-
-	private String[] methodCleaner (String[] lines)
+	
+		private String[] methodCleaner (String[] lines)
 	{
 		String newLine = "";
 		char currentChar;
