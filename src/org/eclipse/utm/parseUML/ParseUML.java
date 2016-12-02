@@ -25,6 +25,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspace;
 //import org.eclipse.acceleo.common.utils.ModelUtils;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -43,11 +44,18 @@ import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationType;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.core.ILaunchManager;
+import org.eclipse.debug.core.Launch;
 import org.eclipse.debug.core.model.IProcess;
 import org.eclipse.debug.ui.DebugUITools;
+import org.eclipse.debug.ui.IDebugUIConstants;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.utm.UTMActivator;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.StructuredSelection;
+import org.eclipse.ui.IWorkbenchWindow;
+import org.eclipse.ui.PlatformUI;
 //import org.eclipse.emf.ecore.resource.ResourceSet;
 //import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 //import org.eclipse.uml2.uml.UMLPackage;
@@ -78,6 +86,11 @@ public class ParseUML extends Job{
 	ILaunchConfiguration config;
 	
 	/**
+     * The type of launch configuration for the UML 2 Java generator.
+     */
+    String LAUNCH_CONFIGURATION_TYPE = "org.eclipse.umlgen.gen.java.ui.launchConfigurationType";
+	
+	/**
 	 * Empty constructor
 	 * @constructor  
 	 * If used initialize must be called before launch
@@ -106,34 +119,38 @@ public class ParseUML extends Job{
 		String generatedSourcePath = this.tempGenFolder.getAbsolutePath() + System.getProperty("file.separator") 
 			+ "org.eclipse.utm.u2j" + System.getProperty("file.separator") 
 			+ "src";
-		IFile generatedSource = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(generatedSourcePath));
+//		IFile generatedSource = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(generatedSourcePath));
 		ParseSource parseGeneratedSourceJob;
 //		monitor.beginTask("UML Parsing begins", ticks);
 		try {
 			if (progress.isCanceled())
 				return Status.CANCEL_STATUS;
 			progress.subTask("Generating Java Code from UML");
-			ILaunch launch = DebugUITools.buildAndLaunch(config, ILaunchManager.RUN_MODE, progress.split(50));
-			IProcess[] processes = launch.getProcesses();
-			if(processes.length == 0) {
-				UTMActivator.log("WHAT!!! No processes created by the launch!");
-			} else if(processes.length == 1) {
-				UTMActivator.log("Just one process created by the launch: "
-						+ processes[0].getLabel());
-				IProgressMonitor test = processes[0].getAdapter(IProgressMonitor.class);
-				UTMActivator.log("The Progress Monitor: " + test.toString());
-			} else {
-				UTMActivator.log("Multiple Processes: ");
-				for (IProcess process : processes) {
-					UTMActivator.log(process.getLabel());
-				}
-			}
+			 // Launch it
+	        if (this.config != null && this.config.exists()) {
+	        	UTMActivator.log("Generating Java Code from UML ... This takes time ... PLEASE WAIT");
+	        	ILaunch launch = DebugUITools.buildAndLaunch(config, ILaunchManager.RUN_MODE, progress.split(50));
+	        }
+//			IProcess[] processes = launch.getProcesses();
+//			if(processes.length == 0) {
+//				UTMActivator.log("WHAT!!! No processes created by the launch!");
+//			} else if(processes.length == 1) {
+//				UTMActivator.log("Just one process created by the launch: "
+//						+ processes[0].getLabel());
+//				IProgressMonitor test = processes[0].getAdapter(IProgressMonitor.class);
+//				UTMActivator.log("The Progress Monitor: " + test.toString());
+//			} else {
+//				UTMActivator.log("Multiple Processes: ");
+//				for (IProcess process : processes) {
+//					UTMActivator.log(process.getLabel());
+//				}
+//			}
 //			monitor.worked(1);
 			if (progress.isCanceled())
 				return Status.CANCEL_STATUS;
 			progress.subTask("Parsing generated Java Code");
 //			File generatedSource = new File(generatedSourcePath);
-			parseGeneratedSourceJob = new ParseSource(generatedSource, this.modelFile.getName());
+			parseGeneratedSourceJob = new ParseSource(generatedSourcePath, this.modelFile.getName());
 //			UTMActivator.log(generatedSource.getLocation().toOSString());
 //			int count = 0;
 //			int divisor = 1000;
@@ -268,6 +285,8 @@ public class ParseUML extends Job{
 //		this.tempGenFolder = new File(System.getProperty("user.dir","temp")
 //				+ "/temp/generated_model_src");
 		this.tempGenFolder = ResourcesPlugin.getWorkspace().getRoot().getLocation().toFile();
+		
+		UTMActivator.log("Initialising prior to parsing the UML Model...");
 
 		
 //		this.defaultConfig = getIFile(ParseUML.class.getResource("resources/UTM_Default_Configuration.launch"));
@@ -299,65 +318,15 @@ public class ParseUML extends Job{
 //			}
 //			this.modelURI = URI.createFileURI(this.modelFile.getAbsolutePath());
 //			this.configuration = createDefaultConfigurationHolder(this.modelFile.getAbsolutePath(), this.tempGenFolder.getAbsolutePath());
-			
-			try {
-//				if(defaultConfig != null) {
-//					ILaunchConfigurationWorkingCopy wc = DebugPlugin.getDefault().getLaunchManager()
-//							.getLaunchConfiguration(defaultConfig).getWorkingCopy();
-//					wc.setAttribute("uml_model_path", getIFile(this.model).getFullPath().toString());
-//					this.config = wc.doSave();
-//				}
-				ILaunchManager launchMgr = DebugPlugin.getDefault().getLaunchManager();
-				ILaunchConfigurationType launchType = launchMgr.getLaunchConfigurationType("org.eclipse.umlgen.gen.java.ui.launchConfigurationType");
-				ILaunchConfigurationWorkingCopy wc = launchType.newInstance(null, launchMgr.generateLaunchConfigurationName("UTM"));
-//				wc.setAttributes(launchAttributes);
-//				List<String> = 
-				wc.setAttribute("uml_model_path", getIFile(model).getFullPath().toString());
-				wc.setAttribute("author",  "UML Trace Magic");
-				wc.setAttribute("bundle_provider",  "UML Trace Magic");
-				wc.setAttribute("default_project_name",  "org.eclipse.utm.u2j");
-				wc.setAttribute("jre_execution_environment",  "JavaSE-1.8");
-				wc.setAttribute("output_folder_path",  "target");
-				wc.setAttribute("source_folder_path",  "src");
-				wc.setAttribute("version",  "1.0.0.temp");
-				wc.setAttribute("components_architecture", "Eclipse Plugins, Features and Update Sites");
-				wc.setAttribute("components_ignore", "java, ");
-				wc.setAttribute("copyright_license", "2016, All rights reserved.");
-				wc.setAttribute("generate_advanced_accessors_collections", false);
-				wc.setAttribute("generate_getters_collections", true);
-				wc.setAttribute("generate_getters_setters", true);
-				wc.setAttribute("generate_setters_collections", false);
-				wc.setAttribute("ignore_java_types_during_generation_and_import", true);
-				wc.setAttribute("jre_execution_environment", "JavaSE-1.8");
-				wc.setAttribute("not_ordered_not_unique", "java.util.ArrayList");
-				wc.setAttribute("not_ordered_unique", "java.util.HashSet");
-				wc.setAttribute("ordered_not_unique", "java.util.ArrayList");
-				wc.setAttribute("ordered_unique", "java.util.LinkedHashSet");
-				wc.setAttribute("packages_ignore_generation", "java, ");
-				wc.setAttribute("packages_ignore_imports", "java.lang, ");
-				wc.setAttribute("types_to_ignore_during_generation", "");
-				wc.setAttribute("types_to_ignore_during_imports", "");
-//				wc.setAttribute("org.eclipse.debug.core.MAPPED_RESOURCE_PATHS", "/org.eclipse.utm.test/models/ExtendedPO2.uml");
-//				wc.setAttribute("org.eclipse.debug.core.MAPPED_RESOURCE_TYPES", "1");
-//				<listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_PATHS">
-//				<listEntry value="/org.eclipse.utm.test/models/ExtendedPO2.uml"/>
-//				</listAttribute>
-//				<listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_TYPES">
-//				<listEntry value="1"/>
-//				</listAttribute>
-
-				this.config = wc.doSave();
-//				ILaunchConfiguration lc = wc.doSave();
-//				Launch launch = lc.launch(ILaunchManager.DEBUG_MODE, new NullProgressMonitor());
-			} catch (CoreException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-
+			// Finds or creates a launch configuration for these UML models.
+			this.config = this.findLaunchConfiguration();
+	        if (this.config == null) {
+	        	this.config = this.createConfiguration();
+	        }
 		}
-//		this.db = new UTMDB();
-//		this.db.Open();
-//		this.db.InitDatabase();
+		this.db = new UTMDB();
+		this.db.Open();
+		this.db.InitDatabase();
 	}	
 	
 	
@@ -647,4 +616,96 @@ public class ParseUML extends Job{
 //		}
 //	}
 	
+	
+	/**
+     * Returns a newly created launch configuration for the available ".uml" models.
+     * 
+     * @return A newly created launch configuration for the available ".uml" models.
+     */
+    protected ILaunchConfiguration createConfiguration() {
+    	ILaunchConfiguration config = null;
+        ILaunchConfigurationWorkingCopy wc = null;
+    	try {
+//			if(defaultConfig != null) {
+//				ILaunchConfigurationWorkingCopy wc = DebugPlugin.getDefault().getLaunchManager()
+//						.getLaunchConfiguration(defaultConfig).getWorkingCopy();
+//				wc.setAttribute("uml_model_path", getIFile(this.model).getFullPath().toString());
+//				this.config = wc.doSave();
+//			}
+			ILaunchManager launchMgr = DebugPlugin.getDefault().getLaunchManager();
+			ILaunchConfigurationType launchType = launchMgr.getLaunchConfigurationType(this.LAUNCH_CONFIGURATION_TYPE);
+			wc = launchType.newInstance(null, launchMgr.generateLaunchConfigurationName("UTM"));
+//			wc.setAttributes(launchAttributes);
+//			List<String> = 
+			wc.setAttribute("uml_model_path", getIFile(this.modelFile).getFullPath().toString());
+			wc.setAttribute("author",  "UML Trace Magic");
+			wc.setAttribute("bundle_provider",  "UML Trace Magic");
+			wc.setAttribute("default_project_name",  "org.eclipse.utm.u2j");
+			wc.setAttribute("jre_execution_environment",  "JavaSE-1.8");
+			wc.setAttribute("output_folder_path",  "target");
+			wc.setAttribute("source_folder_path",  "src");
+			wc.setAttribute("version",  "1.0.0.temp");
+			wc.setAttribute("components_architecture", "Eclipse Plugins, Features and Update Sites");
+			wc.setAttribute("components_ignore", "java, ");
+			wc.setAttribute("copyright_license", "2016, All rights reserved.");
+			wc.setAttribute("generate_advanced_accessors_collections", false);
+			wc.setAttribute("generate_getters_collections", true);
+			wc.setAttribute("generate_getters_setters", true);
+			wc.setAttribute("generate_setters_collections", false);
+			wc.setAttribute("ignore_java_types_during_generation_and_import", true);
+			wc.setAttribute("jre_execution_environment", "JavaSE-1.8");
+			wc.setAttribute("not_ordered_not_unique", "java.util.ArrayList");
+			wc.setAttribute("not_ordered_unique", "java.util.HashSet");
+			wc.setAttribute("ordered_not_unique", "java.util.ArrayList");
+			wc.setAttribute("ordered_unique", "java.util.LinkedHashSet");
+			wc.setAttribute("packages_ignore_generation", "java, ");
+			wc.setAttribute("packages_ignore_imports", "java.lang, ");
+			wc.setAttribute("types_to_ignore_during_generation", "");
+			wc.setAttribute("types_to_ignore_during_imports", "");
+//			wc.setAttribute("org.eclipse.debug.core.MAPPED_RESOURCE_PATHS", "/org.eclipse.utm.test/models/ExtendedPO2.uml");
+//			wc.setAttribute("org.eclipse.debug.core.MAPPED_RESOURCE_TYPES", "1");
+//			<listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_PATHS">
+//			<listEntry value="/org.eclipse.utm.test/models/ExtendedPO2.uml"/>
+//			</listAttribute>
+//			<listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_TYPES">
+//			<listEntry value="1"/>
+//			</listAttribute>
+
+			config = wc.doSave();
+//			ILaunchConfiguration lc = wc.doSave();
+//			Launch launch = lc.launch(ILaunchManager.DEBUG_MODE, new NullProgressMonitor());
+		} catch (CoreException e) {
+			IStatus status = new Status(IStatus.ERROR, UTMActivator.PLUGIN_ID, e.getMessage(), e);
+			UTMActivator.getDefault().getLog().log(status);
+			e.printStackTrace();
+		}
+        return config;
+    }
+
+    /**
+     * Returns the first UML to Java launch configuration using all the selected ".uml" models.
+     * 
+     * @return The first UML to Java launch configuration using all the selected ".uml" models.
+     */
+    protected ILaunchConfiguration findLaunchConfiguration() {
+        String computedModelPath = getIFile(this.modelFile).getFullPath().toString();
+
+        ILaunchConfigurationType configurationType = DebugPlugin.getDefault().getLaunchManager()
+                .getLaunchConfigurationType(this.LAUNCH_CONFIGURATION_TYPE);
+        try {
+            ILaunchConfiguration[] launchConfigurations = DebugPlugin.getDefault().getLaunchManager()
+                    .getLaunchConfigurations(configurationType);
+            for (ILaunchConfiguration iLaunchConfiguration : launchConfigurations) {
+                String modelPath = iLaunchConfiguration.getAttribute("uml_model_path", "");
+
+                if (modelPath != null && modelPath.equals(computedModelPath)) {
+                    return iLaunchConfiguration;
+                }
+            }
+        } catch (CoreException e) {
+            IStatus status = new Status(IStatus.ERROR, UTMActivator.PLUGIN_ID, e.getMessage(), e);
+            UTMActivator.getDefault().getLog().log(status);
+        }
+        return null;
+    }
 }

@@ -14,6 +14,9 @@ import javax.swing.UIManager;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -27,18 +30,26 @@ import org.eclipse.utm.compare.UTMDB;
  * 
  */
 public class ParseSource extends Job {
+<<<<<<< HEAD
 	
+=======
+
+>>>>>>> branch 'master' of https://github.com/SE500/SE500_UTM.git
 	/*
 	 * Variable declarations
 	 */
 	private File sourceCode;
-	private IFile umlSource = null;
+	private String umlSource = null;
 	private String className = null;
 	private UTMDB db = null;
 	private boolean isUml = false;
 	private String umlName = null;
 	private int classLinNumber = 0;
 	private int methodLinNumber = 0;
+<<<<<<< HEAD
+=======
+	private String declaration ="";
+>>>>>>> branch 'master' of https://github.com/SE500/SE500_UTM.git
 	
 	/**
 	 * Empty Constructor
@@ -67,7 +78,7 @@ public class ParseSource extends Job {
 	 * @param umlName
 	 * 		The name of the UML diagram that the source code was generated from
 	 */
-	public ParseSource(IFile source, String umlName) {
+	public ParseSource(String source, String umlName) {
 		super("Parsing the UML generated Source Code: "+ umlName);
 		setSystem(true);
 		initialize(source, umlName);
@@ -84,6 +95,7 @@ public class ParseSource extends Job {
 		this.db = new UTMDB();
 		this.db.Open();
 		this.db.InitDatabase();
+		UTMActivator.log("\nPreparing to parse Source Code within: " + source + "\n");
 	}
 	
 	/**
@@ -91,15 +103,20 @@ public class ParseSource extends Job {
 	 * @param source
 	 * @param umlName
 	 */
-	private void initialize(IFile source, String umlName) {
+	private void initialize(String source, String umlName) {
 		this.umlSource = source;
 		this.umlName = umlName;
 		this.isUml = true;
 		this.db = new UTMDB();
 		this.db.Open();
 		this.db.InitDatabase();
+		UTMActivator.log("\nPreparing to parse UML Generated Source Code from: "+ umlName +" within: " + source + "\n");
 	}
+<<<<<<< HEAD
 	
+=======
+
+>>>>>>> branch 'master' of https://github.com/SE500/SE500_UTM.git
 	@Override
 	protected IStatus run(IProgressMonitor monitor) {
 		monitor.beginTask("Source Code Parsing begins", 1);
@@ -109,18 +126,20 @@ public class ParseSource extends Job {
 			if (monitor.isCanceled())
 				return Status.CANCEL_STATUS;
 			if(this.umlSource != null) {
-				this.sourceCode = new File(this.umlSource.getLocation().toOSString());
-				UTMActivator.log("New File created from IFile");
+				ResourcesPlugin.getWorkspace().getRoot().refreshLocal(IResource.DEPTH_INFINITE, monitor);
+				this.sourceCode = new File(this.umlSource);
+				UTMActivator.log("New File created from File");
 			}
 			if(this.sourceCode.exists()){
 				success = processDirectoryFiles(this.sourceCode);
 				this.db.Commit();
 				this.db.Close();
-				if(success)
-					status = Status.OK_STATUS;
-				else
+				if(success) {status = Status.OK_STATUS;}
+				else {
 					status = new Status(IStatus.ERROR, UTMActivator.PLUGIN_ID,
 							"Source Code Parsing failed for: "+ super.getName());
+					UTMActivator.getDefault().getLog().log(status);
+				}
 			} else if(this.umlName != null){
 				schedule(5000);
 				status = new Status(IStatus.WARNING, UTMActivator.PLUGIN_ID,
@@ -128,17 +147,26 @@ public class ParseSource extends Job {
 						+ this.sourceCode.getPath()
 						+ "\nDoes this file exist? " + this.sourceCode.exists() 
 						+ "\nJob : " + super.getName());
+				UTMActivator.getDefault().getLog().log(status);
 			} else {
 				status = new Status(IStatus.ERROR, UTMActivator.PLUGIN_ID,
 						"Source Code Parsing failed for: "+ super.getName());
+				UTMActivator.getDefault().getLog().log(status);
 			}
 		} catch (NullPointerException e) {
 			schedule(5000);
 			status = new Status(IStatus.WARNING, UTMActivator.PLUGIN_ID,
 					"Source Code Parsing rescheduled for file/directory: \n" 
-					+ this.umlSource.getFullPath().toOSString()
-					+ "\nDoes this file exist? " + this.umlSource.exists() 
+					+ this.umlSource
+					+ "\nDoes this file exist? " + this.sourceCode.exists() 
 					+ "\nJob : " + super.getName());
+			UTMActivator.getDefault().getLog().log(status);
+		} catch (CoreException e) {
+			status = new Status(IStatus.ERROR, UTMActivator.PLUGIN_ID,
+					"Source Code Parsing failed for: "+ super.getName() +
+					"\nFailed when refreshing the resourse hierarchy.");
+			UTMActivator.getDefault().getLog().log(status);
+			e.printStackTrace();
 		} finally {
 			monitor.done();
 		}
@@ -273,9 +301,15 @@ public class ParseSource extends Job {
 				if(findClassMethods(lines, fileName.getName()))
 					if(findClassAttributes(lines, fileName.getName()))
 						return true;
+<<<<<<< HEAD
 					else return false;
 				else return false;
 			else return true; //false
+=======
+					}else {return false;}
+				}else {return false;}
+			}else {return false;} //false
+>>>>>>> branch 'master' of https://github.com/SE500/SE500_UTM.git
 		}
 		catch(FileNotFoundException ex) {
 			UTMActivator.log("Unable to open file '" + 
@@ -287,7 +321,11 @@ public class ParseSource extends Job {
 	
 	//System.err.println(file.getName() 
 	//+ " could not be opened for reading");
+<<<<<<< HEAD
 	
+=======
+
+>>>>>>> branch 'master' of https://github.com/SE500/SE500_UTM.git
 //	private boolean processFile(File file) throws IOException {
 //		
 //		//Construct BufferedReader from FileReader
@@ -345,7 +383,19 @@ public class ParseSource extends Job {
 		
 		this.className = null;
 		String currentLn="";
+<<<<<<< HEAD
 		int lineNumber = 0;
+=======
+		String firstPart ="";
+		String secondPart ="";
+		String classDeclaration ="";
+		String identifier = "";
+		String modifier = "";
+		String type = "";
+		String reference = "";
+		boolean extend = false;
+		boolean implement = false;
+>>>>>>> branch 'master' of https://github.com/SE500/SE500_UTM.git
 		boolean isStatic = false;
 		boolean isFinal = false;
 		boolean isAbstract = false;
@@ -404,6 +454,7 @@ public class ParseSource extends Job {
 						 classDeclaration = firstPart+ " " + secondPart;		
 						System.out.println("Found a Class in line " + lineNumber + " " + classDeclaration);
 						this.classLinNumber = lineNumber;
+<<<<<<< HEAD
 						if (classDeclaration.contains("abstract"))
 							isAbstract = true;
 						if (classDeclaration.contains("final"))
@@ -419,6 +470,69 @@ public class ParseSource extends Job {
 							System.out.println( this.className + lineNumber + this.className + classModifier + isStatic + isAbstract + isFinal);
 						this.db.NewSourceClass(this.className, lineNumber, this.className, classModifier, isStatic, isAbstract, isFinal);
 						if(isReference)
+=======
+					}
+
+					else if (line[i+1].endsWith("{") )
+					{
+						flag = false;
+						secondPart= secondPart +  line[i + 1].trim();
+						this.classLinNumber = lineNumber + 1;
+					}
+					classDeclaration = firstPart+ " " + secondPart;
+					this.declaration = classDeclaration;
+					System.out.println("Found a Class  " +"in line " + lineNumber + " " + classDeclaration);
+				}
+
+				if (classDeclaration.contains("public"))
+				{modifier = "public"; classDeclaration = classDeclaration.replaceFirst("public", "").trim();}
+
+				if (classDeclaration.contains("private"))
+				{modifier = "private"; classDeclaration = classDeclaration.replaceFirst("private", "").trim();}
+
+//				if (classDeclaration.contains("protected"))
+//				{modifier = "protected"; classDeclaration = classDeclaration.replaceFirst("protected", "").trim();}
+//
+//				if (classDeclaration.contains("native"))
+//				{modifier = "native"; classDeclaration = classDeclaration.replaceFirst("native", "").trim();}
+//
+//				if (classDeclaration.contains("synchronized"))
+//				{modifier = "synchronized"; classDeclaration = classDeclaration.replaceFirst("synchronized", "").trim();}
+
+				if (classDeclaration.contains("abstract"))
+				{isAbstract = true; classDeclaration = classDeclaration.replaceFirst("abstract", "").trim();}
+				
+				if (classDeclaration.contains("final"))
+				{isFinal = true; classDeclaration = classDeclaration.replaceFirst("final", "").trim();}
+				
+				if (classDeclaration.contains("static"))
+				{isStatic = true; classDeclaration = classDeclaration.replaceFirst("static", "").trim();}
+
+				type = classDeclaration.substring(0, classDeclaration.indexOf(" ")).trim();
+				classDeclaration = classDeclaration.replaceFirst(type, "").trim();
+				identifier = classDeclaration.substring(0, classDeclaration.indexOf(" ")).trim();
+				classDeclaration = classDeclaration.replaceFirst(identifier, "").trim();
+
+				if (classDeclaration.contains("extends"))
+				{extend = true; classDeclaration = classDeclaration.replaceFirst("extends", "").trim();}
+
+				if (classDeclaration.contains("implements"))
+				{implement = true; classDeclaration = classDeclaration.replaceFirst("implements", "").trim();}
+
+				if (type.contains("class"))
+				{
+					// To split inherited interfaces 
+					//modifier class identifier - extends class_name - - implements interface_name* -  
+					if (extend)
+					{
+						reference = classDeclaration.substring(0,classDeclaration.indexOf(" "));
+						classDeclaration = classDeclaration.replaceFirst(reference, "").trim();
+						System.out.println("Name reference extends class  : " + reference);
+					}
+					if (implement)
+					{
+						if (classDeclaration.contains(","))
+>>>>>>> branch 'master' of https://github.com/SE500/SE500_UTM.git
 						{
 							//this.db.NewSourceReference(this.className, m.group(9), m.group(11));
 						}
@@ -429,10 +543,56 @@ public class ParseSource extends Job {
 							{
 								//this.db.NewUMLReference(this.className, m.group(9), m.group(11));
 							}
+<<<<<<< HEAD
+=======
+							//second* one
+							reference = classDeclaration.substring(0,classDeclaration.indexOf(" "));
+							classDeclaration = classDeclaration.replaceFirst(reference, "").trim();
+							System.out.println("Name reference implements interface  : " + reference);
+							//db
+						} else 
+						{
+							reference = classDeclaration.substring(0,classDeclaration.indexOf(" "));
+							classDeclaration = classDeclaration.replaceFirst(reference, "").trim();
+							System.out.println("Name reference extends interface : " + reference);
+							//db
+>>>>>>> branch 'master' of https://github.com/SE500/SE500_UTM.git
 						}
 						return true;
 				}
+<<<<<<< HEAD
 				
+=======
+
+				this.className = identifier;
+
+				if(!isUml) {
+					System.out.println(this.className + lineNumber + this.className + modifier + isStatic + isAbstract + isFinal);
+					this.db.NewSourceClass(this.className, lineNumber, this.className, modifier, isStatic, isAbstract, isFinal);
+					if(isReference)
+					{
+						//public int NewSourceReference(String ClassName, String AccessType, String RefClass)
+						//	this.db.NewSourceReference(this.className, m.group(9), m.group(11));
+					}
+				} 
+				else {
+					System.out.println(this.className + lineNumber + this.className + modifier + isStatic + isAbstract + isFinal);
+					this.db.NewUMLClass(this.umlName, this.className, modifier, isStatic, isAbstract, isFinal);
+					if(isReference)
+					{
+						//this.db.NewUMLReference(this.className, m.group(9), m.group(11));
+					}
+				}
+				System.out.println("modifier : " + modifier);
+				System.out.println("IsStatic : " + isStatic);
+				System.out.println("IsFinal : " + isFinal);
+				System.out.println("IsAbstract : " + isAbstract);
+				System.out.println("type : " + type);
+				System.out.println("identifier : " + identifier);																								
+				System.out.println("IsExtends : " + extend);
+				System.out.println("IsImplements : " + implement);
+				return true;
+>>>>>>> branch 'master' of https://github.com/SE500/SE500_UTM.git
 			}
 		}
 		UTMActivator.log("No Class Declaration found within '" + name + "'");
@@ -453,9 +613,6 @@ public class ParseSource extends Job {
 	
 		String currentLn="";
 		int lineNumber = classLinNumber;
-		boolean isStatic = false;
-		boolean isFinal = false;
-		boolean isOther = false;
 		String attributesModifier = "";
 		String attributesName = "";
 		String attributeType= "";
@@ -472,7 +629,45 @@ public class ParseSource extends Job {
 					&& currentLn.trim().startsWith("//") == false 
 					&&  currentLn.trim().startsWith("*") == false)
 			{
+<<<<<<< HEAD
 				if(m.find())
+=======
+				this.className = name.substring(0, name.indexOf("."));
+				// Attributes modifiers
+				if (currentLn.contains("public"))
+				{attributesModifier += "public "; currentLn = currentLn.replaceFirst("public", "").trim();}
+
+				if (currentLn.contains("private"))
+				{attributesModifier += "private "; currentLn = currentLn.replaceFirst("private", "").trim();}
+
+				if (currentLn.contains("protected"))
+				{attributesModifier += "protected "; currentLn = currentLn.replaceFirst("protected", "").trim();}
+
+				if (currentLn.contains("native"))
+				{attributesModifier += "native "; currentLn = currentLn.replaceFirst("native", "").trim();}
+
+				if (currentLn.contains("synchronized"))
+				{attributesModifier += "synchronized "; currentLn = currentLn.replaceFirst("synchronized", "").trim();}
+
+				if (currentLn.contains("abstract"))
+				{attributesModifier += "abstract "; currentLn = currentLn.replaceFirst("abstract", "").trim();}
+
+				if (currentLn.contains("threadsafe"))
+				{attributesModifier += "threadsafe "; currentLn = currentLn.replaceFirst("threadsafe", "").trim();}
+
+				if (currentLn.contains("transient"))
+				{attributesModifier += "transient "; currentLn = currentLn.replaceFirst("transient", "").trim();}
+
+				if (currentLn.contains("static"))
+				{attributesModifier += "static "; currentLn = currentLn.replaceFirst("static", "").trim();}
+
+				if (currentLn.contains("final"))
+				{attributesModifier += "final "; currentLn = currentLn.replaceFirst("final", "").trim();}
+
+				attributeType = currentLn.substring(0, currentLn.indexOf(" ") );currentLn = currentLn.replaceFirst(attributeType, "").trim();
+				// To split variables if declared in one line.
+				if (currentLn.contains(","))
+>>>>>>> branch 'master' of https://github.com/SE500/SE500_UTM.git
 				{
 					this.className = name.substring(0, name.indexOf("."));
 					// Attributes modifiers
@@ -529,6 +724,14 @@ public class ParseSource extends Job {
 					System.out.println(lineNumber);
 					attributesModifier = "";	attributesName = "";	attributeType= ""; isStatic = false;	isFinal = false;	isOther = false;
 				}
+<<<<<<< HEAD
+=======
+				System.out.println("Line "+ lineNumber + " : " + line[i].trim());
+				System.out.println("modifier : " + attributesModifier);
+				System.out.println("Type : " + attributeType);
+				System.out.println("Name : " + attributesName +"\n");
+				attributesModifier = "";	attributesName = "";	attributeType= "";
+>>>>>>> branch 'master' of https://github.com/SE500/SE500_UTM.git
 			}
 	
 		}
@@ -549,16 +752,16 @@ public class ParseSource extends Job {
 	
 		String currentLn="";
 		int lineNumber = 0;
-		boolean isStatic = false;
-		boolean isFinal = false;
-		boolean isOther = false;
 		String methodModifier = "";
 		String methodReturnType = "";
 		String methodName = "";
 		String methodParameter = "";
+<<<<<<< HEAD
 		String methodType= "";
 		int bracketCount = 0;
 		
+=======
+>>>>>>> branch 'master' of https://github.com/SE500/SE500_UTM.git
 		// Method Declaration Regular Expression
 		String methodRgEx="((public\\s|private\\s)?(static\\s)?([a-zA-Z0-9]+)+\\s+([a-zA-Z0-9_]+)+\\s?\\((.+)?\\)\\s?\\{)";
 		// Loop through all the file lines
@@ -567,6 +770,7 @@ public class ParseSource extends Job {
 			lineNumber++;
 			Pattern p = Pattern.compile(methodRgEx);
 			Matcher m =p.matcher(currentLn);
+<<<<<<< HEAD
 			if (currentLn.startsWith("/*") == false 
 					&& currentLn.startsWith("//") == false 
 					&&  currentLn.startsWith("*") == false)
@@ -628,9 +832,204 @@ public class ParseSource extends Job {
 							isStatic = false;	isFinal = false;	isOther = false;
 							
 						}
+=======
+			if(m.find())
+			{
+				if (!currentLn.contains("="))
+				{
+					if (this.methodLinNumber == 0)
+						this.methodLinNumber = lineNumber;
+
+					this.className = name.substring(0, name.indexOf("."));
+					// Methods modifiers
+					if (currentLn.contains("public"))
+					{methodModifier += "public "; currentLn = currentLn.replaceFirst("public", "").trim();}
+
+					if (currentLn.contains("private"))
+					{methodModifier += "private "; currentLn = currentLn.replaceFirst("private", "").trim();}
+
+					if (currentLn.contains("protected"))
+					{methodModifier += "protected "; currentLn = currentLn.replaceFirst("protected", "").trim();}
+
+					if (currentLn.contains("native"))
+					{methodModifier += "native "; currentLn = currentLn.replaceFirst("native", "").trim();}
+
+					if (currentLn.contains("synchronized"))
+					{methodModifier += "synchronized "; currentLn = currentLn.replaceFirst("synchronized", "").trim();}
+
+					if (currentLn.contains("abstract"))
+					{methodModifier += "abstract "; currentLn = currentLn.replaceFirst("abstract", "").trim();}
+
+					if (currentLn.contains("threadsafe"))
+					{methodModifier += "threadsafe "; currentLn = currentLn.replaceFirst("threadsafe", "").trim();}
+
+					if (currentLn.contains("transient"))
+					{methodModifier += "transient "; currentLn = currentLn.replaceFirst("transient", "").trim();}
+
+					if (currentLn.contains("static"))
+					{methodModifier += "static "; currentLn = currentLn.replaceFirst("static", "").trim();}
+
+					if (currentLn.contains("final"))
+					{methodModifier += "final "; currentLn = currentLn.replaceFirst("final", "").trim();}
+
+					if (currentLn.contains(this.className) == false) {
+						methodReturnType = currentLn.substring(0,currentLn.indexOf(" ")); 
+						currentLn = currentLn.replaceFirst(currentLn.substring(0,currentLn.indexOf(" ")), "");
+>>>>>>> branch 'master' of https://github.com/SE500/SE500_UTM.git
 					}
+<<<<<<< HEAD
+=======
+					methodParameter = currentLn.substring(currentLn.indexOf("("), currentLn.indexOf(")") + 1 );
+
+					methodName = currentLn.substring(0,currentLn.indexOf("("));
+										
+					if(!isUml)
+						this.db.NewSourceMethod(this.className , lineNumber , this.className , methodModifier , methodReturnType , methodName , methodParameter);
+					else
+						this.db.NewUMLMethod(this.umlName, this.className, methodModifier , methodReturnType , methodName , methodParameter);
+					
+					System.out.println("Line "+ lineNumber + " : " + line[i].trim());
+					System.out.println("modifier : " + methodModifier);
+					System.out.println("Return Type : " + methodReturnType);
+					System.out.println("Method Name : " + methodName);																								
+					System.out.println("Para : " + methodParameter +"\n");
+					
+					// To clean the variables
+					methodModifier = "";	methodReturnType = "";	methodName = "";	methodParameter = "";
+>>>>>>> branch 'master' of https://github.com/SE500/SE500_UTM.git
 				}
 		}
 		return true;
 	}
+<<<<<<< HEAD
+=======
+
+
+	/**
+	 * To fined class's methods  
+	 * @param String[] lines
+	 * @return String[]
+	 */
+	public String[] removeClassMethodsDeclaration(String[] line )
+	{
+		String methodRgEx="((public\\s|private\\s|final\\s)?(static\\s)?([a-zA-Z0-9]+)+\\s+([a-zA-Z0-9_]+)+\\s?\\((.+)?\\)\\s?)";
+		String currentLn="";
+		for (int i=this.classLinNumber ; i<line.length; i++){
+			currentLn = line[i];
+			Pattern p = Pattern.compile(methodRgEx);
+			Matcher m =p.matcher(currentLn);
+			if(m.find())
+			{
+				line[i] = "";
+			}
+		}
+		return line;
+	}
+
+	/**
+	 * To remove all comments and libraries 
+	 * @param String[] lines
+	 * @return String[] code
+	 */
+	private String[] codeCleaner (String[] lines)
+	{
+		String newLine = "";
+		char currentChar;
+		ArrayList<String> javaCode = new ArrayList<String>();
+		for(int i = 0 ; i < lines.length; i++) {
+			newLine = lines[i].trim();
+
+			if (newLine.startsWith("/*") 
+					|| newLine.startsWith("*")
+					|| newLine.endsWith("*/")
+					|| newLine.startsWith("//")
+					|| newLine.startsWith("import")
+					|| newLine.startsWith("package"))
+			{
+				for(int y = 0; y < newLine.length() ; y++)
+				{
+					currentChar = newLine.charAt(y);
+					String toStr = new String(new char[] {currentChar});
+					newLine = newLine.replace(toStr, " ");
+				}
+			}
+			javaCode.add(newLine.trim());
+		}
+		String [] code = javaCode.toArray(new String[javaCode.size()]);
+		return code;
+	}
+
+	/**
+	 * To remove class or the interface declaration  
+	 * @param String[] lines
+	 * @return String[] codeWithoutDeclaration
+	 */
+	private String[] removeClassInterfaceDeclaration (String[] lines, String declaration)
+	{
+		String first = lines[this.classLinNumber - 2].trim();
+		String second = lines[this.classLinNumber - 1].trim();
+		String decla = first + " "  + second;
+		String clDec = declaration.trim();
+		ArrayList<String> javaCode = new ArrayList<String>();
+		for (int i = 0; i < lines.length; i++)
+		{
+			if (lines[this.classLinNumber].trim().contains(clDec))
+			{
+				lines[this.classLinNumber - 2] = " ";
+
+			}else if (decla.contains(clDec)){
+				lines[this.classLinNumber - 2 ] = " ";
+				lines[this.classLinNumber - 1] = " ";
+			}
+			javaCode.add(lines[i].trim());
+		}
+
+		String [] codeWithoutDeclaration = javaCode.toArray(new String[javaCode.size()]);
+//		for(String s : codeWithoutDeclaration)
+//			System.out.println(s);
+		return codeWithoutDeclaration;
+	}
+
+	/**
+	 * To remove methods' body  
+	 * @param String[] lines
+	 * @return String[] body
+	 */
+
+	private String[] methodCleaner (String[] lines)
+	{
+		String newLine = "";
+		char currentChar;
+		ArrayList<String> javaCodeMeth = new ArrayList<String>();
+		boolean flag = false; 
+		int brenth = 0;
+		for(int i = 0 ; i < lines.length; i++) {
+			newLine = lines[i];
+			for(int y = 0; y < lines[i].length() ; y++)
+			{
+				currentChar = newLine.charAt(y);
+				if(currentChar == '{')
+				{brenth ++; flag = true;}
+				if(currentChar == '}')
+				{
+					brenth --;
+					String toStr = new String(new char[] {currentChar});
+					newLine = newLine.replace(toStr, " ");
+				}
+				if (brenth == 0)
+					flag = false;
+				if(flag)
+				{ 
+					String toStr = new String(new char[] {currentChar});
+					newLine = newLine.replace(toStr, " ");
+				}
+			}
+			javaCodeMeth.add(newLine.trim());
+		}
+		String [] body = javaCodeMeth.toArray(new String[javaCodeMeth.size()]);
+//		for(String s : body)
+//			System.out.println(s);
+		return body;
+	}
+>>>>>>> branch 'master' of https://github.com/SE500/SE500_UTM.git
 }
