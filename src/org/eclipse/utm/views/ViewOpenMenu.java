@@ -35,7 +35,9 @@ public class ViewOpenMenu extends ViewPart {
 	private Button btnTraceabilityMatrix;
 	private Group grpTraceUml;
 	private Group grpOutput;
-	File umlFile = null,javaFile = null,projectDirectory;
+	File umlFile = null, 
+			javaFile = null,
+			projectDirectory = null;
 	//	private UTMDB db = null;
 	boolean sourceParsed = false;
 	boolean umlParsed = false;
@@ -74,9 +76,9 @@ public class ViewOpenMenu extends ViewPart {
 				//				else textUML.setText(browse.getFileName());
 				//				textUML.setEnabled(true);
 				//				umlFile=new File(selected);
-
 				umlFile = ParseUML.selectUmlFile();
-				textUML.setText(umlFile.getName());
+				if(umlFile == null) {textUML.setText("No UML File selected!");}	
+				else {textUML.setText(umlFile.getName());}
 				textUML.setEnabled(true);
 			}
 		});
@@ -97,7 +99,8 @@ public class ViewOpenMenu extends ViewPart {
 				//				textJAVA.setEnabled(true);
 				//				javaFile=new File(selected);
 				javaFile = ParseSource.selectSource();
-				textJAVA.setText(javaFile.getName());
+				if(javaFile == null) {textJAVA.setText("No Java Source File selected!");}		
+				else {textJAVA.setText(javaFile.getName());}
 				textJAVA.setEnabled(true);
 			}
 		});
@@ -146,18 +149,18 @@ public class ViewOpenMenu extends ViewPart {
 	private void computeTraceability() {
 		UTMProgressGroupMonitor = Job.getJobManager().createProgressGroup();
 		progressService = (IProgressService) getSite().getService(IProgressService.class);
-		parseUML();
-		parseSource();
-		
+
 		try {
 			UTMProgressGroupMonitor.beginTask("Starting", 100);
+			parseUML();
 			parseUMLJob.setProgressGroup(UTMProgressGroupMonitor, 67);
-			progressService.showInDialog(btnTraceabilityMatrix.getShell(), parseUMLJob);
+			progressService.showInDialog(parent.getShell(), parseUMLJob);
 			parseUMLJob.schedule();
-			parseSourceJob.setProgressGroup(UTMProgressGroupMonitor, 33);
-			progressService.showInDialog(btnTraceabilityMatrix.getShell(), parseSourceJob);
-			parseSourceJob.schedule();
 			parseUMLJob.join();
+			parseSource();
+			parseSourceJob.setProgressGroup(UTMProgressGroupMonitor, 33);
+			progressService.showInDialog(parent.getShell(), parseSourceJob);
+			parseSourceJob.schedule();
 			parseSourceJob.join();
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
