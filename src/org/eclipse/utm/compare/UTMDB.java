@@ -71,8 +71,6 @@ public final class UTMDB {
 			stmntInsert.setString(2, AccessType);
 			stmntInsert.setString(3, RefClass);
 			
-			int rowc = stmntInsert.executeUpdate();
-			
 			ResultSet res = stmntInsert.getGeneratedKeys();
 			res.next();
 
@@ -929,6 +927,18 @@ public final class UTMDB {
 		{
 			System.out.println( e.getClass().getName() + ": " + e.getMessage() );
 		}
+	}
+	
+	public void ReInitDatabase()
+	{
+		this.Close();
+		
+		UTMDB._isInit = false;
+		UTMDB._hasCreatedDB = false;
+		
+		this.Open();
+		
+		this.InitDatabase();
 	}
 	
 	public void InitDatabase()
