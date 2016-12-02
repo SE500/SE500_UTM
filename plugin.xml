@@ -28,7 +28,6 @@
       <view
             category="org.eclipse.utm"
             class="org.eclipse.utm.views.ViewResult"
-            icon="icons/Table_icon_16.png"
             id="org.eclipse.utm.views.ViewResult"
             name="UML Trace Magic - Result"
             restorable="true">
@@ -36,7 +35,6 @@
       <view
             category="org.eclipse.utm"
             class="org.eclipse.utm.views.ViewOpenMenu"
-            icon="icons/Magic_icon_16.png"
             id="org.eclipse.utm.views.ViewOpenMenu"
             name="UML Trace Magic - Menu"
             restorable="true">
