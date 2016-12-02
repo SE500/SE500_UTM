@@ -222,7 +222,8 @@ public class ParseSource {
 				cleanCod = methodCleaner(cleanCod);
 				if(findClassMethods(cleanCod, fileName.getName()))
 				{
-					if(findClassAttributes(lines, fileName.getName()))
+					cleanCod = removeClassMethodsDeclaration(cleanCod);
+					if(findClassAttributes(cleanCod, fileName.getName()))
 					{
 						return true;
 					}else
@@ -439,17 +440,17 @@ public class ParseSource {
 							reference = classDeclaration.substring(0,classDeclaration.indexOf(" "));
 							classDeclaration = classDeclaration.replaceFirst(reference, "").trim();
 							System.out.println("Name reference implements interface  : " + reference);
-						//db
+							//db
 						}else {
 							reference = classDeclaration.substring(0,classDeclaration.indexOf(" "));
 							classDeclaration = classDeclaration.replaceFirst(reference, "").trim();
 							System.out.println("Name reference extends interface : " + reference);
-						//db
+							//db
 						}
 					}
 
 				}
-				
+
 				System.out.println("modifier : " + modifier);
 				System.out.println("type : " + type);
 				System.out.println("identifier : " +identifier);																								
@@ -464,7 +465,7 @@ public class ParseSource {
 					if(isReference)
 					{
 						//public int NewSourceReference(String ClassName, String AccessType, String RefClass)
-					//	this.db.NewSourceReference(this.className, m.group(9), m.group(11));
+						//	this.db.NewSourceReference(this.className, m.group(9), m.group(11));
 					}
 				} 
 				else {
@@ -515,82 +516,77 @@ public class ParseSource {
 			lineNumber++;
 			Pattern p = Pattern.compile(attributeRgEx);
 			Matcher m =p.matcher(currentLn);
-			if (currentLn.trim().startsWith("/*") == false 
-					&& currentLn.trim().startsWith("//") == false 
-					&&  currentLn.trim().startsWith("*") == false)
+
+			if(m.find())
 			{
-				if(m.find())
+				this.className = name.substring(0, name.indexOf("."));
+				// Attributes modifiers
+				if (currentLn.contains("public"))
+				{attributesModifier = "public"; currentLn = currentLn.replaceFirst("public", "").trim();}
+
+				if (currentLn.contains("private"))
+				{attributesModifier = "private"; currentLn = currentLn.replaceFirst("private", "").trim();}
+
+				if (currentLn.contains("protected"))
+				{attributesModifier = "protected"; currentLn = currentLn.replaceFirst("protected", "").trim();}
+
+				if (currentLn.contains("native"))
+				{attributesModifier = "native"; currentLn = currentLn.replaceFirst("native", "").trim();}
+
+				if (currentLn.contains("synchronized"))
+				{attributesModifier = "synchronized"; currentLn = currentLn.replaceFirst("synchronized", "").trim();}
+
+				if (currentLn.contains("abstract"))
+				{attributesModifier = "abstract"; currentLn = currentLn.replaceFirst("abstract", "").trim();}
+
+				if (currentLn.contains("threadsafe"))
+				{attributesModifier = "threadsafe"; currentLn = currentLn.replaceFirst("threadsafe", "").trim();}
+
+				if (currentLn.contains("transient"))
+				{attributesModifier = "transient"; currentLn = currentLn.replaceFirst("transient", "").trim();}
+
+				if (currentLn.contains("static"))
+				{isStatic = true; currentLn = currentLn.replaceFirst("static", "").trim();}
+
+				if (currentLn.contains("final"))
+				{isFinal = true; currentLn = currentLn.replaceFirst("final", "").trim();}
+
+				attributeType = currentLn.substring(0, currentLn.indexOf(" ") );currentLn = currentLn.replaceFirst(attributeType, "").trim();
+				// To split variables if declared in one line.
+				if (currentLn.contains(","))
 				{
-					this.className = name.substring(0, name.indexOf("."));
-					// Attributes modifiers
-					if (currentLn.contains("public"))
-					{attributesModifier = "public"; currentLn = currentLn.replaceFirst("public", "").trim();}
-
-					if (currentLn.contains("private"))
-					{attributesModifier = "private"; currentLn = currentLn.replaceFirst("private", "").trim();}
-
-					if (currentLn.contains("protected"))
-					{attributesModifier = "protected"; currentLn = currentLn.replaceFirst("protected", "").trim();}
-
-					if (currentLn.contains("native"))
-					{attributesModifier = "native"; currentLn = currentLn.replaceFirst("native", "").trim();}
-
-					if (currentLn.contains("synchronized"))
-					{attributesModifier = "synchronized"; currentLn = currentLn.replaceFirst("synchronized", "").trim();}
-
-					if (currentLn.contains("abstract"))
-					{attributesModifier = "abstract"; currentLn = currentLn.replaceFirst("abstract", "").trim();}
-
-					if (currentLn.contains("threadsafe"))
-					{attributesModifier = "threadsafe"; currentLn = currentLn.replaceFirst("threadsafe", "").trim();}
-
-					if (currentLn.contains("transient"))
-					{attributesModifier = "transient"; currentLn = currentLn.replaceFirst("transient", "").trim();}
-
-					if (currentLn.contains("static"))
-					{isStatic = true; currentLn = currentLn.replaceFirst("static", "").trim();}
-
-					if (currentLn.contains("final"))
-					{isFinal = true; currentLn = currentLn.replaceFirst("final", "").trim();}
-
-					attributeType = currentLn.substring(0, currentLn.indexOf(" ") );currentLn = currentLn.replaceFirst(attributeType, "").trim();
-					// To split variables if declared in one line.
-					if (currentLn.contains(","))
+					while (currentLn.contains(","))
 					{
-						while (currentLn.contains(","))
-						{
-							attributesName = currentLn.substring(0,currentLn.indexOf(","));
-							currentLn = currentLn.replaceFirst(attributesName, "").trim();
-							currentLn = currentLn.replaceFirst(",", "").trim();
-							System.out.println("Name Second var : " + attributesName);
-							this.db.NewSourceAttribute(this.className, lineNumber, this.className, attributesModifier, attributeType, attributesName);
-
-						} 
-						if (currentLn.contains(" "))
-							attributesName = currentLn.substring(0,currentLn.indexOf(" "));
-						else 
-							attributesName = currentLn.substring(0,currentLn.indexOf(";"));
+						attributesName = currentLn.substring(0,currentLn.indexOf(","));
+						currentLn = currentLn.replaceFirst(attributesName, "").trim();
+						currentLn = currentLn.replaceFirst(",", "").trim();
+						System.out.println("Name Second var : " + attributesName);
 						this.db.NewSourceAttribute(this.className, lineNumber, this.className, attributesModifier, attributeType, attributesName);
 
-					}else {
-						if (currentLn.contains(" "))
-							attributesName = currentLn.substring(0,currentLn.indexOf(" "));
-						else 
-							attributesName = currentLn.substring(0,currentLn.indexOf(";"));
-						if(!isUml)
-							this.db.NewSourceAttribute(this.className, lineNumber, this.className, attributesModifier, attributeType, attributesName);
-						else
-							this.db.NewUMLAttribute(this.umlName, this.className, attributesModifier, attributeType, attributesName);
-					}
-					System.out.println("Current lin : " + line[i].trim());
-					System.out.println("Name 1: " + attributesName);
-					System.out.println("modifier : " + attributesModifier);
-					System.out.println("Type : " + attributeType);
-					System.out.println(lineNumber);
-					attributesModifier = "";	attributesName = "";	attributeType= ""; isStatic = false;	isFinal = false;	isOther = false;
-				}
-			}
+					} 
+					if (currentLn.contains(" "))
+						attributesName = currentLn.substring(0,currentLn.indexOf(" "));
+					else 
+						attributesName = currentLn.substring(0,currentLn.indexOf(";"));
+					this.db.NewSourceAttribute(this.className, lineNumber, this.className, attributesModifier, attributeType, attributesName);
 
+				}else {
+					if (currentLn.contains(" "))
+						attributesName = currentLn.substring(0,currentLn.indexOf(" "));
+					else 
+						attributesName = currentLn.substring(0,currentLn.indexOf(";"));
+					if(!isUml)
+						this.db.NewSourceAttribute(this.className, lineNumber, this.className, attributesModifier, attributeType, attributesName);
+					else
+						this.db.NewUMLAttribute(this.umlName, this.className, attributesModifier, attributeType, attributesName);
+				}
+				System.out.println("Current lin : " + line[i].trim());
+				System.out.println("Name 1: " + attributesName);
+				System.out.println("modifier : " + attributesModifier);
+				System.out.println("Type : " + attributeType);
+				System.out.println(lineNumber);
+				attributesModifier = "";	attributesName = "";	attributeType= ""; isStatic = false;	isFinal = false;	isOther = false;
+			}
 		}
 		return true;
 	}
@@ -617,96 +613,102 @@ public class ParseSource {
 		String methodName = "";
 		String methodParameter = "";
 		String methodType= "";
-		int bracketCount = 0;
-
 		// Method Declaration Regular Expression
-		String methodRgEx="((public\\s|private\\s)?(static\\s)?([a-zA-Z0-9]+)+\\s+([a-zA-Z0-9_]+)+\\s?\\((.+)?\\)\\s?\\{)";
+		String methodRgEx="((public\\s|private\\s)?(static\\s)?([a-zA-Z0-9]+)+\\s+([a-zA-Z0-9_]+)+\\s?\\((.+)?\\)\\s?)";
 		// Loop through all the file lines
 		for(int i=0; i < line.length; i++){
 			currentLn = line[i].trim();
 			lineNumber++;
 			Pattern p = Pattern.compile(methodRgEx);
 			Matcher m =p.matcher(currentLn);
-			if (currentLn.startsWith("/*") == false 
-					&& currentLn.startsWith("//") == false 
-					&&  currentLn.startsWith("*") == false)
-			{	
-				if(m.find())
+			if(m.find())
+			{
+				if (!currentLn.contains("="))
 				{
-					if ((line[i-1].endsWith("{") == false 
-							|| (line[i-1].endsWith("{") && (i == this.classLinNumber || i == this.classLinNumber + 1))
-							) 
-							&& line[i-1].endsWith("(") == false
-							&& currentLn.contains("else") == false
-							&& currentLn.contains("if") == false
-							&& currentLn.contains("try") == false
-							&& currentLn.contains("catch") == false
-							&& currentLn.contains("}") == false
-							&& currentLn.contains("SwingUtilities") == false)
-					{
+					if (this.methodLinNumber == 0)
+						this.methodLinNumber = lineNumber;
 
-						if (this.methodLinNumber == 0)
-							this.methodLinNumber = lineNumber;
+					this.className = name.substring(0, name.indexOf("."));
+					// Methods modifiers
+					if (currentLn.contains("public"))
+					{methodModifier = "public"; currentLn = currentLn.replaceFirst("public", "").trim();}
 
-						this.className = name.substring(0, name.indexOf("."));
-						// Methods modifiers
-						if (currentLn.contains("public"))
-						{methodModifier = "public"; currentLn = currentLn.replaceFirst("public", "").trim();}
+					if (currentLn.contains("private"))
+					{methodModifier = "private"; currentLn = currentLn.replaceFirst("private", "").trim();}
 
-						if (currentLn.contains("private"))
-						{methodModifier = "private"; currentLn = currentLn.replaceFirst("private", "").trim();}
+					if (currentLn.contains("protected"))
+					{methodModifier = "protected"; currentLn = currentLn.replaceFirst("protected", "").trim();}
 
-						if (currentLn.contains("protected"))
-						{methodModifier = "protected"; currentLn = currentLn.replaceFirst("protected", "").trim();}
+					if (currentLn.contains("native"))
+					{methodModifier = "native"; currentLn = currentLn.replaceFirst("native", "").trim();}
 
-						if (currentLn.contains("native"))
-						{methodModifier = "native"; currentLn = currentLn.replaceFirst("native", "").trim();}
+					if (currentLn.contains("synchronized"))
+					{methodModifier = "synchronized"; currentLn = currentLn.replaceFirst("synchronized", "").trim();}
 
-						if (currentLn.contains("synchronized"))
-						{methodModifier = "synchronized"; currentLn = currentLn.replaceFirst("synchronized", "").trim();}
+					if (currentLn.contains("abstract"))
+					{methodModifier = "abstract"; currentLn = currentLn.replaceFirst("abstract", "").trim();}
 
-						if (currentLn.contains("abstract"))
-						{methodModifier = "abstract"; currentLn = currentLn.replaceFirst("abstract", "").trim();}
+					if (currentLn.contains("threadsafe"))
+					{methodModifier = "threadsafe"; currentLn = currentLn.replaceFirst("threadsafe", "").trim();}
 
-						if (currentLn.contains("threadsafe"))
-						{methodModifier = "threadsafe"; currentLn = currentLn.replaceFirst("threadsafe", "").trim();}
+					if (currentLn.contains("transient"))
+					{methodModifier = "transient"; currentLn = currentLn.replaceFirst("transient", "").trim();}
 
-						if (currentLn.contains("transient"))
-						{methodModifier = "transient"; currentLn = currentLn.replaceFirst("transient", "").trim();}
+					if (currentLn.contains("static"))
+					{isStatic = true; currentLn = currentLn.replaceFirst("static", "").trim();}
 
-						if (currentLn.contains("static"))
-						{isStatic = true; currentLn = currentLn.replaceFirst("static", "").trim();}
+					if (currentLn.contains("final"))
+					{isFinal = true; currentLn = currentLn.replaceFirst("final", "").trim();}
 
-						if (currentLn.contains("final"))
-						{isFinal = true; currentLn = currentLn.replaceFirst("final", "").trim();}
-
-						if (currentLn.contains(this.className) == false) {
-							methodReturnType = currentLn.substring(0,currentLn.indexOf(" ")); currentLn = currentLn.replaceFirst(currentLn.substring(0,currentLn.indexOf(" ")), "");
-						}
-						methodParameter = currentLn.substring(currentLn.indexOf("("), currentLn.indexOf(")") + 1 );
-
-						methodName = currentLn.substring(0,currentLn.indexOf("("));
-						System.out.println("Current lin : " + line[i].trim());
-						System.out.println("Name : " +methodName);																								
-						System.out.println("Para : " + methodParameter);
-						System.out.println("modifier : " + methodModifier);
-						System.out.println("Return Type : " + methodReturnType);
-						System.out.println("method Name : " + methodName);
-						System.out.println(lineNumber);
-						if(!isUml)
-							this.db.NewSourceMethod(this.className , lineNumber , this.className , methodModifier , methodType , methodName , methodParameter);
-						else
-							this.db.NewUMLMethod(this.umlName, this.className, methodModifier , methodType , methodName , methodParameter);
-						// To clean the variables
-						methodModifier = "";	methodReturnType = "";	methodName = "";	methodParameter = "";	methodType= "";
-						isStatic = false;	isFinal = false;	isOther = false;
-
+					if (currentLn.contains(this.className) == false) {
+						methodReturnType = currentLn.substring(0,currentLn.indexOf(" ")); currentLn = currentLn.replaceFirst(currentLn.substring(0,currentLn.indexOf(" ")), "");
 					}
+					methodParameter = currentLn.substring(currentLn.indexOf("("), currentLn.indexOf(")") + 1 );
+
+					methodName = currentLn.substring(0,currentLn.indexOf("("));
+					System.out.println("Current lin : " + line[i].trim());
+					System.out.println("Name : " +methodName);																								
+					System.out.println("Para : " + methodParameter);
+					System.out.println("modifier : " + methodModifier);
+					System.out.println("Return Type : " + methodReturnType);
+					System.out.println("method Name : " + methodName);
+					System.out.println(lineNumber);
+					if(!isUml)
+						this.db.NewSourceMethod(this.className , lineNumber , this.className , methodModifier , methodType , methodName , methodParameter);
+					else
+						this.db.NewUMLMethod(this.umlName, this.className, methodModifier , methodType , methodName , methodParameter);
+					// To clean the variables
+					methodModifier = "";	methodReturnType = "";	methodName = "";	methodParameter = "";	methodType= "";
+					isStatic = false;	isFinal = false;	isOther = false;
 				}
 			}
 		}
 		return true;
 	}
+
+
+	/**
+	 * To fined class's methods  
+	 * @param String[] lines
+	 * @return String[]
+	 */
+
+	public String[] removeClassMethodsDeclaration(String[] line )
+	{
+		String methodRgEx="((public\\s|private\\s|final\\s)?(static\\s)?([a-zA-Z0-9]+)+\\s+([a-zA-Z0-9_]+)+\\s?\\((.+)?\\)\\s?)";
+		String currentLn="";
+		for (int i=this.classLinNumber ; i<line.length; i++){
+			currentLn = line[i];
+			Pattern p = Pattern.compile(methodRgEx);
+			Matcher m =p.matcher(currentLn);
+			if(m.find())
+			{
+				line[i] = "";
+			}
+		}
+		return line;
+	}
+
 
 	/**
 	 * To remove all comments and libraries 
@@ -725,7 +727,8 @@ public class ParseSource {
 					|| newLine.startsWith("*")
 					|| newLine.endsWith("*/")
 					|| newLine.startsWith("//")
-					|| newLine.startsWith("import"))
+					|| newLine.startsWith("import")
+					|| newLine.startsWith("package"))
 			{
 				for(int y = 0; y < newLine.length() ; y++)
 				{
