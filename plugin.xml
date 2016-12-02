@@ -20,13 +20,6 @@
          point="org.eclipse.ui.views">
       <view
             category="org.eclipse.utm"
-            class="org.eclipse.utm.views.ViewOpen"
-            id="org.eclipse.utm.views.ViewOpen"
-            name="UML Trace Magic - Input"
-            restorable="true">
-      </view>
-      <view
-            category="org.eclipse.utm"
             class="org.eclipse.utm.views.ViewResult"
             id="org.eclipse.utm.views.ViewResult"
             name="UML Trace Magic - Result"
@@ -39,25 +32,10 @@
             name="UML Trace Magic - Menu"
             restorable="true">
       </view>
-      <view
-            category="org.eclipse.utm"
-            class="org.eclipse.utm.views.TestGui"
-            id="org.eclipse.utm.views.TestGui"
-            name="Test GUI"
-            restorable="true">
-      </view>
       <category
             id="org.eclipse.utm"
             name="UML Trace Magic">
       </category>
-   </extension>
-   <extension
-         point="org.eclipse.ui.perspectives">
-      <perspective
-            class="org.eclipse.utm.views.perspectives"
-            id="org.eclipse.utm.views.perspectives"
-            name="UML Trace Magic">
-      </perspective>
    </extension>
    <extension
          point="org.eclipse.ui.perspectiveExtensions">
