@@ -51,12 +51,7 @@ public final class UTMDB {
 	}
 	
 	private int newReference(boolean IsFromUML, String ClassName, String AccessType, String RefClass)
-	{
-		if(true)
-		{
-			return 0;
-		}
-		
+	{	
 		try
 		{
 			String strInsert =
@@ -70,6 +65,8 @@ public final class UTMDB {
 			stmntInsert.setString(1, ClassName);
 			stmntInsert.setString(2, AccessType);
 			stmntInsert.setString(3, RefClass);
+			
+			stmntInsert.executeUpdate();
 			
 			ResultSet res = stmntInsert.getGeneratedKeys();
 			res.next();
@@ -1016,7 +1013,7 @@ public final class UTMDB {
 					"Class_ID			Integer		Null," +
 					"ClassName			Text		Not Null," +
 					"AccessType			Text		Not Null Default 'No Modifier'," +
-					"Ref_Class_ID		Integer		Not Null," +
+					"Ref_Class_ID		Integer		Null," +
 					"RefClassName		Text		Not Null," +
 					strMatchTracking +
 					")"
@@ -1114,7 +1111,7 @@ public final class UTMDB {
 		}
 		catch(Exception e)
 		{
-			System.out.println( e.getClass().getName() + ": " + e.getMessage() );
+			System.err.println( e.getClass().getName() + ": " + e.getMessage() );
 			return false;
 		}
 		return true;
