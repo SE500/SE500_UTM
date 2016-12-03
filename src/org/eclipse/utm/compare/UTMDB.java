@@ -1068,7 +1068,10 @@ public final class UTMDB {
 	
 	public void ReInitDatabase()
 	{
-		this.Close();
+		if(this._c != null)
+		{
+			this.Close();
+		}
 		
 		UTMDB._isInit = false;
 		UTMDB._hasCreatedDB = false;
