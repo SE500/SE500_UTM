@@ -1,0 +1,8 @@
+#Debug Options File for org.eclipse.utm
+
+# turn on debugging for org.eclipse.utm
+org.eclipse.utm/debug=true
+
+#turn on debugging for progress monitors
+org.eclipse.equinox.common/debug=true
+org.eclipse.equinox.common/progress_monitors=true

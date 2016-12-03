@@ -36,7 +36,6 @@ public class ViewResult extends ViewPart {
 	 * @param container, parent
 	 */
 	@Override
-
 	public void createPartControl(Composite parent) {
 		container = new Composite(parent,SWT.NONE);
 		parent.setLayout(new FillLayout(SWT.HORIZONTAL));
@@ -70,60 +69,7 @@ public class ViewResult extends ViewPart {
 		mntmSave_1.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				try{
-					FileDialog fd = new FileDialog(mntmSave_1.getParent().getShell(), SWT.SAVE);
-					fd.setText("Save as...");
-					fd.setFilterPath(System.getProperty("user.dir"));
-					String[] filterExt = { "*.txt", "*.doc", ".rtf", "*.*" };
-					fd.setFilterExtensions(filterExt);
-					String selected = fd.open();
-					System.out.println(selected);
-					String content = "This is the content to write into file\n";
-					System.out.println(" ");
-					File file = new File(selected);
-					if(!file.exists()){
-						file.createNewFile();
-					}	
-					FileWriter fw = new FileWriter(file.getAbsolutePath());
-					BufferedWriter bw = new BufferedWriter(fw);
-					bw.newLine();
-					bw.write(content);
-					int rowCount = tree1.getItemCount(); //rowNum: 2
-
-					for(int row = 0; row <rowCount;row++){
-						TreeItem item = tree1.getItem(row);   //row1, row2
-						bw.write(item.getText());   //row1, row2
-						bw.newLine();
-						int subCount = item.getItemCount(); //2  to check if current row has sub rows
-
-						if(subCount >= 1){	  
-							for(int subRow = 0; subRow< subCount; subRow++){	
-
-								TreeItem subItem = item.getItem(subRow); //1sub1row1, 1sub1row2, 2sub1row1
-								bw.write(" ");
-								bw.write(subItem.getText(0));
-								bw.newLine();
-								int subsubRowCount= subItem.getItemCount();  //2
-								if(subsubRowCount >= 1){
-
-									for(int subsubRow = 0; subsubRow< subsubRowCount; subsubRow++){	
-										TreeItem subsubItem = subItem.getItem(subsubRow);
-										bw.write("  ");
-										bw.write(subsubItem.getText(0));
-										bw.newLine();
-									}
-								}
-							}
-						}
-					}
-					bw.close();
-					fw.close();
-					System.out.printf("Done");
-					MessageDialog.openConfirm(shell, "Save as Text File", "Data Exported");	
-				}catch(Exception ex){
-					ex.printStackTrace();
-				}				
-
+				saveTree(tree1, mntmSave_1.getParent().getShell());
 			}
 		});
 		mntmSave_1.setText("Save as...");
@@ -139,60 +85,7 @@ public class ViewResult extends ViewPart {
 		mntmSave_2.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				try{
-					FileDialog fd = new FileDialog(mntmSave_2.getParent().getShell(), SWT.SAVE);
-					fd.setText("Save");
-					fd.setFilterPath(System.getProperty("user.dir"));
-					String[] filterExt = { "*.txt", "*.doc", ".rtf", "*.*" };
-					fd.setFilterExtensions(filterExt);
-					String selected = fd.open();
-					System.out.println(selected);
-					String content = "This is the content to write into file\n";
-					System.out.println(" ");
-					File file = new File(selected);
-					if(!file.exists()){
-						file.createNewFile();
-					}	
-					FileWriter fw = new FileWriter(file.getAbsolutePath());
-					BufferedWriter bw = new BufferedWriter(fw);
-					bw.newLine();
-					bw.write(content);
-					int rowCount = tree2.getItemCount(); //rowNum: 2
-
-					for(int row = 0; row <rowCount;row++){
-						TreeItem item = tree2.getItem(row);   //row1, row2
-						bw.write(item.getText());   //row1, row2
-						bw.newLine();
-						int subCount = item.getItemCount(); //2  to check if current row has sub rows
-
-						if(subCount >= 1){	  
-							for(int subRow = 0; subRow< subCount; subRow++){	
-
-								TreeItem subItem = item.getItem(subRow); //1sub1row1, 1sub1row2, 2sub1row1
-								bw.write(" ");
-								bw.write(subItem.getText(0));
-								bw.newLine();
-								int subsubRowCount= subItem.getItemCount();  //2
-								if(subsubRowCount >= 1){
-
-									for(int subsubRow = 0; subsubRow< subsubRowCount; subsubRow++){	
-										TreeItem subsubItem = subItem.getItem(subsubRow);
-										bw.write("  ");
-										bw.write(subsubItem.getText(0));
-										bw.newLine();
-									}
-								}
-							}
-						}
-					}
-					bw.close();
-					fw.close();
-					System.out.printf("Done");
-					MessageDialog.openConfirm(shell, "Save as Text File", "Data Exported");	
-				}catch(Exception ex){
-					ex.printStackTrace();
-				}				
-
+				saveTree(tree2, mntmSave_2.getParent().getShell());				
 			}
 		});
 		mntmSave_2.setText("Save as...");
@@ -209,60 +102,7 @@ public class ViewResult extends ViewPart {
 		mntmSave_3.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				try{
-					FileDialog fd = new FileDialog(mntmSave_3.getParent().getShell(), SWT.SAVE);
-					fd.setText("Save");
-					fd.setFilterPath(System.getProperty("user.dir"));
-					String[] filterExt = { "*.txt", "*.doc", ".rtf", "*.*" };
-					fd.setFilterExtensions(filterExt);
-					String selected = fd.open();
-					System.out.println(selected);
-					String content = "This is the content to write into file\n";
-					System.out.println(" ");
-					File file = new File(selected);
-					if(!file.exists()){
-						file.createNewFile();
-					}	
-					FileWriter fw = new FileWriter(file.getAbsolutePath());
-					BufferedWriter bw = new BufferedWriter(fw);
-					bw.newLine();
-					bw.write(content);
-					int rowCount = tree3.getItemCount(); //rowNum: 2
-
-					for(int row = 0; row <rowCount;row++){
-						TreeItem item = tree3.getItem(row);   //row1, row2
-						bw.write(item.getText());   //row1, row2
-						bw.newLine();
-						int subCount = item.getItemCount(); //2  to check if current row has sub rows
-
-						if(subCount >= 1){	  
-							for(int subRow = 0; subRow< subCount; subRow++){	
-
-								TreeItem subItem = item.getItem(subRow); //1sub1row1, 1sub1row2, 2sub1row1
-								bw.write(" ");
-								bw.write(subItem.getText(0));
-								bw.newLine();
-								int subsubRowCount= subItem.getItemCount();  //2
-								if(subsubRowCount >= 1){
-
-									for(int subsubRow = 0; subsubRow< subsubRowCount; subsubRow++){	
-										TreeItem subsubItem = subItem.getItem(subsubRow);
-										bw.write("  ");
-										bw.write(subsubItem.getText(0));
-										bw.newLine();
-									}
-								}
-							}
-						}
-					}
-					bw.close();
-					fw.close();
-					System.out.printf("Done");
-					MessageDialog.openConfirm(shell, "Save as Text File", "Data Exported");	
-				}catch(Exception ex){
-					ex.printStackTrace();
-				}				
-
+				saveTree(tree3, mntmSave_3.getParent().getShell());				
 			}
 		});
 		mntmSave_3.setText("Save as...");
@@ -283,7 +123,7 @@ public class ViewResult extends ViewPart {
 
 	/**
 	 * this method used in ViewOpenMenu class, and call UTMDB database to get the 
-	 * data into the output view, which includes Class info and Attrubute info as 
+	 * data into the output view, which includes Class info and Attribute info as 
 	 * well as Method info.
 	 * 
 	 */
@@ -572,7 +412,63 @@ public class ViewResult extends ViewPart {
 
 		db.Close();
 
-	}	
+	}
+	
+	private void saveTree(Tree tree, Shell shell){
+		try{
+			FileDialog fd = new FileDialog(shell, SWT.SAVE);
+			fd.setText("Save");
+			fd.setFilterPath(System.getProperty("user.dir"));
+			String[] filterExt = { "*.txt", "*.doc", ".rtf", "*.*" };
+			fd.setFilterExtensions(filterExt);
+			String selected = fd.open();
+			System.out.println(selected);
+			String content = "This is the content to write into file\n";
+			System.out.println(" ");
+			File file = new File(selected);
+			if(!file.exists()){
+				file.createNewFile();
+			}	
+			FileWriter fw = new FileWriter(file.getAbsolutePath());
+			BufferedWriter bw = new BufferedWriter(fw);
+			bw.newLine();
+			bw.write(content);
+			int rowCount = tree.getItemCount(); //rowNum: 2
+
+			for(int row = 0; row <rowCount;row++){
+				TreeItem item = tree.getItem(row);   //row1, row2
+				bw.write(item.getText());   //row1, row2
+				bw.newLine();
+				int subCount = item.getItemCount(); //2  to check if current row has sub rows
+
+				if(subCount >= 1){	  
+					for(int subRow = 0; subRow< subCount; subRow++){	
+
+						TreeItem subItem = item.getItem(subRow); //1sub1row1, 1sub1row2, 2sub1row1
+						bw.write(" ");
+						bw.write(subItem.getText(0));
+						bw.newLine();
+						int subsubRowCount= subItem.getItemCount();  //2
+						if(subsubRowCount >= 1){
+
+							for(int subsubRow = 0; subsubRow< subsubRowCount; subsubRow++){	
+								TreeItem subsubItem = subItem.getItem(subsubRow);
+								bw.write("  ");
+								bw.write(subsubItem.getText(0));
+								bw.newLine();
+							}
+						}
+					}
+				}
+			}
+			bw.close();
+			fw.close();
+			System.out.printf("Done");
+			MessageDialog.openConfirm(shell, "Save as Text File", "Data Exported");	
+		}catch(Exception ex){
+			ex.printStackTrace();
+		}
+	}
 
 	/**
 	 * Passing the focus request to the viewer's control.

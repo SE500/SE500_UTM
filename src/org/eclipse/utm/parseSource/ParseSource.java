@@ -1,11 +1,8 @@
 package org.eclipse.utm.parseSource;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.FilenameFilter;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.regex.Matcher;
@@ -14,13 +11,13 @@ import javax.swing.JFileChooser;
 import javax.swing.UIManager;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
-import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.utm.UTMActivator;
 import org.eclipse.utm.compare.UTMDB;
@@ -107,19 +104,29 @@ public class ParseSource extends Job {
 		UTMActivator.log("\nPreparing to parse UML Generated Source Code from: "+ umlName +" within: " + source + "\n");
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.core.runtime.jobs.Job#belongsTo(java.lang.Object)
+	 */
+	@Override
+	public boolean belongsTo(Object family) {
+		return family.equals(UTMActivator.UTM_JOB_FAMILY);
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.core.runtime.jobs.Job#run(java.lang.Object)
+	 */
 	@Override
 	protected IStatus run(IProgressMonitor monitor) {
-		monitor.beginTask("Source Code Parsing begins", 1);
+		SubMonitor progress = SubMonitor.convert(monitor,"Source Code Parsing begins", 100);
 		boolean success = false;
 		IStatus status = null;
 		try {
-			if (monitor.isCanceled())
-				return Status.CANCEL_STATUS;
 			if(this.umlSource != null) {
-				ResourcesPlugin.getWorkspace().getRoot().refreshLocal(IResource.DEPTH_INFINITE, monitor);
+				ResourcesPlugin.getWorkspace().getRoot().refreshLocal(IResource.DEPTH_INFINITE, progress.split(50));
 				this.sourceCode = new File(this.umlSource);
 				UTMActivator.log("New File created from: " + this.umlSource);
 			}
+			progress.setWorkRemaining(50);			
 			if(this.sourceCode.exists()){
 				success = processDirectoryFiles(this.sourceCode);
 				this.db.Commit();
@@ -130,6 +137,7 @@ public class ParseSource extends Job {
 							"Source Code Parsing failed for: "+ super.getName());
 					UTMActivator.getDefault().getLog().log(status);
 				}
+				progress.worked(50);
 			} else if(this.umlName != null){
 				schedule(5000);
 				status = new Status(IStatus.WARNING, UTMActivator.PLUGIN_ID,
@@ -157,13 +165,19 @@ public class ParseSource extends Job {
 					"\nFailed when refreshing the resourse hierarchy.");
 			UTMActivator.getDefault().getLog().log(status);
 			e.printStackTrace();
-		} finally {
-			monitor.done();
 		}
 		return status;
 
 	}	
-
+	
+	/**
+	 * A launcher for the ParseSource Job
+	 * @param monitor
+	 * 		The progress monitor for the job
+	 * @return
+	 * 		True if the job runs successfully
+	 * 		False if there is an internal error
+	 */
 	public boolean launch(IProgressMonitor monitor) {
 		if(this.run(monitor) == Status.OK_STATUS)
 			return true;
@@ -310,7 +324,7 @@ public class ParseSource extends Job {
 
 	}
 
-	
+
 	/**
 	 * This method finds the class declaration  
 	 * @param line
@@ -345,8 +359,6 @@ public class ParseSource extends Job {
 		for(int i=0; i < line.length; i++){
 			currentLn = line[i];
 			lineNumber++;
-
-
 
 			if (currentLn.trim().contains("class") 
 					|| currentLn.trim().contains("interface")
@@ -674,7 +686,7 @@ public class ParseSource extends Job {
 						methodReturnType = currentLn.substring(0,currentLn.indexOf(" ")); 
 						currentLn = currentLn.replaceFirst(currentLn.substring(0,currentLn.indexOf(" ")), "");
 					}
-					
+
 					methodParameter = currentLn.substring(currentLn.indexOf("("), currentLn.indexOf(")") + 1 );
 					methodName = currentLn.substring(0,currentLn.indexOf("("));
 
@@ -694,7 +706,7 @@ public class ParseSource extends Job {
 		}
 		return true;
 	}
-	
+
 
 	/**
 	 * This method removes all the class's methods declaration within the file
@@ -703,7 +715,6 @@ public class ParseSource extends Job {
 	 * @return
 	 * 		returns lines
 	 */
-
 	public String[] removeClassMethodsDeclaration(String[] line )
 	{
 		String methodRgEx="((public\\s|private\\s|final\\s)?(static\\s)?([a-zA-Z0-9]+)+\\s+([a-zA-Z0-9_]+)+\\s?\\((.+)?\\)\\s?)";
@@ -754,7 +765,7 @@ public class ParseSource extends Job {
 		String [] code = javaCode.toArray(new String[javaCode.size()]);
 		return code;
 	}
-	
+
 	/**
 	 * This method removes the class or the interface declaration within the file
 	 * @param line
@@ -792,8 +803,7 @@ public class ParseSource extends Job {
 	 * @return
 	 * 		returns body
 	 */
-	
-		private String[] methodCleaner (String[] lines)
+	private String[] methodCleaner (String[] lines)
 	{
 		String newLine = "";
 		char currentChar;

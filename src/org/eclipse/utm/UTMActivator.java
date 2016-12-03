@@ -3,6 +3,8 @@ package org.eclipse.utm;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.IJobManager;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.eclipse.utm.UML2JavaMessages;
@@ -18,6 +20,9 @@ public class UTMActivator extends AbstractUIPlugin {
 
 	// The shared instance
 	private static UTMActivator plugin;
+	
+	// The Job Family Constant
+	public static final String UTM_JOB_FAMILY = "org.eclipse.utm.jobfamily";
 	
 	/**
 	 * The constructor
@@ -41,6 +46,9 @@ public class UTMActivator extends AbstractUIPlugin {
 	public void stop(BundleContext context) throws Exception {
 		plugin = null;
 		super.stop(context);
+		IJobManager jobMan = Job.getJobManager();
+		jobMan.cancel(UTM_JOB_FAMILY);
+		jobMan.join(UTM_JOB_FAMILY, null);
 	}
 
 	/**
