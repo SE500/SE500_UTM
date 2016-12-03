@@ -11,6 +11,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IWorkbenchPage;
@@ -45,7 +46,6 @@ public class ViewOpenMenu extends ViewPart {
 	private Group grpOutput;
 	private File umlFile = null, 
 			javaFile = null;
-	private UTMDB db = new UTMDB();
 	private ParseUML parseUMLJob;
 	private ParseSource parseSourceJob;
 	Composite parent;
@@ -121,15 +121,6 @@ public class ViewOpenMenu extends ViewPart {
 							"Please Select an UML File or Java Source Code Files!");
 				}
 				else {
-					if(firstRun){
-						firstRun = false;
-					} else {
-						if(db.IsOpen()) {db.ReInitDatabase();}
-						else {
-							db.Open();
-							db.ReInitDatabase();
-						}
-					}
 					computeTraceability();
 				}
 			}
@@ -159,15 +150,19 @@ public class ViewOpenMenu extends ViewPart {
 		progressService = (IProgressService) getSite().getService(IProgressService.class);
 
 		try {
+//			UTMDB db = new UTMDB();
+//			db.ReInitDatabase();
+//			db.Close();
+//			db = null;
 			UTMProgressGroupMonitor.beginTask("Starting", 100);
 			parseSourceJob = new ParseSource(javaFile);
 			parseSourceJob.setProgressGroup(UTMProgressGroupMonitor, 33);
-			progressService.showInDialog(null, parseSourceJob);
+			progressService.showInDialog(new Shell(), parseSourceJob);
 			parseSourceJob.schedule();
 			parseSourceJob.join();
 			parseUMLJob = new ParseUML(umlFile);
 			parseUMLJob.setProgressGroup(UTMProgressGroupMonitor, 67);
-			progressService.showInDialog(null, parseUMLJob);
+			progressService.showInDialog(new Shell(), parseUMLJob);
 			parseUMLJob.schedule();
 			parseUMLJob.join();
 		} catch (InterruptedException e) {
