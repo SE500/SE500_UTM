@@ -47,7 +47,7 @@ public final class UTMDB {
 		}
 		catch(Exception e)
 		{
-			System.out.println( e.getClass().getName() + ": " + e.getMessage() );
+			System.err.println( e.getClass().getName() + ": " + e.getMessage() );
 			return 0;
 		}
 	}
@@ -128,7 +128,7 @@ public final class UTMDB {
 		}
 		catch(Exception e)
 		{
-			System.out.println( e.getClass().getName() + ": " + e.getMessage() );
+			System.err.println( e.getClass().getName() + ": " + e.getMessage() );
 			return 0;
 		}
 	}
@@ -168,7 +168,7 @@ public final class UTMDB {
 		}
 		catch(Exception e)
 		{
-			System.out.println( e.getClass().getName() + ": " + e.getMessage() );
+			System.err.println( e.getClass().getName() + ": " + e.getMessage() );
 			return 0;
 		}
 	}
@@ -191,7 +191,7 @@ public final class UTMDB {
 		}
 		catch(Exception e)
 		{
-			System.out.println( e.getClass().getName() + ": " + e.getMessage() );
+			System.err.println( e.getClass().getName() + ": " + e.getMessage() );
 			return -1;
 		}
 		return count;
@@ -215,7 +215,7 @@ public final class UTMDB {
 		}
 		catch(Exception e)
 		{
-			System.out.println( e.getClass().getName() + ": " + e.getMessage() );
+			System.err.println( e.getClass().getName() + ": " + e.getMessage() );
 			return -1;
 		}
 		return count;
@@ -239,7 +239,7 @@ public final class UTMDB {
 		}
 		catch(Exception e)
 		{
-			System.out.println( e.getClass().getName() + ": " + e.getMessage() );
+			System.err.println( e.getClass().getName() + ": " + e.getMessage() );
 			return -1;
 		}
 		return count;
@@ -263,7 +263,7 @@ public final class UTMDB {
 		}
 		catch(Exception e)
 		{
-			System.out.println( e.getClass().getName() + ": " + e.getMessage() );
+			System.err.println( e.getClass().getName() + ": " + e.getMessage() );
 			return -1;
 		}
 		
@@ -289,7 +289,7 @@ public final class UTMDB {
 		}
 		catch(Exception e)
 		{
-			System.out.println( e.getClass().getName() + ": " + e.getMessage() );
+			System.err.println( e.getClass().getName() + ": " + e.getMessage() );
 			return -1;
 		}
 		return count;
@@ -314,7 +314,7 @@ public final class UTMDB {
 		}
 		catch(Exception e)
 		{
-			System.out.println( e.getClass().getName() + ": " + e.getMessage() );
+			System.err.println( e.getClass().getName() + ": " + e.getMessage() );
 			return -1;
 		}
 		return count;
@@ -339,7 +339,7 @@ public final class UTMDB {
 		}
 		catch(Exception e)
 		{
-			System.out.println( e.getClass().getName() + ": " + e.getMessage() );
+			System.err.println( e.getClass().getName() + ": " + e.getMessage() );
 			return -1;
 		}
 		return count;
@@ -364,7 +364,7 @@ public final class UTMDB {
 		}
 		catch(Exception e)
 		{
-			System.out.println( e.getClass().getName() + ": " + e.getMessage() );
+			System.err.println( e.getClass().getName() + ": " + e.getMessage() );
 			return -1;
 		}
 		return count;
@@ -399,7 +399,7 @@ public final class UTMDB {
 		}
 		catch(Exception e)
 		{
-			System.out.println( e.getClass().getName() + ": " + e.getMessage() );
+			System.err.println( e.getClass().getName() + ": " + e.getMessage() );
 			return null;
 		}
 		
@@ -434,7 +434,7 @@ public final class UTMDB {
 		}
 		catch(Exception e)
 		{
-			System.out.println( e.getClass().getName() + ": " + e.getMessage() );
+			System.err.println( e.getClass().getName() + ": " + e.getMessage() );
 			return null;
 		}
 		return o;
@@ -468,7 +468,7 @@ public final class UTMDB {
 		}
 		catch(Exception e)
 		{
-			System.out.println( e.getClass().getName() + ": " + e.getMessage() );
+			System.err.println( e.getClass().getName() + ": " + e.getMessage() );
 			return null;
 		}
 		return o;
@@ -534,7 +534,7 @@ public final class UTMDB {
 		}
 		catch(Exception e)
 		{
-			System.out.println( e.getClass().getName() + ": " + e.getMessage() );
+			System.err.println( e.getClass().getName() + ": " + e.getMessage() );
 		}
 		
 		return list;
@@ -570,7 +570,7 @@ public final class UTMDB {
 		}
 		catch(Exception e)
 		{
-			System.out.println( e.getClass().getName() + ": " + e.getMessage() );
+			System.err.println( e.getClass().getName() + ": " + e.getMessage() );
 		}
 		
 		return list;
@@ -606,7 +606,7 @@ public final class UTMDB {
 		}
 		catch(Exception e)
 		{
-			System.out.println( e.getClass().getName() + ": " + e.getMessage() );
+			System.err.println( e.getClass().getName() + ": " + e.getMessage() );
 		}
 		
 		return list;
@@ -642,7 +642,7 @@ public final class UTMDB {
 		}
 		catch(Exception e)
 		{
-			System.out.println( e.getClass().getName() + ": " + e.getMessage() );
+			System.err.println( e.getClass().getName() + ": " + e.getMessage() );
 		}
 		
 		return list;
@@ -679,7 +679,7 @@ public final class UTMDB {
 		}
 		catch(Exception e)
 		{
-			System.out.println( e.getClass().getName() + ": " + e.getMessage() );
+			System.err.println( e.getClass().getName() + ": " + e.getMessage() );
 		}
 		
 		return list;
@@ -716,7 +716,7 @@ public final class UTMDB {
 		}
 		catch(Exception e)
 		{
-			System.out.println( e.getClass().getName() + ": " + e.getMessage() );
+			System.err.println( e.getClass().getName() + ": " + e.getMessage() );
 		}
 		
 		return list;
@@ -750,7 +750,7 @@ public final class UTMDB {
 		}
 		catch(Exception e)
 		{
-			System.out.println( e.getClass().getName() + ": " + e.getMessage() );
+			System.err.println( e.getClass().getName() + ": " + e.getMessage() );
 		}
 		
 		return list;
@@ -784,7 +784,7 @@ public final class UTMDB {
 		}
 		catch(Exception e)
 		{
-			System.out.println( e.getClass().getName() + ": " + e.getMessage() );
+			System.err.println( e.getClass().getName() + ": " + e.getMessage() );
 		}
 		
 		return list;
@@ -918,7 +918,7 @@ public final class UTMDB {
 		}
 		catch(Exception e)
 		{
-			System.out.println( e.getClass().getName() + ": " + e.getMessage() );
+			System.err.println( e.getClass().getName() + ": " + e.getMessage() );
 		}
 	}
 	
@@ -935,7 +935,7 @@ public final class UTMDB {
 		}
 		catch(Exception e)
 		{
-			System.out.println( e.getClass().getName() + ": " + e.getMessage() );
+			System.err.println( e.getClass().getName() + ": " + e.getMessage() );
 			return false;
 		}
 	}
@@ -979,7 +979,7 @@ public final class UTMDB {
 		}
 		catch(Exception e)
 		{
-			System.out.println( e.getClass().getName() + ": " + e.getMessage() );
+			System.err.println( e.getClass().getName() + ": " + e.getMessage() );
 		}
 	}
 	
@@ -1062,7 +1062,7 @@ public final class UTMDB {
 		}
 		catch(Exception e)
 		{
-			System.out.println( e.getClass().getName() + ": " + e.getMessage() );
+			System.err.println( e.getClass().getName() + ": " + e.getMessage() );
 		}
 	}
 	
@@ -1226,7 +1226,7 @@ public final class UTMDB {
 		}
 		catch(Exception e)
 		{
-			System.out.println( e.getClass().getName() + ": " + e.getMessage() );
+			System.err.println( e.getClass().getName() + ": " + e.getMessage() );
 		}
 	}
 	
@@ -1261,11 +1261,14 @@ public final class UTMDB {
 	{
 		try
 		{
-			this._c.close();
+			if(!this._c.isClosed())
+			{
+				this._c.close();
+			}
 		}
 		catch(Exception e)
 		{
-			System.out.println( e.getClass().getName() + ": " + e.getMessage() );
+			System.err.println( e.getClass().getName() + ": " + e.getMessage() );
 			return false;
 		}
 		return true;
@@ -1286,7 +1289,7 @@ public final class UTMDB {
 		}
 		catch(Exception e)
 		{
-			System.out.println( e.getClass().getName() + ": " + e.getMessage() );
+			System.err.println( e.getClass().getName() + ": " + e.getMessage() );
 		}
 	}
 }
