@@ -324,9 +324,9 @@ public class ParseUML extends Job{
 	        	this.config = this.createConfiguration();
 	        }
 		}
-		this.db = new UTMDB();
-		this.db.Open();
-		this.db.InitDatabase();
+//		this.db = new UTMDB();
+//		this.db.Open();
+//		this.db.InitDatabase();
 	}	
 	
 	
@@ -459,8 +459,8 @@ public class ParseUML extends Job{
 	public void cleanUp() {
 		removeDirectory(new File(this.tempGenFolder.getParent()));
 		//System.out.println("Temporary Generated Files Removed");
-		this.db.Commit();
-		this.db.Close();
+//		this.db.Commit();
+//		this.db.Close();
 	}
 	
 	/**
@@ -697,8 +697,9 @@ public class ParseUML extends Job{
                     .getLaunchConfigurations(configurationType);
             for (ILaunchConfiguration iLaunchConfiguration : launchConfigurations) {
                 String modelPath = iLaunchConfiguration.getAttribute("uml_model_path", "");
-
-                if (modelPath != null && modelPath.equals(computedModelPath)) {
+                String name = iLaunchConfiguration.getName();
+                
+                if (modelPath != null && modelPath.equals(computedModelPath) && name.contains("UTM")) {
                     return iLaunchConfiguration;
                 }
             }

@@ -175,16 +175,16 @@ public class ViewOpenMenu extends ViewPart {
 
 		try {
 			UTMProgressGroupMonitor.beginTask("Starting", 100);
-			parseUML();
-			parseUMLJob.setProgressGroup(UTMProgressGroupMonitor, 67);
-			progressService.showInDialog(parent.getShell(), parseUMLJob);
-			parseUMLJob.schedule();
-			parseUMLJob.join();
-			parseSource();
+			parseSourceJob = new ParseSource(javaFile);
 			parseSourceJob.setProgressGroup(UTMProgressGroupMonitor, 33);
 			progressService.showInDialog(parent.getShell(), parseSourceJob);
 			parseSourceJob.schedule();
 			parseSourceJob.join();
+			parseUMLJob = new ParseUML(umlFile);
+			parseUMLJob.setProgressGroup(UTMProgressGroupMonitor, 67);
+			progressService.showInDialog(parent.getShell(), parseUMLJob);
+			parseUMLJob.schedule();
+			parseUMLJob.join();
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -216,23 +216,7 @@ public class ViewOpenMenu extends ViewPart {
 			rv.showResults();
 		}	
 	}
-	/**
-	 * Method call parseScource method.
-	 */
 
-	private void parseSource() {	
-		parseSourceJob = new ParseSource(javaFile);
-		//		sourceParsed = parseSourceJob.launch(UTMProgressGroupMonitor);
-	}
-
-	/**
-	 * Method call parseUML method.
-	 */
-
-	private void parseUML() {
-		parseUMLJob = new ParseUML(umlFile);
-		//		umlParsed = parseUMLJob.launch(UTMProgressGroupMonitor);
-	}
 	/**
 	 * Parsing the focus request to the viewer's control.
 	 */

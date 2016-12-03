@@ -118,7 +118,7 @@ public class ParseSource extends Job {
 			if(this.umlSource != null) {
 				ResourcesPlugin.getWorkspace().getRoot().refreshLocal(IResource.DEPTH_INFINITE, monitor);
 				this.sourceCode = new File(this.umlSource);
-				UTMActivator.log("New File created from File");
+				UTMActivator.log("New File created from: " + this.umlSource);
 			}
 			if(this.sourceCode.exists()){
 				success = processDirectoryFiles(this.sourceCode);
@@ -498,7 +498,7 @@ public class ParseSource extends Job {
 				System.out.println("type : " + type);
 				System.out.println("identifier : " + identifier);																								
 				System.out.println("IsExtends : " + extend);
-				System.out.println("IsImplements : " + implement);
+				System.out.println("IsImplements : " + implement + "\n");
 				return true;
 			}
 		}
