@@ -31,6 +31,8 @@ public final class UTMDB {
 			stmntInsert.setBoolean(5, IsStatic);
 			stmntInsert.setBoolean(6, IsAbstract);
 			stmntInsert.setBoolean(7, IsAbstract && IsFinal ? false : IsFinal); // Cannot be abstract and final, if abstract, not final
+			
+			stmntInsert.executeUpdate();
 
 			ResultSet res = stmntInsert.getGeneratedKeys();
 			res.next();
@@ -111,6 +113,8 @@ public final class UTMDB {
 			stmntInsert.setString(4, AccessType);
 			stmntInsert.setString(5, Type);
 			stmntInsert.setString(6, Name);
+
+			stmntInsert.executeUpdate();
 			
 			ResultSet res = stmntInsert.getGeneratedKeys();
 			res.next();
@@ -148,6 +152,8 @@ public final class UTMDB {
 			stmntInsert.setString(5, Type);
 			stmntInsert.setString(6, Name);
 			stmntInsert.setString(7, Params);
+
+			stmntInsert.executeUpdate();
 			
 			ResultSet res = stmntInsert.getGeneratedKeys();
 			res.next();
