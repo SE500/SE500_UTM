@@ -38,7 +38,7 @@ public final class UTMDB {
 			res.next();
 
 			int ret = res.getInt(1);
-			System.out.println("newClass " + ret);
+			System.out.println((IsFromUML ? "UML" : "Source") + ":newClass:" + ClassName + ":id:" + ret);
 			
 			res.close();
 			stmntInsert.close();
@@ -74,7 +74,7 @@ public final class UTMDB {
 			res.next();
 
 			int ret = res.getInt(1);
-			System.out.println("newReference " + ret);
+			System.out.println((IsFromUML ? "UML" : "Source") + ":newReference:" + ClassName + ":" + RefClass + ":id:" + ret);
 			
 			res.close();
 			stmntInsert.close();
@@ -120,7 +120,7 @@ public final class UTMDB {
 			res.next();
 
 			int ret = res.getInt(1);
-			System.out.println("newAttribute " + ret);
+			System.out.println((IsFromUML ? "UML" : "Source") + ":newAttribute:" + Name + ":id:" + ret);
 			
 			stmntInsert.close();
 			
@@ -159,7 +159,7 @@ public final class UTMDB {
 			res.next();
 
 			int ret = res.getInt(1);
-			System.out.println("newMethod " + ret);
+			System.out.println((IsFromUML ? "UML" : "Source") + ":newMethod:" + Name + ":id:" + ret);
 			
 			res.close();
 			stmntInsert.close();
@@ -368,6 +368,140 @@ public final class UTMDB {
 			return -1;
 		}
 		return count;
+	}
+	
+	private UTMDBClass getClass(boolean fromUML, int ClassID)
+	{
+		UTMDBClass o = null;
+		
+		try
+		{
+			Statement select = this._c.createStatement();
+			ResultSet rs = select.executeQuery("Select * From " + (fromUML ? "UML" : "Code") + "Class Where Class_ID = " + ClassID);
+			rs.next();
+			
+			o = new UTMDBClass();
+			
+			o.ClassID = rs.getInt(1);
+			o.Filename = rs.getString(2);
+			o.LineNumber = rs.getInt(3);
+			o.ClassName = rs.getString(4);
+			o.AccessType = rs.getString(5);
+			o.IsStatic = rs.getBoolean(6);
+			o.IsAbstract = rs.getBoolean(7);
+			o.IsFinal = rs.getBoolean(8);
+			o.OtherID = rs.getInt(9);
+			o.NumMismatched = rs.getInt(10);
+			
+			rs.close();
+			
+			select.close();
+		}
+		catch(Exception e)
+		{
+			System.out.println( e.getClass().getName() + ": " + e.getMessage() );
+			return null;
+		}
+		
+		return o;
+	}
+	
+	private UTMDBAttribute getAttribute(boolean fromUML, int AttributeID)
+	{
+		UTMDBAttribute o = null;
+		try
+		{
+			Statement select = this._c.createStatement();
+			ResultSet rs = select.executeQuery("Select * From " + (fromUML ? "UML" : "Code") + "Attribute Where Attribute_ID = " + AttributeID);
+			rs.next();
+			
+			o = new UTMDBAttribute();
+			
+			o.AttributeID = rs.getInt(1);
+			o.ClassID = rs.getInt(2);
+			o.Filename = rs.getString(3);
+			o.LineNumber = rs.getInt(4);
+			o.ClassName = rs.getString(5);
+			o.AccessType = rs.getString(6);
+			o.Name = rs.getString(7);
+			o.Type = rs.getString(8);
+			o.OtherID = rs.getInt(9);
+			o.NumMismatched = rs.getInt(10);
+			
+			rs.close();
+			
+			select.close();
+		}
+		catch(Exception e)
+		{
+			System.out.println( e.getClass().getName() + ": " + e.getMessage() );
+			return null;
+		}
+		return o;
+	}
+	
+	private UTMDBMethod getMethod(boolean fromUML, int MethodID)
+	{
+		UTMDBMethod o = null;
+		try
+		{
+			Statement select = this._c.createStatement();
+			ResultSet rs = select.executeQuery("Select * From " + (fromUML ? "UML" : "Code") + "Method Where Method_ID = " + MethodID);
+			rs.next();
+			
+			o = new UTMDBMethod();
+			
+			o.MethodID = rs.getInt(1);
+			o.ClassID = rs.getInt(2);
+			o.Filename = rs.getString(3);
+			o.LineNumber = rs.getInt(4);
+			o.ClassName = rs.getString(5);
+			o.AccessType = rs.getString(6);
+			o.Type = rs.getString(7);
+			o.Name = rs.getString(8);
+			o.OtherID = rs.getInt(9);
+			o.NumMismatched = rs.getInt(10);
+			
+			rs.close();
+			
+			select.close();
+		}
+		catch(Exception e)
+		{
+			System.out.println( e.getClass().getName() + ": " + e.getMessage() );
+			return null;
+		}
+		return o;
+	}
+	
+	public UTMDBClass GetSourceClass(int ClassID)
+	{
+		return this.getClass(false, ClassID);
+	}
+	
+	public UTMDBClass GetUMLClass(int ClassID)
+	{
+		return this.getClass(true, ClassID);
+	}
+	
+	public UTMDBAttribute GetSourceAttribute(int AttributeID)
+	{
+		return this.getAttribute(false, AttributeID);
+	}
+	
+	public UTMDBAttribute GetUMLAttribute(int AttributeID)
+	{
+		return this.getAttribute(false, AttributeID);
+	}
+	
+	public UTMDBMethod GetSourceMethod(int MethodID)
+	{
+		return this.getMethod(false, MethodID);
+	}
+	
+	public UTMDBMethod GetUMLMethod(int MethodID)
+	{
+		return this.getMethod(true, MethodID);
 	}
 	
 	public ArrayList<UTMDBClass> GetSourceClassList()
