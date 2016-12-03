@@ -164,7 +164,6 @@ public class ViewResult extends ViewPart {
 				String abstractType = "";
 				String finalType = "";
 				String staticType = "";
-				System.out.print(utmclass);
 					
 				if(utmclass.IsAbstract)
 					abstractType = "abstract ";
@@ -276,7 +275,7 @@ public class ViewResult extends ViewPart {
 				String abstractType = "";
 				String finalType = "";
 				String staticType = "";
-				System.out.print(utmclass);
+				
 				if(utmclass.IsAbstract)
 					abstractType = "abstract ";
 				if(utmclass.IsStatic)
