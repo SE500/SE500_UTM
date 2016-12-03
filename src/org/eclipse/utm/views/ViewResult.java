@@ -335,13 +335,13 @@ public class ViewResult extends ViewPart {
 
 				String classNodeText1 = 
 						utmclass.LineNumber + ": " 
-								+ utmclass.ClassName + " "
 								+ utmclass.AccessType + " " 
 								+ staticType
 								+ abstractType
 								+ finalType
-								+ utmclass.NumMismatched 
-								+ "(NumMismatched)";
+								+ utmclass.ClassName + " "
+								+ " NumMismatched: "
+								+ utmclass.NumMismatched;
 				
 				
 				// Create Class Node
@@ -362,27 +362,27 @@ public class ViewResult extends ViewPart {
 					// Create Attribute Node && Add Attribute Node to Class Node
 					TreeItem subItemAttr1 = new TreeItem(item1, SWT.NONE);
 					subItemAttr1.setText(new String[] {NodeText1});
-					item1.setExpanded(true);
+					item1.setExpanded(false);
 
 					// Create Filename Node && Add Filename Node to Attribute Node
 					TreeItem subsubItemAttrFileName1 = new TreeItem(subItemAttr1, SWT.NONE);
 					subsubItemAttrFileName1.setText("File Name: " + utmattr.Filename);
-					subItemAttr1.setExpanded(true);
+					subItemAttr1.setExpanded(false);
 
 					//Create LineNum Node && Add LineNum Node to Attribute Node
 					TreeItem subsubItemAttrID1 = new TreeItem(subItemAttr1, SWT.NONE);
 					subsubItemAttrID1.setText("AttributeID: " + String.valueOf(utmattr.AttributeID));
-					subItemAttr1.setExpanded(true);
+					subItemAttr1.setExpanded(false);
 
 					//Create ClassID Node && Add ClassID Node to Attribute Node
 					TreeItem subsubItemAttrClassID1 = new TreeItem(subItemAttr1, SWT.NONE);
 					subsubItemAttrClassID1.setText("Class Name: " + String.valueOf(utmattr.ClassName));
-					subItemAttr1.setExpanded(true);
+					subItemAttr1.setExpanded(false);
 
 					//Create NumMismatched Node && Add NumMismatched Node to Attribute Node
 					TreeItem subsubItemAttrNumMismatched1 = new TreeItem(subItemAttr1, SWT.NONE);
 					subsubItemAttrNumMismatched1.setText("Number MisMatched: " + String.valueOf(utmattr.NumMismatched));
-					subItemAttr1.setExpanded(true);
+					subItemAttr1.setExpanded(false);
 				}
 
 				ArrayList<UTMDBMethod> methodList1 = new ArrayList<UTMDBMethod>();
@@ -399,32 +399,32 @@ public class ViewResult extends ViewPart {
 									+ utmmeth.Type;
 
 					subItemMethod1.setText(MethodNodeText1);
-					item1.setExpanded(true);
+					item1.setExpanded(false);
 
 					// Create Filename Node && Add Filename Node to Method Node
 					TreeItem subsubItemMethFileName1 = new TreeItem(subItemMethod1, SWT.NONE);
 					subsubItemMethFileName1.setText("File Name: "+ utmmeth.Filename);
-					subItemMethod1.setExpanded(true);
+					subItemMethod1.setExpanded(false);
 
 					//Create LineNum Node && Add LineNum Node to Method Node
 					TreeItem subsubItemMethID1 = new TreeItem(subItemMethod1, SWT.NONE);
 					subsubItemMethID1.setText("MethodID: " + String.valueOf(utmmeth.MethodID));
-					subItemMethod1.setExpanded(true);
+					subItemMethod1.setExpanded(false);
 
 					//Create ClassID Node && Add ClassID Node to Method Node
 					TreeItem subsubItemMethClassID1 = new TreeItem(subItemMethod1, SWT.NONE);
 					subsubItemMethClassID1.setText("ClassID: " + String.valueOf(utmmeth.ClassID));
-					subItemMethod1.setExpanded(true);
+					subItemMethod1.setExpanded(false);
 
 					//Create Parameters Node && Add Parameters Node to Method Node
 					TreeItem subsubItemMethPara1 = new TreeItem(subItemMethod1, SWT.NONE);
 					subsubItemMethPara1.setText("Parameters: " + utmmeth.Parameters);
-					subItemMethod1.setExpanded(true);		
+					subItemMethod1.setExpanded(false);		
 
 					//Create NumMismatched Node && Add NumMismatched Node to Method Node
 					TreeItem subsubItemAttrNumMismatched1 = new TreeItem(subItemMethod1, SWT.NONE);
 					subsubItemAttrNumMismatched1.setText("Number MisMatched: " + String.valueOf(utmmeth.NumMismatched));
-					subItemMethod1.setExpanded(true);
+					subItemMethod1.setExpanded(false);
 				}
 			}
 
@@ -445,14 +445,13 @@ public class ViewResult extends ViewPart {
 					finalType = "final ";
 
 				String classNodeText2 = 
-						utmclass.LineNumber + ": " 
-								+ utmclass.AccessType + " " 
+								 utmclass.AccessType + " " 
 								+ staticType
 								+ abstractType
 								+ finalType
 								+ utmclass.ClassName + " "
-								+ utmclass.NumMismatched
-								+ "(NumMismatched)";
+								+ " NumMismatched: "
+								+ utmclass.NumMismatched;
 
 				// Create Class Node
 				TreeItem item2 = new TreeItem(tree2, SWT.NONE);
@@ -472,27 +471,27 @@ public class ViewResult extends ViewPart {
 					// Create Attribute Node && Add Attribute Node to Class Node
 					TreeItem subItemAttr2 = new TreeItem(item2, SWT.NONE);
 					subItemAttr2.setText(new String[] {NodeText2});
-					item2.setExpanded(true);
+					item2.setExpanded(false);
 
 					// Create Filename Node && Add Filename Node to Attribute Node
 					TreeItem subsubItemAttrFileName2 = new TreeItem(subItemAttr2, SWT.NONE);
 					subsubItemAttrFileName2.setText("File Name: " + utmattr.Filename);
-					subItemAttr2.setExpanded(true);
+					subItemAttr2.setExpanded(false);
 
 					//Create LineNum Node && Add LineNum Node to Attribute Node
 					TreeItem subsubItemAttrID2 = new TreeItem(subItemAttr2, SWT.NONE);
 					subsubItemAttrID2.setText("AttributeID: " + String.valueOf(utmattr.AttributeID));
-					subItemAttr2.setExpanded(true);
+					subItemAttr2.setExpanded(false);
 
 					//Create ClassID Node && Add ClassID Node to Attribute Node
 					TreeItem subsubItemAttrClassID2 = new TreeItem(subItemAttr2, SWT.NONE);
 					subsubItemAttrClassID2.setText("ClassID: " + String.valueOf(utmattr.ClassID));
-					subItemAttr2.setExpanded(true);
+					subItemAttr2.setExpanded(false);
 
 					//Create NumMismatched Node && Add NumMismatched Node to Attribute Node
 					TreeItem subsubItemAttrNumMismatched2 = new TreeItem(subItemAttr2, SWT.NONE);
 					subsubItemAttrNumMismatched2.setText("Number MisMatched: " + String.valueOf(utmattr.NumMismatched));
-					subItemAttr2.setExpanded(true);
+					subItemAttr2.setExpanded(false);
 				}
 
 				ArrayList<UTMDBMethod> methodList2 = new ArrayList<UTMDBMethod>();
@@ -509,32 +508,32 @@ public class ViewResult extends ViewPart {
 									+ utmmeth.Type;
 
 					subItemMethod2.setText(MethodNodeText2);
-					item2.setExpanded(true);
+					item2.setExpanded(false);
 
 					// Create Filename Node && Add Filename Node to Attribute Node
 					TreeItem subsubItemMethFileName2 = new TreeItem(subItemMethod2, SWT.NONE);
 					subsubItemMethFileName2.setText("File Name: "+ utmmeth.Filename);
-					subItemMethod2.setExpanded(true);
+					subItemMethod2.setExpanded(false);
 
 					//Create LineNum Node && Add LineNum Node to Attribute Node
 					TreeItem subsubItemMethID2 = new TreeItem(subItemMethod2, SWT.NONE);
 					subsubItemMethID2.setText("MethodID: " + String.valueOf(utmmeth.MethodID));
-					subItemMethod2.setExpanded(true);
+					subItemMethod2.setExpanded(false);
 
 					//Create ClassID Node && Add ClassID Node to Attribute Node
 					TreeItem subsubItemMethClassID2 = new TreeItem(subItemMethod2, SWT.NONE);
 					subsubItemMethClassID2.setText("ClassID: " + String.valueOf(utmmeth.ClassID));
-					subItemMethod2.setExpanded(true);
+					subItemMethod2.setExpanded(false);
 
 					//Create Parameters Node && Add Parameters Node to Attribute Node
 					TreeItem subsubItemMethPara2 = new TreeItem(subItemMethod2, SWT.NONE);
 					subsubItemMethPara2.setText("Parameters: " + utmmeth.Parameters);
-					subItemMethod2.setExpanded(true);		
+					subItemMethod2.setExpanded(false);		
 
 					//Create NumMismatched Node && Add NumMismatched Node to Method Node
 					TreeItem subsubItemAttrNumMismatched2 = new TreeItem(subItemMethod2, SWT.NONE);
 					subsubItemAttrNumMismatched2.setText("Number MisMatched: " + String.valueOf(utmmeth.NumMismatched));
-					subItemMethod2.setExpanded(true);
+					subItemMethod2.setExpanded(false);
 				}
 			}
 
