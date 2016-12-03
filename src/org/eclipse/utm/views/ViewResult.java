@@ -325,6 +325,7 @@ public class ViewResult extends ViewPart {
 				String finalType = "";
 				String staticType = "";
 				System.out.print(utmclass);
+					
 				if(utmclass.IsAbstract)
 					abstractType = "abstract ";
 				if(utmclass.IsStatic)
@@ -341,6 +342,7 @@ public class ViewResult extends ViewPart {
 								+ finalType
 								+ utmclass.NumMismatched 
 								+ "(NumMismatched)";
+				
 				
 				// Create Class Node
 				TreeItem item1 = new TreeItem(tree1, SWT.NONE);
@@ -539,34 +541,32 @@ public class ViewResult extends ViewPart {
 			//tree 3 compare results
 			
 			TreeItem item3_1 = new TreeItem(tree3,SWT.NONE);
-			item3_1.setText("UML Class Count");
-			TreeItem subitem3_1 = new TreeItem(item3_1,SWT.NONE);
-			subitem3_1.setText(String.valueOf(db.CountUMLClasses()));
+			item3_1.setText("Class Count");
+			TreeItem subitem3_1_1 = new TreeItem(item3_1,SWT.NONE);
+			subitem3_1_1.setText("UML Class Count: "+ String.valueOf(db.CountUMLClasses()));
+			TreeItem subitem3_1_2 = new TreeItem(item3_1,SWT.NONE);
+			subitem3_1_2.setText("Source Class Count: "+ String.valueOf(db.CountSourceClasses()));
 			
 			TreeItem item3_2 = new TreeItem(tree3,SWT.NONE);
-			item3_2.setText("Source Class Count");
-			TreeItem subitem3_2 = new TreeItem(item3_2,SWT.NONE);
-			subitem3_2.setText(String.valueOf(db.CountSourceClasses()));
+			item3_2.setText("Attribute Count");
+			TreeItem subitem3_2_1 = new TreeItem(item3_2,SWT.NONE);
+			subitem3_2_1.setText("UML Attribute Count: " + String.valueOf(db.CountUMLAttributes()));
+			TreeItem subitem3_2_2 = new TreeItem(item3_2,SWT.NONE);
+			subitem3_2_2.setText("Source Attribute Count: " + String.valueOf(db.CountSourceAttributes()));
 			
 			TreeItem item3_3 = new TreeItem(tree3,SWT.NONE);
-			item3_3.setText("UML Attribute Count");
-			TreeItem subitem3_3 = new TreeItem(item3_3,SWT.NONE);
-			subitem3_3.setText(String.valueOf(db.CountUMLAttributes()));
+			item3_3.setText("Method Count");
+			TreeItem subitem3_3_1 = new TreeItem(item3_3,SWT.NONE);
+			subitem3_3_1.setText("UML Method Count: "+ String.valueOf(db.CountUMLMethods()));
+			TreeItem subitem3_3_2 = new TreeItem(item3_3,SWT.NONE);
+			subitem3_3_2.setText("Source Method Count: "+ String.valueOf(db.CountSourceMethods()));
 			
-			TreeItem item3_4 = new TreeItem(tree3,SWT.NONE);
-			item3_4.setText("Source Attribute Count");
-			TreeItem subitem3_4 = new TreeItem(item3_4,SWT.NONE);
-			subitem3_4.setText(String.valueOf(db.CountSourceAttributes()));
+			// give result of total numMismatched of Class, Attribute, Method in UML and Source
+				
+			// give result of percentage of completion 
 			
-			TreeItem item3_5 = new TreeItem(tree3,SWT.NONE);
-			item3_5.setText("UML Method Count Count");
-			TreeItem subitem3_5 = new TreeItem(item3_5,SWT.NONE);
-			subitem3_5.setText(String.valueOf(db.CountUMLMethods()));
+			// give result of comparison of misMatched classes or attributes or methods.
 			
-			TreeItem item3_6 = new TreeItem(tree3,SWT.NONE);
-			item3_6.setText("Source Method Count");
-			TreeItem subitem3_6 = new TreeItem(item3_6,SWT.NONE);
-			subitem3_6.setText(String.valueOf(db.CountSourceMethods()));
 			
 
 		}
