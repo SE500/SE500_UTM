@@ -90,9 +90,15 @@ public class TestCompare {
 				
 				System.out.println("Source Classes");
 				// List All Source Elements
+				float totalSourceNumTotal = 0;
+				float totalSourceNumMismatched = 0;
+				
 				ArrayList<UTMDBClass> SourceClassList = db.GetSourceClassList();
 				for(UTMDBClass curClass : SourceClassList)
 				{
+					float numTotal = 0;
+					float numMismatched = 0;
+					
 					ArrayList<UTMDBReference> SourceClassReference = db.GetSourceReferencesList(curClass.ClassID);
 					ArrayList<UTMDBAttribute> SourceAttributeList = db.GetSourceAttributesList(curClass.ClassID);
 					ArrayList<UTMDBMethod> SourceMethodList = db.GetSourceMethodsList(curClass.ClassID);
@@ -100,7 +106,12 @@ public class TestCompare {
 					System.out.println(curClass.ClassName + (curClass.NumMismatched > 0 || curClass.OtherID < 1 ? "**" : ""));
 					for(UTMDBReference ref : SourceClassReference)
 					{
-						System.out.println("\t- " + ref.AccessType + " " + ref.ReferenceClassName);
+						numTotal++;
+						if(ref.OtherID <= 0)
+						{
+							numMismatched++;
+						}
+						System.out.println("\t- " + ref.AccessType + " " + ref.ReferenceClassName + (ref.OtherID <= 0 ? "*" : ""));
 					}
 					System.out.println("\tClassID: " + curClass.ClassID);
 					System.out.println("\tLocation: " + curClass.Filename + ":" + curClass.LineNumber);
@@ -113,34 +124,74 @@ public class TestCompare {
 					System.out.println("\tAttributes: ");
 					for(UTMDBAttribute attr : SourceAttributeList)
 					{
-						System.out.println("\t\t" + attr.AccessType + " " + attr.Type + " " + attr.Name + (attr.NumMismatched > 0 || attr.OtherID < 1 ? "**" : ""));
+						UTMDBAttribute otherAttr = db.GetUMLAttribute(attr.OtherID);
+						System.out.println(
+								"\t\t" + 
+								attr.AccessType + (otherAttr == null || otherAttr.AccessType != attr.AccessType ? "*" : "") + " " + 
+								attr.Type + (otherAttr == null || otherAttr.Type != attr.Type ? "*" : "") + " " + 
+								attr.Name + (attr.NumMismatched > 0 || attr.OtherID < 1 ? "**" : "")
+						);
 						System.out.println("\t\t\tAttributeID: " + attr.AttributeID);
 						System.out.println("\t\t\tClassID: " + attr.ClassID);
-						System.out.println("\t\t\tFilename: " + attr.Filename);
-						System.out.println("\t\t\tLineNumber: " + attr.LineNumber);
+						System.out.println("\t\t\tLocation: " + attr.Filename + ":" + attr.LineNumber);
 						System.out.println("\t\t\tClassName: " + attr.ClassName);
 						System.out.println("\t\t\tOtherID: " + attr.OtherID);
 						System.out.println("\t\t\tNumMismatched: " + attr.NumMismatched);
+						
+						numTotal++;
+						if(attr.NumMismatched > 0)
+						{
+							numMismatched++;
+						}
 					}
 					System.out.println("\tMethods: ");
 					for(UTMDBMethod method : SourceMethodList)
 					{
-						System.out.println("\t\t" + method.AccessType + " " + method.Type + " " + method.Name + "(" + method.Parameters + ")" + (method.NumMismatched > 0 || method.OtherID < 1 ? "**" : ""));
+						UTMDBMethod otherMethod = db.GetUMLMethod(method.OtherID);
+						System.out.println(
+								"\t\t" + 
+								method.AccessType + (otherMethod == null || otherMethod.AccessType != method.AccessType ? "*" : "") + " " + 
+								method.Type + (otherMethod == null || otherMethod.Type != method.Type ? "*" : "") + " " + 
+								method.Name + 
+								"(" + 
+										method.Parameters + 
+										(otherMethod != null || otherMethod.Parameters != method.Parameters ? "*" : "")  + 
+								")" + 
+								(method.NumMismatched > 0 || method.OtherID < 1 ? "**" : "")
+						);
 						System.out.println("\t\t\tMethodID: " + method.MethodID);
 						System.out.println("\t\t\tClassID: " + method.ClassID);
-						System.out.println("\t\t\tFilename: " + method.Filename);
-						System.out.println("\t\t\tLineNumber: " + method.LineNumber);
+						System.out.println("\t\t\tLocation: " + method.Filename + ":" + method.LineNumber);
 						System.out.println("\t\t\tClassName: " + method.ClassName);
 						System.out.println("\t\t\tOtherID: " + method.OtherID);
 						System.out.println("\t\t\tNumMismatched: " + method.NumMismatched);
+						
+						numTotal++;
+						if(method.NumMismatched > 0)
+						{
+							numMismatched++;
+						}
 					}
+					
+					System.out.println(curClass.ClassName + " " + Math.round(numMismatched) + " Mismatched of " + Math.round(numTotal) + " Elements (" + ((numTotal - numMismatched) / numTotal) * 100 + "% Matched)");
+					
+					totalSourceNumTotal += numTotal;
+					totalSourceNumMismatched += numMismatched;
 				}
+				
+				System.out.println("Source: " + Math.round(totalSourceNumMismatched) + " Mismatched of " + Math.round(totalSourceNumTotal) + " Elements (" + ((totalSourceNumTotal - totalSourceNumMismatched) / totalSourceNumTotal) * 100 + "% Matched)");
 				
 				System.out.println("UML Classes");
 				// List All UML Elements
+				float totalUMLNumTotal = 0;
+				float totalUMLNumMismatched = 0;
+				
 				ArrayList<UTMDBClass> UMLClassList = db.GetUMLClassList();
 				for(UTMDBClass curClass : UMLClassList)
 				{
+					float numTotal = 0;
+					float numMismatched = 0;
+					
 					ArrayList<UTMDBReference> UMLClassReference = db.GetUMLReferencesList(curClass.ClassID);
 					ArrayList<UTMDBAttribute> UMLAttributeList = db.GetUMLAttributesList(curClass.ClassID);
 					ArrayList<UTMDBMethod> UMLMethodList = db.GetUMLMethodsList(curClass.ClassID);
@@ -151,7 +202,7 @@ public class TestCompare {
 						System.out.println("\t- " + ref.AccessType + " " + ref.ReferenceClassName);
 					}
 					System.out.println("\tClassID: " + curClass.ClassID);
-					System.out.println("\tLocation: " + curClass.Filename + ":" + curClass.LineNumber);
+					System.out.println("\tLocation: " + curClass.Filename);
 					System.out.println("\tAccess: " + curClass.AccessType);
 					System.out.println("\tStatic: " + (curClass.IsStatic ? "true" : "false"));
 					System.out.println("\tAbstract: " + (curClass.IsAbstract ? "true" : "false"));
@@ -161,10 +212,17 @@ public class TestCompare {
 					System.out.println("\tAttributes: ");
 					for(UTMDBAttribute attr : UMLAttributeList)
 					{
-						System.out.println("\t\t" + attr.AccessType + " " + attr.Type + " " + attr.Name + (attr.NumMismatched > 0 || attr.OtherID < 1 ? "**" : ""));
+						UTMDBAttribute otherAttr = db.GetSourceAttribute(attr.OtherID);
+						System.out.println(
+								"\t\t" + 
+								attr.AccessType + (otherAttr == null || otherAttr.AccessType != attr.AccessType) + " " + 
+								attr.Type + (otherAttr == null || otherAttr.Type != attr.Type) + " " + 
+								attr.Name + 
+								(attr.NumMismatched > 0 || attr.OtherID < 1 ? "**" : "")
+						);
 						System.out.println("\t\t\tAttributeID: " + attr.AttributeID);
 						System.out.println("\t\t\tClassID: " + attr.ClassID);
-						System.out.println("\t\t\tFilename: " + attr.Filename);
+						System.out.println("\t\t\tLocation: " + attr.Filename);
 						System.out.println("\t\t\tClassName: " + attr.ClassName);
 						System.out.println("\t\t\tOtherID: " + attr.OtherID);
 						System.out.println("\t\t\tNumMismatched: " + attr.NumMismatched);
@@ -172,15 +230,40 @@ public class TestCompare {
 					System.out.println("\tMethods: ");
 					for(UTMDBMethod method : UMLMethodList)
 					{
-						System.out.println("\t\t" + method.AccessType + " " + method.Type + " " + method.Name + "(" + method.Parameters + ")" + (method.NumMismatched > 0 || method.OtherID < 1 ? "**" : ""));
+						UTMDBMethod otherMethod = db.GetSourceMethod(method.OtherID);
+						System.out.println(
+								"\t\t" + 
+								method.AccessType + (otherMethod.AccessType.compareTo(method.AccessType) != 0 ? "*" : "") + " " + 
+								method.Type + (otherMethod.Type.compareTo(method.Type) != 0 ? "*" : "") + " " + 
+								method.Name + 
+								"(" + 
+										method.Parameters + 
+										(otherMethod == null || otherMethod.Parameters.compareTo(method.Parameters) != 0 ? "*" : "")  + 
+								")" + 
+								(method.NumMismatched > 0 || method.OtherID < 1 ? "**" : "")
+						);
 						System.out.println("\t\t\tMethodID: " + method.MethodID);
 						System.out.println("\t\t\tClassID: " + method.ClassID);
-						System.out.println("\t\t\tFilename: " + method.Filename);
+						System.out.println("\t\t\tLocation: " + method.Filename);
 						System.out.println("\t\t\tClassName: " + method.ClassName);
 						System.out.println("\t\t\tOtherID: " + method.OtherID);
 						System.out.println("\t\t\tNumMismatched: " + method.NumMismatched);
+						
+						// Count Mismatches
+						numTotal++;
+						if(method.NumMismatched > 0)
+						{
+							numMismatched++;
+						}
 					}
+
+					System.out.println(curClass.ClassName + " " + Math.round(numMismatched) + " Mismatched of " + Math.round(numTotal) + " Elements (" + ((numTotal - numMismatched) / numTotal) * 100 + "% Matched)");
+					
+					totalUMLNumTotal += numTotal;
+					totalUMLNumMismatched += numMismatched;
 				}
+				
+				System.out.println("UML: " + Math.round(totalUMLNumMismatched) + " Mismatched of " + Math.round(totalUMLNumTotal) + " Elements (" + ((totalUMLNumTotal - totalUMLNumMismatched) / totalUMLNumTotal) * 100 + "% Matched)");
 				
 				db.Close();
 			}
