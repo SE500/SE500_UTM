@@ -2,10 +2,17 @@ package org.eclipse.utm;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.IJobManager;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.ui.console.ConsolePlugin;
+import org.eclipse.ui.console.IConsole;
+import org.eclipse.ui.console.IConsoleManager;
+import org.eclipse.ui.console.MessageConsole;
+import org.eclipse.ui.console.MessageConsoleStream;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.eclipse.utm.UML2JavaMessages;
 import org.osgi.framework.BundleContext;
@@ -15,15 +22,46 @@ import org.osgi.framework.BundleContext;
  */
 public class UTMActivator extends AbstractUIPlugin {
 
-	// The plug-in ID
+	/**
+	 * The plug-in ID
+	 */
 	public static final String PLUGIN_ID = "org.eclipse.utm"; //$NON-NLS-1$
 
-	// The shared instance
+	/**
+	 * The shared instance
+	 */
 	private static UTMActivator plugin;
-	
-	// The Job Family Constant
+
+	/**
+	 * The plug-in Job Family Constant
+	 */
 	public static final String UTM_JOB_FAMILY = "org.eclipse.utm.jobfamily";
 	
+	/** 
+	 *  The plug-in Console Name
+	 */
+	public static final String UTM_CONSOLE_NAME = "UML Trace Magic - Console";
+	
+	/**
+	 * The plug-in Console
+	 */
+	public static final MessageConsole utmConsole = findConsole(UTM_CONSOLE_NAME);
+	
+	/**
+	 * 	The Console Output Stream for the plug-in
+	 */
+	public static final MessageConsoleStream out = utmConsole.newMessageStream();
+	
+	/**
+	 * 	The debug option key for debug tracing within .options
+	 */
+	private static final String DEBUG_OPTION = PLUGIN_ID + "/debug";
+	
+	/**
+	 * 	The debug flag obtained from the .options file
+	 */
+	public static final String DEBUG = Platform.getDebugOption(DEBUG_OPTION); 
+
 	/**
 	 * The constructor
 	 */
@@ -70,7 +108,7 @@ public class UTMActivator extends AbstractUIPlugin {
 	public static ImageDescriptor getImageDescriptor(String path) {
 		return imageDescriptorFromPlugin(PLUGIN_ID, path);
 	}
-	
+
 	/**
 	 * Trace an Exception in the error log.
 	 * 
@@ -139,6 +177,32 @@ public class UTMActivator extends AbstractUIPlugin {
 	 *            the message to log.
 	 */
 	public static void log(String information) {
-		System.out.println(information);
+		if ("true".equalsIgnoreCase(DEBUG))		
+			System.out.println(information);
+		else {
+			Display.getDefault().syncExec(new Runnable() {
+				public void run() {
+					UTMActivator.out.println(information);
+				}
+			});
+		}
+	}
+	
+	/**
+	 * 
+	 * @param name
+	 * @return
+	 */
+	private static MessageConsole findConsole(String name) {
+		ConsolePlugin plugin = ConsolePlugin.getDefault();
+		IConsoleManager conMan = plugin.getConsoleManager();
+		IConsole[] existing = conMan.getConsoles();
+		for (int i = 0; i < existing.length; i++)
+			if (name.equals(existing[i].getName()))
+				return (MessageConsole) existing[i];
+		//no console found, so create a new one
+		MessageConsole myConsole = new MessageConsole(name, null);
+		conMan.addConsoles(new IConsole[]{myConsole});
+		return myConsole;
 	}
 }

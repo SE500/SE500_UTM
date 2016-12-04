@@ -43,15 +43,6 @@ public class ParseSource extends Job {
 	private String declaration ="";
 
 	/**
-	 * Empty Constructor
-	 * If used initialize must be called before launch
-	 */
-	public ParseSource() {
-		super("Parsing the Source Code");
-		setUser(true);
-	}
-
-	/**
 	 * Constructor for parsing the file or directory
 	 * @param source
 	 * 		The file or directory to be parsed
@@ -59,7 +50,8 @@ public class ParseSource extends Job {
 	public ParseSource(File source) {
 		super("Parsing the Source Code: "+ source.getName());
 		setUser(true);
-		initialize(source);
+		this.sourceCode = source;
+		UTMActivator.log("\nPreparing to parse Source Code within: " + source + "\n");
 	}
 
 	/**
@@ -71,36 +63,12 @@ public class ParseSource extends Job {
 	 */
 	public ParseSource(String source, String umlName) {
 		super("Parsing the UML generated Source Code: "+ umlName);
-		setSystem(true);
-		initialize(source, umlName);
-	}
-
-	/**
-	 * Initializes the parse source process
-	 * @param source
-	 * 		The file or directory to be parsed
-	 */
-	public void initialize(File source) {
-		this.sourceCode = source;
-		this.db = new UTMDB();
-		this.db.Open();
-		this.db.InitDatabase();
-		UTMActivator.log("\nPreparing to parse Source Code within: " + source + "\n");
-	}
-
-	/**
-	 * 
-	 * @param source
-	 * @param umlName
-	 */
-	private void initialize(String source, String umlName) {
+		setUser(true);
 		this.umlSource = source;
 		this.umlName = umlName;
 		this.isUml = true;
-		this.db = new UTMDB();
-		this.db.Open();
-		this.db.InitDatabase();
 		UTMActivator.log("\nPreparing to parse UML Generated Source Code from: "+ umlName +" within: " + source + "\n");
+
 	}
 
 	/** (non-Javadoc)
@@ -116,27 +84,30 @@ public class ParseSource extends Job {
 	 */
 	@Override
 	protected IStatus run(IProgressMonitor monitor) {
-		SubMonitor progress = SubMonitor.convert(monitor,"Source Code Parsing begins", 100);
+		SubMonitor progress = SubMonitor.convert(monitor,"Parsing Source Code", 100);
 		boolean success = false;
 		IStatus status = null;
+		this.db = new UTMDB();
+		this.db.Open();
 		try {
 			if(this.umlSource != null) {
-				ResourcesPlugin.getWorkspace().getRoot().refreshLocal(IResource.DEPTH_INFINITE, progress.split(50));
+				progress.subTask("Refresh the workspace");
+				ResourcesPlugin.getWorkspace().getRoot().refreshLocal(IResource.DEPTH_INFINITE, progress.split(25));
 				this.sourceCode = new File(this.umlSource);
 				UTMActivator.log("New File created from: " + this.umlSource);
-			}
-			progress.setWorkRemaining(50);			
+				this.db.InitDatabase();
+			} else {this.db.ReInitDatabase();}
+			progress.setWorkRemaining(75);			
 			if(this.sourceCode.exists()){
-				success = processDirectoryFiles(this.sourceCode);
+				progress.subTask("Process Subdirectories and Files");
+				success = processDirectoryFiles(this.sourceCode, progress.split(75));
 				this.db.Commit();
-				this.db.Close();
 				if(success) {status = Status.OK_STATUS;}
 				else {
 					status = new Status(IStatus.ERROR, UTMActivator.PLUGIN_ID,
 							"Source Code Parsing failed for: "+ super.getName());
 					UTMActivator.getDefault().getLog().log(status);
 				}
-				progress.worked(50);
 			} else if(this.umlName != null){
 				schedule(5000);
 				status = new Status(IStatus.WARNING, UTMActivator.PLUGIN_ID,
@@ -145,10 +116,12 @@ public class ParseSource extends Job {
 								+ "\nDoes this file exist? " + this.sourceCode.exists() 
 								+ "\nJob : " + super.getName());
 				UTMActivator.getDefault().getLog().log(status);
+				progress.worked(50);
 			} else {
 				status = new Status(IStatus.ERROR, UTMActivator.PLUGIN_ID,
 						"Source Code Parsing failed for: "+ super.getName());
 				UTMActivator.getDefault().getLog().log(status);
+				progress.worked(50);
 			}
 		} catch (NullPointerException e) {
 			schedule(5000);
@@ -161,10 +134,11 @@ public class ParseSource extends Job {
 		} catch (CoreException e) {
 			status = new Status(IStatus.ERROR, UTMActivator.PLUGIN_ID,
 					"Source Code Parsing failed for: "+ super.getName() +
-					"\nFailed when refreshing the resourse hierarchy.");
+					"\nFailed when refreshing the resource hierarchy.");
 			UTMActivator.getDefault().getLog().log(status);
 			e.printStackTrace();
 		}
+		this.db.Close();
 		return status;
 	}	
 
@@ -197,7 +171,7 @@ public class ParseSource extends Job {
 		fileChooser.setDialogTitle("Choose a Java File or a Directory containing Java Files");
 		fileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
 		fileChooser.setFileFilter(new FileNameExtensionFilter("Java File","java"));
-		fileChooser.setCurrentDirectory(new File(System.getProperty("user.dir")));
+		fileChooser.setCurrentDirectory(ResourcesPlugin.getWorkspace().getRoot().getLocation().toFile());
 		int result = fileChooser.showOpenDialog(null);
 		if(result == JFileChooser.APPROVE_OPTION) {
 			return fileChooser.getSelectedFile();
@@ -214,12 +188,13 @@ public class ParseSource extends Job {
 	 * 		Returns true on successfully parsing all files
 	 * 		Returns false on failure
 	 */
-	private boolean processDirectoryFiles(File directoryOrFile){
+	private boolean processDirectoryFiles(File directoryOrFile, IProgressMonitor monitor){
 		if(directoryOrFile == null||!directoryOrFile.exists()){
 			UTMActivator.log(directoryOrFile.getName() +
 					" : File or Directory not initialized or doesn't exit");
 			return false;
 		}
+		SubMonitor progress = SubMonitor.convert(monitor, "Processing : " + directoryOrFile.getName(), 100);
 		// create new filename filter
 		FilenameFilter fileNameFilter = new FilenameFilter() {
 			@Override
@@ -251,17 +226,31 @@ public class ParseSource extends Job {
 				return false;
 			}
 		}
+		
+		
 		// Recursively loop through directories
 		File[] files = directoryOrFile.listFiles();
+		int remaining = files.length;
+		// Create a new progress monitor for the loop.
+        SubMonitor loopMonitor = progress.split(70).setWorkRemaining(remaining);
 		for(File file : files){
+			loopMonitor.setWorkRemaining(remaining--);
+			// Create a progress monitor for each loop iteration.
+            SubMonitor iterationMonitor = loopMonitor.split(1);
 			if(file.isDirectory()) {
-				if(!processDirectoryFiles(file))
+				if(!processDirectoryFiles(file, iterationMonitor))
 					return false;
-			} 
+			}	
 		}
+		
 		// Loop through each java file and process it
 		File[] javaFiles = directoryOrFile.listFiles(fileNameFilter);
+		remaining = javaFiles.length;
+		loopMonitor = progress.setWorkRemaining(remaining);
 		for (File file : javaFiles){ 
+			// Create a progress monitor for each loop iteration.
+            SubMonitor iterationMonitor = loopMonitor.split(1);
+            iterationMonitor.setTaskName("Processing : " + file.getName());
 			System.out.println(file.getName());
 			if(!readFile(file))
 				return false;
@@ -344,7 +333,6 @@ public class ParseSource extends Job {
 		boolean isStatic = false;
 		boolean isFinal = false;
 		boolean isAbstract = false;
-		boolean isReference = false;
 		boolean flag = false;
 		for(int i=0; i < line.length; i++){
 			currentLn = line[i];
@@ -496,7 +484,7 @@ public class ParseSource extends Job {
 			}
 		}
 		UTMActivator.log("No Class Declaration found within '" + name + "'");
-		return false;
+		return true;
 	}
 
 	/**

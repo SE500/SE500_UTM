@@ -1,17 +1,12 @@
 package org.eclipse.utm.test;
 
-import java.io.File;
 import java.io.IOException;
 
-import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.utm.compare.UTMDB;
 import org.eclipse.utm.compare.UTMDBAttribute;
 import org.eclipse.utm.compare.UTMDBClass;
 import org.eclipse.utm.compare.UTMDBMethod;
 import org.eclipse.utm.compare.UTMDBReference;
-import org.eclipse.utm.parseSource.ParseSource;
-import org.eclipse.utm.parseUML.ParseUML;
-import java.sql.*;
 /**
  * 
  * @author Thomas Colborne

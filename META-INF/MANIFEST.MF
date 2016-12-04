@@ -7,16 +7,11 @@ Bundle-ClassPath: resources/sqlite-jdbc-3.14.2.jar,
  .
 Bundle-Activator: org.eclipse.utm.UTMActivator
 Export-Package: org.eclipse.utm.views
-Require-Bundle: org.eclipse.core.resources;bundle-version="3.9.0",
- org.eclipse.core.runtime;bundle-version="3.10.0",
- org.eclipse.jdt.core;bundle-version="3.10.0",
- org.eclipse.jdt.launching;bundle-version="3.7.100",
- org.eclipse.text;bundle-version="3.5.300",
- org.eclipse.acceleo.model;bundle-version="3.5.0",
- org.eclipse.acceleo.engine;bundle-version="3.5.0",
- org.eclipse.uml2.uml;bundle-version="5.0.1",
- org.eclipse.ui;bundle-version="3.108.0",
- org.eclipse.debug.core;bundle-version="3.10.100",
- org.eclipse.debug.ui;bundle-version="3.11.201"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
+Require-Bundle: org.eclipse.debug.ui;bundle-version="3.11.201",
+ org.eclipse.ui;bundle-version="3.108.0",
+ org.eclipse.uml2.uml;bundle-version="5.0.1",
+ org.eclipse.acceleo.engine;bundle-version="3.5.0",
+ org.eclipse.core.runtime;bundle-version="3.10.0",
+ org.eclipse.ui.console;bundle-version="3.6.200"

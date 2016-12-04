@@ -2,29 +2,37 @@ package org.eclipse.utm.views;
 
 import java.io.File;
 
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IWorkspace;
+import org.eclipse.core.resources.IWorkspaceRoot;
+import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.jface.action.Action;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.console.IConsoleConstants;
+import org.eclipse.ui.console.IConsoleView;
 import org.eclipse.ui.part.ViewPart;
-import org.eclipse.ui.progress.IProgressService;
+import org.eclipse.ui.progress.IProgressConstants;
 import org.eclipse.utm.UTMActivator;
-import org.eclipse.utm.compare.UTMDB;
 import org.eclipse.utm.parseSource.ParseSource;
 import org.eclipse.utm.parseUML.ParseUML;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+
 /**
  * The input view part of UML Trace Magic plug-in application that let users input the 
  * UML model and Source Code.
@@ -34,26 +42,38 @@ import org.eclipse.swt.events.SelectionEvent;
  */
 public class ViewOpenMenu extends ViewPart {
 
+	/**
+	 * 	The ViewOpenMenu ViewPart ID
+	 */
 	public static final String ID = "org.eclipse.utm.views.ViewOpenMenu";
 
-	private Text textUML;
-	private Text textJAVA;
-	private Button btnChooseUmlFile;
-	private Button btnChooseSourceCode;
-	private Button btnTraceabilityMatrix;
-	//private Button btnShowResults;
-	private Group grpTraceUml;
-	private Group grpOutput;
+	/**
+	 *  The parent of this ViewPart
+	 */
+	private Composite parent;
+
+	/**
+	 * 	The selected UML file and Java Source File/Directory
+	 */
 	private File umlFile = null, 
 			javaFile = null;
-	private ParseUML parseUMLJob;
-	private ParseSource parseSourceJob;
-	Composite parent;
-	IProgressMonitor UTMProgressGroupMonitor;
-	IProgressService progressService;
-	boolean firstRun = true;
-//	@Inject Shell shell;
 
+	/**
+	 * 	Text areas that display the selected file names
+	 */
+	private Text textUML, textJAVA;
+
+	/**
+	 * The path to the source code generated from the UML model
+	 */
+	private String generatedSourcePath = ResourcesPlugin.getWorkspace().getRoot().getLocation().toOSString() +
+			System.getProperty("file.separator") + "org.eclipse.utm.u2j" +
+			System.getProperty("file.separator") + "src";
+
+
+	/**
+	 * Empty Constructor
+	 */
 	public ViewOpenMenu() {}
 
 	/**
@@ -68,11 +88,11 @@ public class ViewOpenMenu extends ViewPart {
 		Composite container = new Composite(parent, SWT.NONE);
 		container.setLayout(null);
 
-		grpTraceUml = new Group(container, SWT.BORDER | SWT.SHADOW_ETCHED_OUT);
+		Group grpTraceUml = new Group(container, SWT.BORDER | SWT.SHADOW_ETCHED_OUT);
 		grpTraceUml.setText("Input");
 		grpTraceUml.setBounds(20, 30, 400, 95);
 
-		btnChooseUmlFile = new Button(grpTraceUml, SWT.NONE);
+		Button btnChooseUmlFile = new Button(grpTraceUml, SWT.NONE);
 		btnChooseUmlFile.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
@@ -85,7 +105,7 @@ public class ViewOpenMenu extends ViewPart {
 		btnChooseUmlFile.setBounds(20, 50, 175, 25);
 		btnChooseUmlFile.setText("Choose UML File");
 
-		btnChooseSourceCode = new Button(grpTraceUml, SWT.NONE);
+		Button btnChooseSourceCode = new Button(grpTraceUml, SWT.NONE);
 		btnChooseSourceCode.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
@@ -98,21 +118,21 @@ public class ViewOpenMenu extends ViewPart {
 		btnChooseSourceCode.setBounds(200, 50, 175, 25);
 		btnChooseSourceCode.setText("Choose Java Source");
 
-		textUML = new Text(grpTraceUml, SWT.BORDER);
-		textUML.setBounds(20, 20, 175, 25);
+		this.textUML = new Text(grpTraceUml, SWT.BORDER);
+		this.textUML.setBounds(20, 20, 175, 25);
 
-		textJAVA = new Text(grpTraceUml, SWT.BORDER);
-		textJAVA.setBounds(200, 20, 175, 25);
+		this.textJAVA = new Text(grpTraceUml, SWT.BORDER);
+		this.textJAVA.setBounds(200, 20, 175, 25);
 
 		Label lblWelcome = new Label(container, SWT.NONE);
 		lblWelcome.setBounds(141, 10, 151, 15);
 		lblWelcome.setText("Welcome to Trace Magic");
 
-		grpOutput = new Group(container, SWT.NONE);
+		Group grpOutput = new Group(container, SWT.NONE);
 		grpOutput.setText("Output");
 		grpOutput.setBounds(22, 125, 400, 60);
 
-		btnTraceabilityMatrix = new Button(grpOutput, SWT.NONE);
+		Button btnTraceabilityMatrix = new Button(grpOutput, SWT.NONE);
 		btnTraceabilityMatrix.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
@@ -121,14 +141,33 @@ public class ViewOpenMenu extends ViewPart {
 							"Please Select an UML File or Java Source Code Files!");
 				}
 				else {
-					computeTraceability();
+					showConsole();
+					hideResults();
+					Job job = new Job("UML Trace Magic : " + umlFile.getName()) {
+						@Override
+						protected IStatus run(IProgressMonitor monitor) {
+							computeTraceability();
+							if (isModal(this)) {
+								// The progress dialog is still open so
+								// just show the results view
+								showResults();
+							} else {
+								setProperty(IProgressConstants.KEEP_PROPERTY, Boolean.TRUE);
+								setProperty(IProgressConstants.ACTION_PROPERTY, 
+										getShowResultsViewAction());
+							}
+							return Status.OK_STATUS;
+						}
+					};
+					job.setUser(true);
+					job.schedule();
 				}
 			}
 		});
 		btnTraceabilityMatrix.setBounds(105, 20, 175, 25);
 		btnTraceabilityMatrix.setText("Start");
 
-		//		btnShowResults = new Button(grpOutput, SWT.NONE);
+		//		Button btnShowResults = new Button(grpOutput, SWT.NONE);
 		//		btnShowResults.addSelectionListener(new SelectionAdapter() {
 		//			@Override
 		//			public void widgetSelected(SelectionEvent e) {
@@ -138,7 +177,7 @@ public class ViewOpenMenu extends ViewPart {
 		//		btnShowResults.setText("Show Results");
 		//		btnShowResults.setBounds(200, 20, 175, 25);
 	}
-	
+
 	/**
 	 * This method is the action when click 'start' button, a 'showResultsView' method
 	 * is used inside.
@@ -146,25 +185,40 @@ public class ViewOpenMenu extends ViewPart {
 	 * @exception throws InterruptedException
 	 */
 	private void computeTraceability() {
-		UTMProgressGroupMonitor = Job.getJobManager().createProgressGroup();
-		progressService = (IProgressService) getSite().getService(IProgressService.class);
+		// Create a Progress Group
+		IProgressMonitor UTMProgressGroupMonitor = Job.getJobManager().createProgressGroup();
 
 		try {
-//			UTMDB db = new UTMDB();
-//			db.ReInitDatabase();
-//			db.Close();
-//			db = null;
-			UTMProgressGroupMonitor.beginTask("Starting", 100);
-			parseSourceJob = new ParseSource(javaFile);
-			parseSourceJob.setProgressGroup(UTMProgressGroupMonitor, 33);
-			progressService.showInDialog(new Shell(), parseSourceJob);
-			parseSourceJob.schedule();
-			parseSourceJob.join();
-			parseUMLJob = new ParseUML(umlFile);
-			parseUMLJob.setProgressGroup(UTMProgressGroupMonitor, 67);
-			progressService.showInDialog(new Shell(), parseUMLJob);
+			UTMProgressGroupMonitor.beginTask("UML Trace Magic : "+ this.umlFile.getName(), 90);
+			// (1) Parse the UML by first generating java
+			ParseUML parseUMLJob = new ParseUML(this.umlFile);
+			parseUMLJob.setProgressGroup(UTMProgressGroupMonitor, 30);
 			parseUMLJob.schedule();
+			// (2) Parse the Source Code
+			ParseSource parseSourceJob = new ParseSource(this.javaFile);
+			parseSourceJob.setProgressGroup(UTMProgressGroupMonitor, 30);
+			parseSourceJob.schedule();
+			// Jobs 1 & 2 occur concurrently - Wait till both are complete
 			parseUMLJob.join();
+			parseSourceJob.join();
+			// (3) Parse the UML Generated Source Code
+			ParseSource parseGeneratedSourceJob = new ParseSource(this.generatedSourcePath, this.umlFile.getName());
+			parseGeneratedSourceJob.setProgressGroup(UTMProgressGroupMonitor, 30);
+			parseGeneratedSourceJob.schedule();
+			// Wait for Job 3 to finish
+			parseGeneratedSourceJob.join();
+			// (4) Clean up and delete the UML Generated Source Code
+			Job removeGeneratedSourceJob = new Job("Remove the source code generated from : "
+					+ this.umlFile.getName()) {
+				@Override
+				protected IStatus run(IProgressMonitor monitor) {
+					removeGeneratedProject(monitor);
+					return Status.OK_STATUS;
+				}
+			};
+			removeGeneratedSourceJob.setProgressGroup(UTMProgressGroupMonitor, 10);
+			removeGeneratedSourceJob.schedule();
+			removeGeneratedSourceJob.join();
 		} catch (InterruptedException e) {
 			IStatus status = new Status(IStatus.INFO, UTMActivator.PLUGIN_ID, e.getMessage(),  e);
 			UTMActivator.getDefault().getLog().log(status);
@@ -172,32 +226,130 @@ public class ViewOpenMenu extends ViewPart {
 		} finally {
 			UTMProgressGroupMonitor.done();
 		}
-
-		showResultsView();
 	}
-	
+
 	/**
 	 * A method used to trigger output view.
 	 * 
 	 * @exception PartInitException
 	 */
-	private void showResultsView() {
-		IWorkbenchPage page = getSite().getPage();
-		IViewPart resultsView = page.findView(ViewResult.ID);
-		if(resultsView == null){
-			try {
-				resultsView = page.showView(ViewResult.ID);
-			} catch (PartInitException e) {
-				IStatus status = new Status(e.getStatus().getSeverity(), UTMActivator.PLUGIN_ID, e.getStatus().getCode(), e.getMessage(),  e);
-				UTMActivator.getDefault().getLog().log(status);
-				e.printStackTrace();
+	//	protected void showResultsView() {
+	//		IWorkbenchPage page = getSite().getPage();
+	//		IViewPart resultsView = page.findView(ViewResult.ID);
+	//		if(resultsView == null){
+	//			try {
+	//				resultsView = page.showView(ViewResult.ID);
+	//			} catch (PartInitException e) {
+	//				IStatus status = new Status(e.getStatus().getSeverity(), UTMActivator.PLUGIN_ID, e.getStatus().getCode(), e.getMessage(),  e);
+	//				UTMActivator.getDefault().getLog().log(status);
+	//				e.printStackTrace();
+	//			}
+	//		}
+	//		if(resultsView != null){
+	//			getSite().getPage().bringToTop(resultsView);
+	//			ViewResult rv = (ViewResult) resultsView;
+	//			rv.showResults();
+	//		}	
+	//	}
+
+	/**
+	 * Creates a runnable action to show the results view
+	 * @return
+	 * 		Returns the "View UML Trace Magic Results" action
+	 */
+	protected Action getShowResultsViewAction() {
+		return new Action("View UML Trace Magic Results") {
+			public void run() {
+				IWorkbenchPage page = getSite().getPage();
+				IViewPart resultsView = page.findView(ViewResult.ID);
+				if(resultsView == null){
+					try {
+						resultsView = page.showView(ViewResult.ID);
+					} catch (PartInitException e) {
+						IStatus status = new Status(e.getStatus().getSeverity(), UTMActivator.PLUGIN_ID, e.getStatus().getCode(), e.getMessage(),  e);
+						UTMActivator.getDefault().getLog().log(status);
+						e.printStackTrace();
+					}
+				}
+				if(resultsView != null){
+					getSite().getPage().bringToTop(resultsView);
+					ViewResult rv = (ViewResult) resultsView;
+					rv.showResults();
+				}
 			}
+		};
+	}
+	
+	/**
+	 * A method to show the results from a non-UI thread
+	 */
+	protected void showResults() {
+		Display.getDefault().asyncExec(new Runnable() {
+			public void run() {
+				getShowResultsViewAction().run();
+			}
+		});
+	}
+	
+	/**
+	 * Checks whether a job is modal or not
+	 * @param job
+	 * @return
+	 * 		returns true if it is Modal, false if not
+	 */
+	public boolean isModal(Job job) {
+		Boolean isModal = (Boolean)job.getProperty(
+				IProgressConstants.PROPERTY_IN_DIALOG);
+		if(isModal == null) return false;
+		return isModal.booleanValue();
+	}
+	
+	/**
+	 * Hides the results view and resets it ready to be recreated
+	 */
+	private void hideResults() {
+		getSite().getPage().hideView(getSite().getPage().findView(ViewResult.ID));
+	}
+	
+	/**
+	 * Shows the plug-in specific console
+	 */
+	private void showConsole() {
+		try {
+			IWorkbenchPage page = getSite().getPage();
+			String id = IConsoleConstants.ID_CONSOLE_VIEW;
+			IConsoleView view = (IConsoleView) page.showView(id);
+			view.display(UTMActivator.utmConsole);
+		} catch (PartInitException e) {
+			IStatus status = new Status(e.getStatus().getSeverity(), UTMActivator.PLUGIN_ID, e.getStatus().getCode(), e.getMessage(),  e);
+			UTMActivator.getDefault().getLog().log(status);
+			e.printStackTrace();
 		}
-		if(resultsView != null){
-			getSite().getPage().bringToTop(resultsView);
-			ViewResult rv = (ViewResult) resultsView;
-			rv.showResults();
-		}	
+	}
+	
+	/**
+	 * Removes the UML generated workspace project
+	 * @param monitor
+	 * 		The progress monitor passed to delete
+	 */
+	public void removeGeneratedProject(IProgressMonitor monitor) {
+		IWorkspace workspace = ResourcesPlugin.getWorkspace();
+		IWorkspaceRoot root = workspace.getRoot();
+		// Get all projects in the workspace
+		IProject[] projects = root.getProjects();
+		// Loop over all projects
+		for (IProject project : projects) {
+			if (project.getName().equals("org.eclipse.utm.u2j")) {
+				try {
+					project.delete(true, true, monitor);
+				} catch (CoreException e) {
+					IStatus status = new Status(e.getStatus().getSeverity(), UTMActivator.PLUGIN_ID, e.getStatus().getCode(), e.getMessage(), e);
+					UTMActivator.getDefault().getLog().log(status);
+					e.printStackTrace();
+				}
+			}
+
+		}
 	}
 
 	/**

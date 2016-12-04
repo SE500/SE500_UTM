@@ -17,7 +17,7 @@ public class TestParseUML {
 		File selectedModel = ParseUML.selectUmlFile();
 		if(selectedModel != null) {
 			ParseUML test = new ParseUML(selectedModel);
-			test.launch(new NullProgressMonitor(), false);
+			test.launch(new NullProgressMonitor());
 			
 		}
 		else {

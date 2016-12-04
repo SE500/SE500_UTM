@@ -28,7 +28,6 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.debug.core.DebugPlugin;
@@ -40,7 +39,6 @@ import org.eclipse.debug.ui.DebugUITools;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.utm.UTMActivator;
 import org.eclipse.emf.ecore.EObject;
-import org.eclipse.utm.parseSource.ParseSource;
 
 
 /**
@@ -56,13 +54,10 @@ public class ParseUML extends Job{
 	 * The UML model file used for input processing
 	 */
 	private File modelFile;
-	
-	/**
-	 * The path to the source code generated from the UML model
-	 */
-	private String generatedSourcePath;
-	
 
+	/**
+	 * The DebugUI launch configuration used to launch the UML 2 Java generator.
+	 */
 	ILaunchConfiguration config;
 	
 	/**
@@ -102,34 +97,17 @@ public class ParseUML extends Job{
 	 */
 	@Override
 	protected IStatus run(IProgressMonitor monitor) {
-		final int ticks = 100;
-		
-		// Convert the given monitor into a progress instance 
-        SubMonitor progress = SubMonitor.convert(monitor, "UML Parsing begins", ticks);
 		try {
-			progress.subTask("Generating Java Code from UML");
 			 // Launch it
 	        if (this.config != null && this.config.exists()) {
 	        	UTMActivator.log("Generating Java Code from UML ... This takes time ... PLEASE WAIT");
-	        	DebugUITools.buildAndLaunch(config, ILaunchManager.RUN_MODE, progress.split(50));
+	        	DebugUITools.buildAndLaunch(config, ILaunchManager.RUN_MODE, monitor);
 	        }
-
-			progress.subTask("Parsing generated Java Code");
-
-			ParseSource parseGeneratedSourceJob = new ParseSource(this.generatedSourcePath, this.modelFile.getName());
-			parseGeneratedSourceJob.schedule();
-			parseGeneratedSourceJob.join();
-			progress.worked(50);
 		} catch (CoreException e) {
 			IStatus status = new Status(IStatus.ERROR, UTMActivator.PLUGIN_ID, e.getMessage(), e);
 			UTMActivator.getDefault().getLog().log(status);
 			e.printStackTrace();
 			return status;
-			
-		} catch (InterruptedException e) {
-			IStatus status = new Status(IStatus.WARNING, UTMActivator.PLUGIN_ID, e.getMessage(), e);
-			UTMActivator.getDefault().getLog().log(status);
-			e.printStackTrace();
 		}
 		return Status.OK_STATUS;
 	}
@@ -146,21 +124,7 @@ public class ParseUML extends Job{
 		if(this.run(monitor) == Status.OK_STATUS)
 			return true;
 		return false;
-	}
-	
-	/**
-	 * Launch the process to parse the UML into the SQL database
-	 * and cleans up temporary files if argument is true
-	 * @param withCleanUp
-	 */
-	public boolean launch(IProgressMonitor monitor, boolean withCleanUp){
-		if((this.run(monitor) == Status.OK_STATUS) && withCleanUp) {
-			this.cleanUp();
-			return true;
-		}
-		return false;
-	}
-	
+	}	
 	
 	/**
 	 * This method initializes the ParseUML object
@@ -168,10 +132,6 @@ public class ParseUML extends Job{
 	 */
 	public void initialize(File model) {
 		UTMActivator.log("Initialising prior to parsing the UML Model...");
-		
-		this.generatedSourcePath = ResourcesPlugin.getWorkspace().getRoot().getLocation().toOSString() +
-				System.getProperty("file.separator") + "org.eclipse.utm.u2j" +
-				System.getProperty("file.separator") + "src";
 		
 		this.modelFile = model;
 		
@@ -192,11 +152,13 @@ public class ParseUML extends Job{
 	public static File selectUmlFile(){
 		try {
 	        UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-	    }catch(Exception ex) {
-	        ex.printStackTrace();
+	    }catch(Exception e) {
+	    	IStatus status = new Status(IStatus.ERROR, UTMActivator.PLUGIN_ID, e.getMessage(), e);
+			UTMActivator.getDefault().getLog().log(status);
+	        e.printStackTrace();
 	    }
 		JFileChooser fileChooser = new JFileChooser();
-		fileChooser.setCurrentDirectory(new File(System.getProperty("user.dir")));
+		fileChooser.setCurrentDirectory(ResourcesPlugin.getWorkspace().getRoot().getLocation().toFile());
 		fileChooser.setFileFilter(new FileNameExtensionFilter("UML File","uml"));
 		int result = fileChooser.showOpenDialog(null);
 		if (result == JFileChooser.APPROVE_OPTION) {
@@ -236,7 +198,8 @@ public class ParseUML extends Job{
 						if (!processGenFile(entry))
 							return false;
 					} catch (IOException e) {
-						// TODO Auto-generated catch block
+						IStatus status = new Status(IStatus.ERROR, UTMActivator.PLUGIN_ID, e.getMessage(), e);
+						UTMActivator.getDefault().getLog().log(status);
 						e.printStackTrace();
 					}
 
@@ -311,16 +274,6 @@ public class ParseUML extends Job{
 				System.err.println("Error: Unknown model translation");
 		}
 		return true;
-	}
-	
-	
-	/**
-	 * Cleanup after parsing a UML file by deleting any temporary files created
-	 * and closing the database.
-	 */
-	public void cleanUp() {
-//		removeDirectory(new File(this.tempGenFolder.getParent()));
-		//System.out.println("Temporary Generated Files Removed");
 	}
 	
 	/**
