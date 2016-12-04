@@ -6,14 +6,41 @@ import java.util.ArrayList;
 
 import org.eclipse.utm.UTMActivator;
 
+/**
+ * Class which contains all accessors for database manipulation within UTM.
+ * @author Michael Freudeman
+ */
 public final class UTMDB {
 	
+	/**
+	 * The connection object to the database.
+	 * Is null until Open() is called.
+	 */
 	private Connection _c = null;
 	
+	/**
+	 * Static flag to signify if the database has been initialized.
+	 */
 	private static boolean _isInit = false;
 	
+	/**
+	 * Static flag set to true after the database has been created via initialization.
+	 */
 	private static boolean _hasCreatedDB = false;
 	
+	/**
+	 * Inserts a new record into either the UMLClass or CodeClass table.
+	 * If IsFromUML = true the destination table will be UMLClass else the destination table will be CodeClass.
+	 * @param IsFromUML Designates if the class is from a UML or Source Code document.
+	 * @param Filename Name of the file which the class originates.
+	 * @param LineNumber Line number within the originating file.
+	 * @param ClassName Name of the class.
+	 * @param AccessType Access identifier of the class (public, private, etc..)
+	 * @param IsStatic True if the class is static.
+	 * @param IsAbstract True if the class is abstract.
+	 * @param IsFinal True if the class is final.
+	 * @return Auto-incremented Class_ID of the new record within the destination table.
+	 */
 	private int newClass(boolean IsFromUML, String Filename, int LineNumber, String ClassName, String AccessType, boolean IsStatic, boolean IsAbstract, boolean IsFinal)
 	{
 		try
@@ -54,6 +81,15 @@ public final class UTMDB {
 		}
 	}
 	
+	/**
+	 * Inserts a new record into either the UMLReference or CodeReference table.
+	 * If IsFromUML = true the destination table will be UMLReference else the destination table will be CodeReference.
+	 * @param IsFromUML Designates if the reference is from a UML or Source Code document.
+	 * @param ClassName Name of the base class.
+	 * @param AccessType Access identifier of the class (implements, extends)
+	 * @param RefClass Name of the referenced class.
+	 * @return Auto-incremented Reference_ID of the record within the destination table.
+	 */
 	private int newReference(boolean IsFromUML, String ClassName, String AccessType, String RefClass)
 	{	
 		try
@@ -95,6 +131,18 @@ public final class UTMDB {
 		}
 	}
 	
+	/**
+	 * Inserts a new record into either the UMLAttribute or CodeAttribute table.
+	 * If IsFromUML = true the destination table will be UMLAttribute else the destination table will be CodeAttribute.
+	 * @param IsFromUML Designates if the attribute is from a UML or Source Code document.
+	 * @param Filename Name of the file which the attribute originates.
+	 * @param LineNumber Line number within the originating file.
+	 * @param ClassName Name of the originating class.
+	 * @param AccessType Access identifier of the class (public, private, etc..)
+	 * @param Type Data type of the attribute.
+	 * @param Name Name of the attribute.
+	 * @return Auto-incremented Attribute_ID of the record within the destination table.
+	 */
 	private int newAttribute(boolean IsFromUML, String Filename, int LineNumber, String ClassName, String AccessType, String Type, String Name)
 	{
 		PreparedStatement stmntInsert = null;
@@ -135,6 +183,19 @@ public final class UTMDB {
 		}
 	}
 	
+	/**
+	 * Inserts a new record into either the UMLAttribute or CodeAttribute table.
+	 * If IsFromUML = true the destination table will be UMLAttribute else the destination table will be CodeAttribute.
+	 * @param IsFromUML Designates if the attribute is from a UML or Source Code document.
+	 * @param Filename Name of the file which the attribute originates.
+	 * @param LineNumber Line number within the originating file.
+	 * @param ClassName Name of the originating class.
+	 * @param AccessType Access identifier of the class (public, private, etc..)
+	 * @param Type Data type of the attribute.
+	 * @param Name Name of the attribute.
+	 * @param Params Comma-delimited list of parameters of the method in the format of "DataType Name, DataType Name"
+	 * @return Auto-incremented Method_ID of the record within the destination table.
+	 */
 	private int newMethod(boolean IsFromUML, String Filename, int LineNumber, String ClassName, String AccessType, String Type, String Name, String Params)
 	{
 		try
@@ -175,6 +236,11 @@ public final class UTMDB {
 		}
 	}
 	
+	/**
+	 * If fromUML = true then count will be against UMLMethod table else CodeMethod table will be used.
+	 * @param fromUML Designates if the attribute to count are from a UML or Source Code document.
+	 * @return Count of methods within either UMLMethod or CodeMethod tables.
+	 */
 	private int countMethods(boolean fromUML)
 	{
 		int count = 0;
@@ -199,6 +265,11 @@ public final class UTMDB {
 		return count;
 	}
 	
+	/**
+	 * If fromUML = true then count will be against UMLAttribute table else CodeAttribute table will be used.
+	 * @param fromUML Designates if the attribute to count are from a UML or Source Code document.
+	 * @return Count of attributes within either UMLAttribute or CodeAttribute tables.
+	 */
 	private int countAttributes(boolean fromUML)
 	{
 		int count = 0;
@@ -223,6 +294,11 @@ public final class UTMDB {
 		return count;
 	}
 	
+	/**
+	 * If fromUML = true then count will be against UMLClass table else CodeClass table will be used.
+	 * @param fromUML Designates if the class to count are from a UML or Source Code document.
+	 * @return Count of classes within either UMLClass or CodeClass tables.
+	 */
 	private int countClasses(boolean fromUML)
 	{
 		int count = 0;
@@ -247,6 +323,11 @@ public final class UTMDB {
 		return count;
 	}
 	
+	/**
+	 * If fromUML = true then count will be against UMLReference table else CodeReference table will be used.
+	 * @param fromUML Designates if the reference to count are from a UML or Source Code document.
+	 * @return Count of references within either UMLReference or CodeReference tables.
+	 */
 	private int countReferences(boolean fromUML)
 	{
 		int count = 0;
@@ -272,6 +353,12 @@ public final class UTMDB {
 		return count;
 	}
 	
+	/**
+	 * If fromUML = true then count will be against UMLMethod table else CodeMethod table will be used.
+	 * @param fromUML Designates if the methods to count are from a UML or Source Code document.
+	 * @param ClassName Name of the class to count from.
+	 * @return Count of methods within either UMLClass or CodeClass tables associated with the given ClassName.
+	 */
 	private int countMethods(boolean fromUML, String ClassName)
 	{
 		int count = 0;
@@ -297,6 +384,12 @@ public final class UTMDB {
 		return count;
 	}
 	
+	/**
+	 * If fromUML = true then count will be against UMLAttribute table else CodeAttribute table will be used.
+	 * @param fromUML Designates if the attribute is from a UML or Source Code document.
+	 * @param ClassName Name of the class to count from.
+	 * @return Count of attributes within either UMLAttribute or CodeAttribute tables associated with the given ClassName.
+	 */
 	private int countAttributes(boolean fromUML, String ClassName)
 	{
 		int count = 0;
@@ -322,6 +415,12 @@ public final class UTMDB {
 		return count;
 	}
 	
+	/**
+	 * If fromUML = true then count will be against UMLReference table else CodeReference table will be used.
+	 * @param fromUML Designates if the reference is from a UML or Source Code document.
+	 * @param ClassName Name of the class to count from.
+	 * @return Count of references with ClassName as the referenced class.
+	 */
 	private int countReferencesOf(boolean fromUML, String ClassName)
 	{
 		int count = 0;
@@ -347,6 +446,12 @@ public final class UTMDB {
 		return count;
 	}
 	
+	/**
+	 * If fromUML = true then count will be against UMLReference table else CodeReference table will be used.
+	 * @param fromUML Designates if the reference is from a UML or Source Code document.
+	 * @param ClassName Name of the class to count from.
+	 * @return Count of references with ClassName as the base class of the reference.
+	 */
 	private int countReferencesTo(boolean fromUML, String ClassName)
 	{
 		int count = 0;
@@ -372,6 +477,12 @@ public final class UTMDB {
 		return count;
 	}
 	
+	/**
+	 * If fromUML = true then UMLClass table is used else the CodeClass table is used.
+	 * @param fromUML Sets the table to use as the source.
+	 * @param ClassID Sets the Class_ID to reference from the source table.
+	 * @return UTMDBClass object representing the given ClassID of the sourced table.
+	 */
 	private UTMDBClass getClass(boolean fromUML, int ClassID)
 	{
 		UTMDBClass o = null;
@@ -408,6 +519,12 @@ public final class UTMDB {
 		return o;
 	}
 	
+	/**
+	 * If fromUML = true then UMLAttribute table is used else the CodeAttribute table is used.
+	 * @param fromUML Sets the table to use as the source.
+	 * @param ClassID Sets the Class_ID to reference from the source table.
+	 * @return UTMDBAttribute object representing the given ClassID of the sourced table.
+	 */
 	private UTMDBAttribute getAttribute(boolean fromUML, int AttributeID)
 	{
 		UTMDBAttribute o = null;
@@ -442,6 +559,12 @@ public final class UTMDB {
 		return o;
 	}
 	
+	/**
+	 * If fromUML = true then UMLMethod table is used else the CodeMethod table is used.
+	 * @param fromUML Sets the table to use as the source.
+	 * @param ClassID Sets the Class_ID to reference from the source table.
+	 * @return UTMDBMethod object representing the given ClassID of the sourced table.
+	 */
 	private UTMDBMethod getMethod(boolean fromUML, int MethodID)
 	{
 		UTMDBMethod o = null;
@@ -477,36 +600,69 @@ public final class UTMDB {
 		return o;
 	}
 	
+	/**
+	 * Retrieves the class object representing the class record created using {@link #NewSourceClass(String, int, String, String, boolean, boolean, boolean) NewSourceClass} method.
+	 * @param ClassID ID of the class to retrieve.
+	 * @return UTMDBClass object representing the class record.
+	 */
 	public UTMDBClass GetSourceClass(int ClassID)
 	{
 		return this.getClass(false, ClassID);
 	}
 	
+	/**
+	 * Retrieves the class object representing the class record created using {@link #NewUMLClass(String, String, String, boolean, boolean, boolean) NewUMLClass} method.
+	 * @param ClassID ID of the class to retrieve.
+	 * @return UTMDBClass object representing the class record.
+	 */
 	public UTMDBClass GetUMLClass(int ClassID)
 	{
 		return this.getClass(true, ClassID);
 	}
 	
+	/**
+	 * Retrieves the attribute object representing the attribute record created using {@link #NewSourceAttribute(String, int, String, String, String, String) NewSourceAttribute} method.
+	 * @param ClassID ID of the class to retrieve.
+	 * @return UTMDBClass object representing the class record.
+	 */
 	public UTMDBAttribute GetSourceAttribute(int AttributeID)
 	{
 		return this.getAttribute(false, AttributeID);
 	}
 	
+	/**
+	 * Retrieves the attribute object representing the attribute record created using {@link #NewUMLAttribute(String, String, String, String, String) NewUMLAttribute} method.
+	 * @param ClassID ID of the class to retrieve.
+	 * @return UTMDBAttribute object representing the attribute record.
+	 */
 	public UTMDBAttribute GetUMLAttribute(int AttributeID)
 	{
 		return this.getAttribute(false, AttributeID);
 	}
 	
+	/**
+	 * Retrieves the method object representing the method record created using {@link #NewSourceMethod(String, int, String, String, String, String, String) NewSourceMethod} method.
+	 * @param ClassID ID of the class to retrieve.
+	 * @return UTMDBMethod object representing the method record.
+	 */
 	public UTMDBMethod GetSourceMethod(int MethodID)
 	{
 		return this.getMethod(false, MethodID);
 	}
 	
+	/**
+	 * Retrieves the method object representing the method record created using {@link #NewUMLMethod(String, String, String, String, String, String) NewUMLMethod} method.
+	 * @param ClassID ID of the class to retrieve.
+	 * @return UTMDBMethod object representing the method record.
+	 */
 	public UTMDBMethod GetUMLMethod(int MethodID)
 	{
 		return this.getMethod(true, MethodID);
 	}
 	
+	/**
+	 * @return Returns the 
+	 */
 	public ArrayList<UTMDBClass> GetSourceClassList()
 	{
 		ArrayList<UTMDBClass> list = new ArrayList<UTMDBClass>();
@@ -1255,7 +1411,7 @@ public final class UTMDB {
 			
 			if(!UTMDB._hasCreatedDB)
 			{
-				File file = new File("utm.db");
+				File file = new File(dbpath);
 				if(file.exists())
 				{
 					file.delete();
