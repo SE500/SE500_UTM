@@ -194,6 +194,11 @@ public class TestCompare {
 					System.out.println(curClass.ClassName + (curClass.NumMismatched > 0 || curClass.OtherID < 1 ? "**" : ""));
 					for(UTMDBReference ref : UMLClassReference)
 					{
+						numTotal++;
+						if(ref.OtherID <= 0)
+						{
+							numMismatched++;
+						}
 						System.out.println("\t- " + ref.AccessType + " " + ref.ReferenceClassName);
 					}
 					System.out.println("\tClassID: " + curClass.ClassID);
@@ -221,10 +226,17 @@ public class TestCompare {
 						System.out.println("\t\t\tClassName: " + attr.ClassName);
 						System.out.println("\t\t\tOtherID: " + attr.OtherID);
 						System.out.println("\t\t\tNumMismatched: " + attr.NumMismatched);
+						
+						numTotal++;
+						if(attr.NumMismatched > 0)
+						{
+							numMismatched++;
+						}
 					}
 					System.out.println("\tMethods: ");
 					for(UTMDBMethod method : UMLMethodList)
 					{
+						
 						UTMDBMethod otherMethod = db.GetSourceMethod(method.OtherID);
 						System.out.println(
 								"\t\t" + 
