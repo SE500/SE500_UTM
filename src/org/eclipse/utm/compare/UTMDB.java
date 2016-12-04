@@ -4,6 +4,8 @@ import java.io.File;
 import java.sql.*;
 import java.util.ArrayList;
 
+import org.eclipse.utm.UTMActivator;
+
 public final class UTMDB {
 	
 	private Connection _c = null;
