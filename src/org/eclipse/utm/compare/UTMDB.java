@@ -459,8 +459,9 @@ public final class UTMDB {
 			o.AccessType = rs.getString(6);
 			o.Type = rs.getString(7);
 			o.Name = rs.getString(8);
-			o.OtherID = rs.getInt(9);
-			o.NumMismatched = rs.getInt(10);
+			o.Parameters = rs.getString(9);
+			o.OtherID = rs.getInt(10);
+			o.NumMismatched = rs.getInt(11);
 			
 			rs.close();
 			
@@ -1236,6 +1237,20 @@ public final class UTMDB {
 	public boolean Open()
 	{
 		try{
+
+			String dbpath = "platform://meta/" + UTMActivator.PLUGIN_ID;
+			{
+				File file = new File(dbpath);
+				if(file.exists())
+				{
+					dbpath += "/utm.db";
+				}
+				else
+				{
+					dbpath = "utm.db";
+				}
+			}
+			
 			if(!UTMDB._hasCreatedDB)
 			{
 				File file = new File("utm.db");
@@ -1246,7 +1261,7 @@ public final class UTMDB {
 			}
 			
 			Class.forName("org.sqlite.JDBC");
-			this._c = DriverManager.getConnection("jdbc:sqlite:utm.db");
+			this._c = DriverManager.getConnection("jdbc:sqlite:" + dbpath);
 			
 			this._c.setAutoCommit(false);
 			
