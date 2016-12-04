@@ -127,8 +127,8 @@ public class TestCompare {
 						UTMDBAttribute otherAttr = db.GetUMLAttribute(attr.OtherID);
 						System.out.println(
 								"\t\t" + 
-								attr.AccessType + (otherAttr == null || otherAttr.AccessType != attr.AccessType ? "*" : "") + " " + 
-								attr.Type + (otherAttr == null || otherAttr.Type != attr.Type ? "*" : "") + " " + 
+								attr.AccessType + (otherAttr == null || otherAttr.AccessType.compareTo(attr.AccessType) != 0 ? "*" : "") + " " + 
+								attr.Type + (otherAttr == null || otherAttr.Type.compareTo(attr.Type) != 0 ? "*" : "") + " " + 
 								attr.Name + (attr.NumMismatched > 0 || attr.OtherID < 1 ? "**" : "")
 						);
 						System.out.println("\t\t\tAttributeID: " + attr.AttributeID);
@@ -150,12 +150,12 @@ public class TestCompare {
 						UTMDBMethod otherMethod = db.GetUMLMethod(method.OtherID);
 						System.out.println(
 								"\t\t" + 
-								method.AccessType + (otherMethod == null || otherMethod.AccessType != method.AccessType ? "*" : "") + " " + 
-								method.Type + (otherMethod == null || otherMethod.Type != method.Type ? "*" : "") + " " + 
+								method.AccessType + (otherMethod == null || otherMethod.AccessType.compareTo(method.AccessType) != 0 ? "*" : "") + " " + 
+								method.Type + (otherMethod == null || otherMethod.Type.compareTo(method.Type) != 0 ? "*" : "") + " " + 
 								method.Name + 
 								"(" + 
 										method.Parameters + 
-										(otherMethod != null || otherMethod.Parameters != method.Parameters ? "*" : "")  + 
+										(otherMethod == null || otherMethod.Parameters.compareTo(method.Parameters) != 0 ? "*" : "")  + 
 								")" + 
 								(method.NumMismatched > 0 || method.OtherID < 1 ? "**" : "")
 						);
@@ -215,8 +215,8 @@ public class TestCompare {
 						UTMDBAttribute otherAttr = db.GetSourceAttribute(attr.OtherID);
 						System.out.println(
 								"\t\t" + 
-								attr.AccessType + (otherAttr == null || otherAttr.AccessType != attr.AccessType) + " " + 
-								attr.Type + (otherAttr == null || otherAttr.Type != attr.Type) + " " + 
+								attr.AccessType + (otherAttr == null || otherAttr.AccessType.compareTo(attr.AccessType) != 0 ? "*" : "") + " " + 
+								attr.Type + (otherAttr == null || otherAttr.Type.compareTo(attr.Type) != 0 ? "*" : "") + " " + 
 								attr.Name + 
 								(attr.NumMismatched > 0 || attr.OtherID < 1 ? "**" : "")
 						);
