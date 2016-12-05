@@ -9,7 +9,7 @@ Bundle-Activator: org.eclipse.utm.UTMActivator
 Export-Package: org.eclipse.utm.views
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
-Require-Bundle: org.eclipse.debug.ui;bundle-version="3.11.201",
+Require-Bundle: org.eclipse.debug.ui;bundle-version="3.11.200",
  org.eclipse.ui;bundle-version="3.108.0",
  org.eclipse.uml2.uml;bundle-version="5.0.1",
  org.eclipse.acceleo.engine;bundle-version="3.5.0",
