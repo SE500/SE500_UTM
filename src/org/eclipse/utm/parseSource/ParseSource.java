@@ -96,7 +96,9 @@ public class ParseSource extends Job {
 				this.sourceCode = new File(this.umlSource);
 				UTMActivator.log("New File created from: " + this.umlSource);
 				this.db.InitDatabase();
-			} else {this.db.ReInitDatabase();}
+			} else {
+				this.db.ReInitDatabase();
+			}
 			progress.setWorkRemaining(75);			
 			if(this.sourceCode.exists()){
 				progress.subTask("Process Subdirectories and Files");
@@ -407,8 +409,13 @@ public class ParseSource extends Job {
 					{
 						reference = classDeclaration.substring(0,classDeclaration.indexOf(" "));
 						classDeclaration = classDeclaration.replaceFirst(reference, "").trim();
-						System.out.println("Name reference extends class  : " + reference);
-						this.db.NewSourceReference(this.className, "extends" , reference);
+						System.out.println("Name reference extends class : " + reference);
+						if(!isUml) {
+							this.db.NewSourceReference(this.className, "extends" , reference);
+						} 
+						else {
+							this.db.NewUMLReference(this.className, "extends" , reference);
+						}
 					}
 					if (implement)
 					{
@@ -420,19 +427,34 @@ public class ParseSource extends Job {
 								reference = classDeclaration.substring(0,classDeclaration.indexOf(","));
 								classDeclaration = classDeclaration.replaceFirst(reference, "").trim();
 								classDeclaration = classDeclaration.replaceFirst(",", "").trim();
-								System.out.println("Name reference implements interface  : " + reference);
-								this.db.NewSourceReference(this.className, "implements" , reference);
+								System.out.println("Name reference implements interface : " + reference);
+								if(!isUml) {
+									this.db.NewSourceReference(this.className, "implements" , reference);
+								} 
+								else {
+									this.db.NewUMLReference(this.className, "implements" , reference);
+								}
 							}
 							//second* one
 							reference = classDeclaration.substring(0,classDeclaration.indexOf(" "));
 							classDeclaration = classDeclaration.replaceFirst(reference, "").trim();
-							System.out.println("Name reference implements interface  : " + reference);
-							this.db.NewSourceReference(this.className, "implements" , reference);
+							System.out.println("Name reference implements interface : " + reference);
+							if(!isUml) {
+								this.db.NewSourceReference(this.className, "implements" , reference);
+							} 
+							else {
+								this.db.NewUMLReference(this.className, "implements" , reference);
+							}
 						}else {
 							reference = classDeclaration.substring(0,classDeclaration.indexOf(" "));
 							classDeclaration = classDeclaration.replaceFirst(reference, "").trim();
-							System.out.println("Name reference implements interface  : " + reference);
-							this.db.NewSourceReference(this.className, "implements" , reference);
+							System.out.println("Name reference implements interface : " + reference);
+							if(!isUml) {
+								this.db.NewSourceReference(this.className, "implements" , reference);
+							} 
+							else {
+								this.db.NewUMLReference(this.className, "implements" , reference);
+							}
 						}
 					}
 				}else if (type.contains("interface"))
@@ -448,19 +470,34 @@ public class ParseSource extends Job {
 								classDeclaration = classDeclaration.replaceFirst(reference, "").trim();
 								classDeclaration = classDeclaration.replaceFirst(",", "").trim();
 								System.out.println("Name reference extends interface : " + reference);
-								this.db.NewSourceReference(this.className, "extends" , reference);
+								if(!isUml) {
+									this.db.NewSourceReference(this.className, "extends" , reference);
+								} 
+								else {
+									this.db.NewUMLReference(this.className, "extends" , reference);
+								}
 							}
 							//second* one
 							reference = classDeclaration.substring(0,classDeclaration.indexOf(" "));
 							classDeclaration = classDeclaration.replaceFirst(reference, "").trim();
-							System.out.println("Name reference implements interface  : " + reference);
-							this.db.NewSourceReference(this.className, "extends" , reference);
+							System.out.println("Name reference implements interface : " + reference);
+							if(!isUml) {
+								this.db.NewSourceReference(this.className, "extends" , reference);
+							} 
+							else {
+								this.db.NewUMLReference(this.className, "extends" , reference);
+							}
 						} else 
 						{
 							reference = classDeclaration.substring(0,classDeclaration.indexOf("{") -1);
 							classDeclaration = classDeclaration.replaceFirst(reference, "").trim();
 							System.out.println("Name reference extends interface : " + reference);
-							this.db.NewSourceReference(this.className, "extends" , reference);
+							if(!isUml) {
+								this.db.NewSourceReference(this.className, "extends" , reference);
+							} 
+							else {
+								this.db.NewUMLReference(this.className, "extends" , reference);
+							}
 						}
 					}
 				}

@@ -4,7 +4,7 @@ import java.io.File;
 import java.sql.*;
 import java.util.ArrayList;
 
-import org.eclipse.utm.UTMActivator;
+import org.eclipse.core.resources.ResourcesPlugin;
 
 /**
  * Class which contains all accessors for database manipulation within UTM.
@@ -77,6 +77,7 @@ public final class UTMDB {
 		catch(Exception e)
 		{
 			System.err.println( e.getClass().getName() + ": " + e.getMessage() );
+			e.printStackTrace();
 			return 0;
 		}
 	}
@@ -179,6 +180,7 @@ public final class UTMDB {
 		catch(Exception e)
 		{
 			System.err.println( e.getClass().getName() + ": " + e.getMessage() );
+			e.printStackTrace();
 			return 0;
 		}
 	}
@@ -232,6 +234,7 @@ public final class UTMDB {
 		catch(Exception e)
 		{
 			System.err.println( e.getClass().getName() + ": " + e.getMessage() );
+			e.printStackTrace();
 			return 0;
 		}
 	}
@@ -260,6 +263,7 @@ public final class UTMDB {
 		catch(Exception e)
 		{
 			System.err.println( e.getClass().getName() + ": " + e.getMessage() );
+			e.printStackTrace();
 			return -1;
 		}
 		return count;
@@ -289,6 +293,7 @@ public final class UTMDB {
 		catch(Exception e)
 		{
 			System.err.println( e.getClass().getName() + ": " + e.getMessage() );
+			e.printStackTrace();
 			return -1;
 		}
 		return count;
@@ -318,6 +323,7 @@ public final class UTMDB {
 		catch(Exception e)
 		{
 			System.err.println( e.getClass().getName() + ": " + e.getMessage() );
+			e.printStackTrace();
 			return -1;
 		}
 		return count;
@@ -347,6 +353,7 @@ public final class UTMDB {
 		catch(Exception e)
 		{
 			System.err.println( e.getClass().getName() + ": " + e.getMessage() );
+			e.printStackTrace();
 			return -1;
 		}
 		
@@ -379,6 +386,7 @@ public final class UTMDB {
 		catch(Exception e)
 		{
 			System.err.println( e.getClass().getName() + ": " + e.getMessage() );
+			e.printStackTrace();
 			return -1;
 		}
 		return count;
@@ -410,6 +418,7 @@ public final class UTMDB {
 		catch(Exception e)
 		{
 			System.err.println( e.getClass().getName() + ": " + e.getMessage() );
+			e.printStackTrace();
 			return -1;
 		}
 		return count;
@@ -441,6 +450,7 @@ public final class UTMDB {
 		catch(Exception e)
 		{
 			System.err.println( e.getClass().getName() + ": " + e.getMessage() );
+			e.printStackTrace();
 			return -1;
 		}
 		return count;
@@ -472,6 +482,7 @@ public final class UTMDB {
 		catch(Exception e)
 		{
 			System.err.println( e.getClass().getName() + ": " + e.getMessage() );
+			e.printStackTrace();
 			return -1;
 		}
 		return count;
@@ -513,6 +524,7 @@ public final class UTMDB {
 		catch(Exception e)
 		{
 			System.err.println( e.getClass().getName() + ": " + e.getMessage() );
+			e.printStackTrace();
 			return null;
 		}
 		
@@ -554,6 +566,7 @@ public final class UTMDB {
 		catch(Exception e)
 		{
 			System.err.println( e.getClass().getName() + ": " + e.getMessage() );
+			e.printStackTrace();
 			return null;
 		}
 		return o;
@@ -595,6 +608,7 @@ public final class UTMDB {
 		catch(Exception e)
 		{
 			System.err.println( e.getClass().getName() + ": " + e.getMessage() );
+			e.printStackTrace();
 			return null;
 		}
 		return o;
@@ -661,7 +675,7 @@ public final class UTMDB {
 	}
 	
 	/**
-	 * @return Returns the 
+	 * @return List of UTMDBClass objects which represent all records in the CodeClass table.
 	 */
 	public ArrayList<UTMDBClass> GetSourceClassList()
 	{
@@ -694,11 +708,15 @@ public final class UTMDB {
 		catch(Exception e)
 		{
 			System.err.println( e.getClass().getName() + ": " + e.getMessage() );
+			e.printStackTrace();
 		}
 		
 		return list;
 	}
 	
+	/**
+	 * @return List of UTMDBClass objects which represent all records in the UMLClass table.
+	 */
 	public ArrayList<UTMDBClass> GetUMLClassList()
 	{
 		ArrayList<UTMDBClass> list = new ArrayList<UTMDBClass>();
@@ -730,11 +748,15 @@ public final class UTMDB {
 		catch(Exception e)
 		{
 			System.err.println( e.getClass().getName() + ": " + e.getMessage() );
+			e.printStackTrace();
 		}
 		
 		return list;
 	}
 
+	/**
+	 * @return List of UTMDBAttribute objects which represent all records in the CodeAttributes table.
+	 */
 	public ArrayList<UTMDBAttribute> GetSourceAttributesList(int ClassID)
 	{
 		ArrayList<UTMDBAttribute> list = new ArrayList<UTMDBAttribute>();
@@ -766,11 +788,15 @@ public final class UTMDB {
 		catch(Exception e)
 		{
 			System.err.println( e.getClass().getName() + ": " + e.getMessage() );
+			e.printStackTrace();
 		}
 		
 		return list;
 	}
 	
+	/**
+	 * @return List of UTMDBAttribute objects which represent all records in the UMLAttributes table.
+	 */
 	public ArrayList<UTMDBAttribute> GetUMLAttributesList(int ClassID)
 	{
 		ArrayList<UTMDBAttribute> list = new ArrayList<UTMDBAttribute>();
@@ -802,11 +828,15 @@ public final class UTMDB {
 		catch(Exception e)
 		{
 			System.err.println( e.getClass().getName() + ": " + e.getMessage() );
+			e.printStackTrace();
 		}
 		
 		return list;
 	}
 	
+	/**
+	 * @return List of UTMDBMethod objects which represent all records in the CodeMethod table.
+	 */
 	public ArrayList<UTMDBMethod> GetSourceMethodsList(int ClassID)
 	{
 		ArrayList<UTMDBMethod> list = new ArrayList<UTMDBMethod>();
@@ -839,11 +869,15 @@ public final class UTMDB {
 		catch(Exception e)
 		{
 			System.err.println( e.getClass().getName() + ": " + e.getMessage() );
+			e.printStackTrace();
 		}
 		
 		return list;
 	}
 	
+	/**
+	 * @return List of UTMDBMethod objects which represent all records in the UMLMethod table.
+	 */
 	public ArrayList<UTMDBMethod> GetUMLMethodsList(int ClassID)
 	{
 		ArrayList<UTMDBMethod> list = new ArrayList<UTMDBMethod>();
@@ -876,11 +910,15 @@ public final class UTMDB {
 		catch(Exception e)
 		{
 			System.err.println( e.getClass().getName() + ": " + e.getMessage() );
+			e.printStackTrace();
 		}
 		
 		return list;
 	}
 	
+	/**
+	 * @return List of UTMDBReference objects which represent all records in the CodeReference table.
+	 */
 	public ArrayList<UTMDBReference> GetSourceReferencesList(int ClassID)
 	{
 		ArrayList<UTMDBReference> list = new ArrayList<UTMDBReference>();
@@ -910,11 +948,15 @@ public final class UTMDB {
 		catch(Exception e)
 		{
 			System.err.println( e.getClass().getName() + ": " + e.getMessage() );
+			e.printStackTrace();
 		}
 		
 		return list;
 	}
 	
+	/**
+	 * @return List of UTMDBReference objects which represent all records in the UMLReference table.
+	 */
 	public ArrayList<UTMDBReference> GetUMLReferencesList(int ClassID)
 	{
 		ArrayList<UTMDBReference> list = new ArrayList<UTMDBReference>();
@@ -944,131 +986,289 @@ public final class UTMDB {
 		catch(Exception e)
 		{
 			System.err.println( e.getClass().getName() + ": " + e.getMessage() );
+			e.printStackTrace();
 		}
 		
 		return list;
 	}
 	
+	/**
+	 * Create a new record in the UMLClass table.
+	 * Calls the {@link #newClass(boolean, String, int, String, String, boolean, boolean, boolean) newClass} method.
+	 * @param ClassName Name of the class.
+	 * @param AccessType Access identifier of the class (public, private, etc..)
+	 * @param IsStatic True if the class is static.
+	 * @param IsAbstract True if the class is abstract.
+	 * @param IsFinal True if the class is final.
+	 * @return Auto-incremented Class_ID of the new record within the destination table.
+	 */
 	public int NewUMLClass(String Filename, String ClassName, String AccessType, boolean IsStatic, boolean IsAbstract, boolean IsFinal)
 	{
 		return this.newClass(true, Filename, 0, ClassName, AccessType, IsStatic, IsAbstract, IsFinal);
 	}
 	
+	/**
+	 * Create a new record in the SourceClass table.
+	 * Calls the {@link #newClass(boolean, String, int, String, String, boolean, boolean, boolean) newClass} method.
+	 * @param Filename Name of the file which the class originates.
+	 * @param LineNumber Line number within the originating file.
+	 * @param ClassName Name of the class.
+	 * @param AccessType Access identifier of the class (public, private, etc..)
+	 * @param IsStatic True if the class is static.
+	 * @param IsAbstract True if the class is abstract.
+	 * @param IsFinal True if the class is final.
+	 * @return Auto-incremented Class_ID of the new record within the destination table.
+	 */
 	public int NewSourceClass(String Filename, int LineNumber, String ClassName, String AccessType, boolean IsStatic, boolean IsAbstract, boolean IsFinal)
 	{
 		return this.newClass(false, Filename, LineNumber, ClassName, AccessType, IsStatic, IsAbstract, IsFinal);
 	}
 	
+	/**
+	 * Create a new record in the UMLReference table.
+	 * Call the {@link #newReference(boolean, String, String, String) newReference} method.
+	 * @param ClassName Name of the class.
+	 * @param AccessType Reference identifier of the class (extends, implements)
+	 * @param RefClass Name of the class being referenced.
+	 * @return Auto-incremented Class_ID of the new record within the destination table.
+	 */
 	public int NewUMLReference(String ClassName, String AccessType, String RefClass)
 	{
 		return this.newReference(true, ClassName, AccessType, RefClass);
 	}
 	
+	/**
+	 * Create a new record in the CodeReference table.
+	 * Call the {@link #newReference(boolean, String, String, String) newReference} method.
+	 * @param ClassName Name of the class.
+	 * @param AccessType Reference identifier of the class (extends, implements)
+	 * @param RefClass Name of the class being referenced.
+	 * @return Auto-incremented Class_ID of the new record within the destination table.
+	 */
 	public int NewSourceReference(String ClassName, String AccessType, String RefClass)
 	{
 		return this.newReference(false, ClassName, AccessType, RefClass);
 	}
 	
+	/**
+	 * Create a new record in the UMLAttribute table.
+	 * Call the {@link #newAttribute(boolean, String, int, String, String, String, String) newAttribute} method.
+	 * @param Filename Name of the file which the attribute originates.
+	 * @param ClassName Name of the class.
+	 * @param AccessType Access identifier of the class (public, private, etc..)
+	 * @param Type Data type of the attribute.
+	 * @param Name Name of the attribute.
+	 * @return Auto-incremented Attribute_ID of the record within the destination table.
+	 */
 	public int NewUMLAttribute(String Filename, String ClassName, String AccessType, String Type, String Name)
 	{
 		return this.newAttribute(true, Filename, 0, ClassName, AccessType, Type, Name);
 	}
 	
+	/**
+	 * Create a new record in the CodeAttribute table.
+	 * Call the {@link #newAttribute(boolean, String, int, String, String, String, String) newAttribute} method.
+	 * @param Filename Name of the file which the attribute originates.
+	 * @param LineNumber Line number within the originating file.
+	 * @param ClassName Name of the class.
+	 * @param AccessType Access identifier of the class (public, private, etc..)
+	 * @param Type Data type of the attribute.
+	 * @param Name Name of the attribute.
+	 * @return Auto-incremented Attribute_ID of the record within the destination table.
+	 */
 	public int NewSourceAttribute(String Filename, int LineNumber, String ClassName, String AccessType, String Type, String Name)
 	{
 		return this.newAttribute(false, Filename, LineNumber, ClassName, AccessType, Type, Name);
 	}
 	
+	/**
+	 * Create a new record in the UMLMethod table.
+	 * Call the {@link #newMethod(boolean, String, int, String, String, String, String, String) newMthod} method.
+	 * @param Filename Name of the file which the attribute originates.
+	 * @param ClassName Name of the class the method is contained within.
+	 * @param AccessType Access identifier of the class (public, private, etc..)
+	 * @param Type Data type of the attribute.
+	 * @param Name Name of the method.
+	 * @param Params Comma-delimited list of parameters of the method in the format of "DataType Name, DataType Name"
+	 * @return Auto-incremented Method_ID of the record within the destination table.
+	 */
 	public int NewUMLMethod(String Filename, String ClassName, String AccessType, String Type, String Name, String Params)
 	{
 		return this.newMethod(true, Filename, 0, ClassName, AccessType, Type, Name, Params);
 	}
 	
+	/**
+	 * Create a new record in the CodeMethod table.
+	 * Call the {@link #newMethod(boolean, String, int, String, String, String, String, String) newMthod} method.
+	 * @param Filename Name of the file which the method originates.
+	 * @param LineNumber Line number within the originating file.
+	 * @param ClassName Name of the class the method is contained within.
+	 * @param AccessType Access identifier of the class (public, private, etc..)
+	 * @param Type Data type of the method.
+	 * @param Name Name of the method.
+	 * @param Params Comma-delimited list of parameters of the method in the format of "DataType Name, DataType Name"
+	 * @return Auto-incremented Method_ID of the record within the destination table.
+	 */
 	public int NewSourceMethod(String Filename, int LineNumber, String ClassName, String AccessType, String Type, String Name, String Params)
 	{
 		return this.newMethod(false, Filename, LineNumber, ClassName, AccessType, Type, Name, Params);
 	}
 	
+	/**
+	 * Calls the {@link #countClasses(boolean) countClasses} method.
+	 * @return Total count of records within the UMLClass table.
+	 */
 	public int CountUMLClasses()
 	{
 		return countClasses(true);
 	}
 	
+	/**
+	 * Calls the {@link #countClasses(boolean) countClasses} method.
+	 * @return Total count of records within the CodeClass table.
+	 */
 	public int CountSourceClasses()
 	{
 		return countClasses(false);
 	}
 	
+	/**
+	 * Calls the {@link #countAttributes(boolean) countAttributes} method.
+	 * @return Total count of records within the UMLAttribute table.
+	 */
 	public int CountUMLAttributes()
 	{
 		return countAttributes(true);
 	}
 	
+	/**
+	 * Calls the {@link #countAttributes(boolean) countAttributes} method.
+	 * @return Total count of records within the CodeAttribute table.
+	 */
 	public int CountSourceAttributes()
 	{
 		return countAttributes(false);
 	}
 	
+	/**
+	 * Calls the {@link #countMethods(boolean) countMethods} method.
+	 * @return Total count of records within the UMLMethod table.
+	 */
 	public int CountUMLMethods()
 	{
 		return countMethods(true);
 	}
 	
+	/**
+	 * Calls the {@link #countMethods(boolean) countMethods} method.
+	 * @return Total count of records within the CodeMethod table.
+	 */
 	public int CountSourceMethods()
 	{
 		return countMethods(false);
 	}
 	
+	/**
+	 * Calls the {@link #countReferences(boolean) countReferences} method.
+	 * @return Total count of records within the UMLReference table.
+	 */
 	public int CountUMLReferences()
 	{
 		return countReferences(true);
 	}
 	
+	/**
+	 * Calls the {@link #countReferences(boolean) countReferences} method.
+	 * @return Total count of records within the CodeReference table.
+	 */
 	public int CountSourceReferences()
 	{
 		return countReferences(false);
 	}
 	
+	/**
+	 * Calls the {@link #countAttributes(boolean, String) countAttributes} method.
+	 * @param ClassName Name of the class to count from.
+	 * @return Count of attributes within UMLAttribute table associated with the given ClassName.
+	 */
 	public int CountUMLAttributes(String ClassName)
 	{
 		return countAttributes(true, ClassName);
 	}
 	
+	/**
+	 * Calls the {@link #countAttributes(boolean, String) countAttributes} method.
+	 * @param ClassName Name of the class to count from.
+	 * @return Count of attributes within CodeAttribute table associated with the given ClassName.
+	 */
 	public int CountSourceAttributes(String ClassName)
 	{
 		return countAttributes(false, ClassName);
 	}
 	
+	/**
+	 * Calls the {@link #countMethods(boolean, String) countMethods} method.
+	 * @param ClassName Name of the class to count from.
+	 * @return Count of methods within UMLMethod table associated with the given ClassName.
+	 */
 	public int CountUMLMethods(String ClassName)
 	{
 		return countMethods(true, ClassName);
 	}
 	
+	/**
+	 * Calls the {@link #countMethods(boolean, String) countMethods} method.
+	 * @param ClassName Name of the class to count from.
+	 * @return Count of methods within CodeMethod table associated with the given ClassName.
+	 */
 	public int CountSourceMethods(String ClassName)
 	{
 		return countMethods(false, ClassName);
 	}
 	
+	/**
+	 * Calls the {@link #countReferencesOf(boolean, String) countReferencesOf} method.
+	 * @param ClassName Name of the base class to count from.
+	 * @return Count of references of the base class ClassName within the UMLReference table.
+	 */
 	public int CountUMLReferencesOf(String ClassName)
 	{
 		return countReferencesOf(true, ClassName);
 	}
 	
+	/**
+	 * Calls the {@link #countReferencesOf(boolean, String) countReferencesOf} method.
+	 * @param ClassName Name of the base class to count from.
+	 * @return Count of references of the base class ClassName within the CodeReference table.
+	 */
 	public int CountSourceReferencesOf(String ClassName)
 	{
 		return countReferencesOf(false, ClassName);
 	}
 	
+	/**
+	 * Calls the {@link #countReferencesTo(boolean, String)
+	 * @param ClassName Name of the referenced class to count.
+	 * @return Count of references to the referenced ClassName within the UMLReference table.
+	 */
 	public int CountUMLReferencesTo(String ClassName)
 	{
 		return countReferencesTo(true, ClassName);
 	}
 	
+	/**
+	 * Calls the {@link #countReferencesTo(boolean, String)
+	 * @param ClassName Name of the referenced class to count.
+	 * @return Count of references to the referenced ClassName within the CodeReference table.
+	 */
 	public int CountSourceReferencesTo(String ClassName)
 	{
 		return countReferencesTo(false, ClassName);
 	}
 	
+	/**
+	 * Commit must be called to save data changes made by NewUML, NewSource, Match, and Relate methods.
+	 */
 	public void Commit()
 	{
 		try
@@ -1078,14 +1278,21 @@ public final class UTMDB {
 		catch(Exception e)
 		{
 			System.err.println( e.getClass().getName() + ": " + e.getMessage() );
+			e.printStackTrace();
 		}
 	}
 	
+	/**
+	 * @return true if the database has been initialized.
+	 */
 	public boolean IsInitialized()
 	{
 		return _isInit;
 	}
 	
+	/**
+	 * @return true if a database connection has been opened.
+	 */
 	public boolean IsOpen()
 	{
 		try
@@ -1095,10 +1302,14 @@ public final class UTMDB {
 		catch(Exception e)
 		{
 			System.err.println( e.getClass().getName() + ": " + e.getMessage() );
+			e.printStackTrace();
 			return false;
 		}
 	}
 	
+	/**
+	 * Relates Class_ID of Attribute, Method, and Reference entries.
+	 */
 	public void Relate()
 	{
 		try
@@ -1109,7 +1320,7 @@ public final class UTMDB {
 			
 			String strUpdateMethodsUML = "Update UMLMethod Set Class_ID = (Select CodeClass.Class_ID From CodeClass Where CodeClass.Classname = UMLMethod.Classname)";
 			
-			String strUpdateMethodsCode = "Update	CodeMethod Set Class_ID = (Select CodeClass.Class_ID From CodeClass Where CodeClass.Classname = CodeMethod.Classname)";
+			String strUpdateMethodsCode = "Update CodeMethod Set Class_ID = (Select CodeClass.Class_ID From CodeClass Where CodeClass.Classname = CodeMethod.Classname)";
 			
 			String strUpdateReferencesUML = "Update UMLReference Set Class_ID = (Select UMLClass.Class_ID From UMLClass Where UMLClass.ClassName = UMLReference.ClassName), Ref_Class_ID = (Select UMLClass.Class_ID From UMLClass Where UMLClass.ClassName = UMLReference.RefClassName)";
 			
@@ -1139,9 +1350,13 @@ public final class UTMDB {
 		catch(Exception e)
 		{
 			System.err.println( e.getClass().getName() + ": " + e.getMessage() );
+			e.printStackTrace();
 		}
 	}
 	
+	/**
+	 * Updates Other_ID of each table record to the corresponding ID of the opposite type. Calculates NumMismatched value of each record.
+	 */
 	public void Match()
 	{
 		try
@@ -1222,9 +1437,15 @@ public final class UTMDB {
 		catch(Exception e)
 		{
 			System.err.println( e.getClass().getName() + ": " + e.getMessage() );
+			e.printStackTrace();
+			
 		}
 	}
 	
+	/**
+	 * Re-initializes the database. Calls {@link #Close()} sets {@link #_isInit} and {@link #_hasCreatedDB} to false then calls {@link #Open()} and {@link #InitDatabase()}.
+	 * This deletes the database and re-creates it using new structures.
+	 */
 	public void ReInitDatabase()
 	{
 		if(this._c != null)
@@ -1240,6 +1461,9 @@ public final class UTMDB {
 		this.InitDatabase();
 	}
 	
+	/**
+	 * Creates the database structures.
+	 */
 	public void InitDatabase()
 	{
 		if(UTMDB._isInit)
@@ -1389,24 +1613,28 @@ public final class UTMDB {
 		catch(Exception e)
 		{
 			System.err.println( e.getClass().getName() + ": " + e.getMessage() );
+			e.printStackTrace();
 		}
 	}
 	
+	/**
+	 * Opens a connection to the database.
+	 * @return true if the database is open. false if there was an error.
+	 */
 	public boolean Open()
 	{
+		if(this.IsOpen())
+		{
+			return true;
+		}
 		try{
-
-			String dbpath = "platform://meta/" + UTMActivator.PLUGIN_ID;
-			{
-				File file = new File(dbpath);
-				if(file.exists())
-				{
-					dbpath += "/utm.db";
-				}
-				else
-				{
-					dbpath = "utm.db";
-				}
+			String dbpath;
+			try{
+				dbpath = ResourcesPlugin.getWorkspace().getRoot().getLocation().toOSString()
+						+ System.getProperty("file.separator") + "utm.db";
+			}
+			catch(Exception e){
+				dbpath = "utm.db";
 			}
 			
 			if(!UTMDB._hasCreatedDB)
@@ -1428,11 +1656,16 @@ public final class UTMDB {
 		catch(Exception e)
 		{
 			System.err.println( e.getClass().getName() + ": " + e.getMessage() );
+			e.printStackTrace();
 			return false;
 		}
 		return true;
 	}
 	
+	/**
+	 * Closes a connection to the database.
+	 * @return true if the database is closed. false if an error occurred.
+	 */
 	public boolean Close()
 	{
 		try
@@ -1445,6 +1678,7 @@ public final class UTMDB {
 		catch(Exception e)
 		{
 			System.err.println( e.getClass().getName() + ": " + e.getMessage() );
+			e.printStackTrace();
 			return false;
 		}
 		return true;
@@ -1454,6 +1688,9 @@ public final class UTMDB {
 	{
 	}
 	
+	/**
+	 * Closes the database connection.
+	 */
 	public void finalize()
 	{
 		try
@@ -1466,6 +1703,7 @@ public final class UTMDB {
 		catch(Exception e)
 		{
 			System.err.println( e.getClass().getName() + ": " + e.getMessage() );
+			e.printStackTrace();
 		}
 	}
 }

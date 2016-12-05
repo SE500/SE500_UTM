@@ -32,13 +32,13 @@ public class TestCompare {
 				db.NewSourceReference("ClassA", "implements", "UIFormElementClass");
 				db.NewSourceReference("ClassA", "implements", "UIPanel");
 				db.NewSourceAttribute("ClassA.java", 4, "ClassA", "private", "boolean", "_isInit");
-				db.NewSourceAttribute("ClassA.java", 5, "ClassA", "private", "int", "_counter");
+//				db.NewSourceAttribute("ClassA.java", 5, "ClassA", "private", "int", "_counter");
 				db.NewSourceAttribute("ClassA.java", 6, "ClassA", "public", "String", "Type");
 				db.NewSourceAttribute("ClassA.java", 8, "ClassA", "public", "UIPanelControl", "Control");
 				db.NewSourceMethod("ClassA.java", 10, "ClassA", "public", "void", "DoTheThing", "int num, boolean isTrue");
 				db.NewSourceMethod("ClassA.java", 19, "ClassA", "public", "boolean", "IsSomethingDone", "int num");
 				db.NewSourceMethod("ClassA.java", 42, "ClassA", "public", "void", "WriteAnother", "String written");
-				db.NewSourceMethod("ClassA.java", 58, "ClassA", "public", "int", "GetCounter", "");
+//				db.NewSourceMethod("ClassA.java", 58, "ClassA", "public", "int", "GetCounter", "");
 	
 				db.NewSourceClass("ClassB.java", 1, "ClassB", "public", false, true, false);
 				db.NewSourceAttribute("ClassB.java", 4, "ClassB", "private", "boolean", "_isGood");
@@ -120,6 +120,7 @@ public class TestCompare {
 					for(UTMDBAttribute attr : SourceAttributeList)
 					{
 						UTMDBAttribute otherAttr = db.GetUMLAttribute(attr.OtherID);
+						System.err.println(attr.OtherID);
 						System.out.println(
 								"\t\t" + 
 								attr.AccessType + (otherAttr == null || otherAttr.AccessType.compareTo(attr.AccessType) != 0 ? "*" : "") + " " + 
@@ -240,8 +241,8 @@ public class TestCompare {
 						UTMDBMethod otherMethod = db.GetSourceMethod(method.OtherID);
 						System.out.println(
 								"\t\t" + 
-								method.AccessType + (otherMethod.AccessType.compareTo(method.AccessType) != 0 ? "*" : "") + " " + 
-								method.Type + (otherMethod.Type.compareTo(method.Type) != 0 ? "*" : "") + " " + 
+								method.AccessType + (otherMethod == null || otherMethod.AccessType.compareTo(method.AccessType) != 0 ? "*" : "") + " " + 
+								method.Type + (otherMethod == null || otherMethod.Type.compareTo(method.Type) != 0 ? "*" : "") + " " + 
 								method.Name + 
 								"(" + 
 										method.Parameters + 

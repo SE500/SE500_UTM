@@ -164,18 +164,18 @@ public class ViewOpenMenu extends ViewPart {
 				}
 			}
 		});
-		btnTraceabilityMatrix.setBounds(105, 20, 175, 25);
+		btnTraceabilityMatrix.setBounds(20, 20, 175, 25);
 		btnTraceabilityMatrix.setText("Start");
 
-		//		Button btnShowResults = new Button(grpOutput, SWT.NONE);
-		//		btnShowResults.addSelectionListener(new SelectionAdapter() {
-		//			@Override
-		//			public void widgetSelected(SelectionEvent e) {
-		//				showResultsView();
-		//			}
-		//		});
-		//		btnShowResults.setText("Show Results");
-		//		btnShowResults.setBounds(200, 20, 175, 25);
+		Button btnShowResults = new Button(grpOutput, SWT.NONE);
+		btnShowResults.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				showResultsView();
+			}
+		});
+		btnShowResults.setText("Show Results");
+		btnShowResults.setBounds(200, 20, 175, 25);
 	}
 
 	/**
@@ -233,24 +233,24 @@ public class ViewOpenMenu extends ViewPart {
 	 * 
 	 * @exception PartInitException
 	 */
-	//	protected void showResultsView() {
-	//		IWorkbenchPage page = getSite().getPage();
-	//		IViewPart resultsView = page.findView(ViewResult.ID);
-	//		if(resultsView == null){
-	//			try {
-	//				resultsView = page.showView(ViewResult.ID);
-	//			} catch (PartInitException e) {
-	//				IStatus status = new Status(e.getStatus().getSeverity(), UTMActivator.PLUGIN_ID, e.getStatus().getCode(), e.getMessage(),  e);
-	//				UTMActivator.getDefault().getLog().log(status);
-	//				e.printStackTrace();
-	//			}
-	//		}
-	//		if(resultsView != null){
-	//			getSite().getPage().bringToTop(resultsView);
-	//			ViewResult rv = (ViewResult) resultsView;
-	//			rv.showResults();
-	//		}	
-	//	}
+	protected void showResultsView() {
+		IWorkbenchPage page = getSite().getPage();
+		IViewPart resultsView = page.findView(ViewResult.ID);
+		if(resultsView == null){
+			try {
+				resultsView = page.showView(ViewResult.ID);
+			} catch (PartInitException e) {
+				IStatus status = new Status(e.getStatus().getSeverity(), UTMActivator.PLUGIN_ID, e.getStatus().getCode(), e.getMessage(),  e);
+				UTMActivator.getDefault().getLog().log(status);
+				e.printStackTrace();
+			}
+		}
+		if(resultsView != null){
+			getSite().getPage().bringToTop(resultsView);
+			ViewResult rv = (ViewResult) resultsView;
+			rv.showResults();
+		}	
+	}
 
 	/**
 	 * Creates a runnable action to show the results view
