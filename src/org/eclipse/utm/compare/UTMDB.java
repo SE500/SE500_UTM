@@ -4,7 +4,7 @@ import java.io.File;
 import java.sql.*;
 import java.util.ArrayList;
 
-import org.eclipse.utm.UTMActivator;
+import org.eclipse.core.resources.ResourcesPlugin;
 
 /**
  * Class which contains all accessors for database manipulation within UTM.
@@ -77,6 +77,7 @@ public final class UTMDB {
 		catch(Exception e)
 		{
 			System.err.println( e.getClass().getName() + ": " + e.getMessage() );
+			e.printStackTrace();
 			return 0;
 		}
 	}
@@ -179,6 +180,7 @@ public final class UTMDB {
 		catch(Exception e)
 		{
 			System.err.println( e.getClass().getName() + ": " + e.getMessage() );
+			e.printStackTrace();
 			return 0;
 		}
 	}
@@ -232,6 +234,7 @@ public final class UTMDB {
 		catch(Exception e)
 		{
 			System.err.println( e.getClass().getName() + ": " + e.getMessage() );
+			e.printStackTrace();
 			return 0;
 		}
 	}
@@ -260,6 +263,7 @@ public final class UTMDB {
 		catch(Exception e)
 		{
 			System.err.println( e.getClass().getName() + ": " + e.getMessage() );
+			e.printStackTrace();
 			return -1;
 		}
 		return count;
@@ -289,6 +293,7 @@ public final class UTMDB {
 		catch(Exception e)
 		{
 			System.err.println( e.getClass().getName() + ": " + e.getMessage() );
+			e.printStackTrace();
 			return -1;
 		}
 		return count;
@@ -318,6 +323,7 @@ public final class UTMDB {
 		catch(Exception e)
 		{
 			System.err.println( e.getClass().getName() + ": " + e.getMessage() );
+			e.printStackTrace();
 			return -1;
 		}
 		return count;
@@ -347,6 +353,7 @@ public final class UTMDB {
 		catch(Exception e)
 		{
 			System.err.println( e.getClass().getName() + ": " + e.getMessage() );
+			e.printStackTrace();
 			return -1;
 		}
 		
@@ -379,6 +386,7 @@ public final class UTMDB {
 		catch(Exception e)
 		{
 			System.err.println( e.getClass().getName() + ": " + e.getMessage() );
+			e.printStackTrace();
 			return -1;
 		}
 		return count;
@@ -410,6 +418,7 @@ public final class UTMDB {
 		catch(Exception e)
 		{
 			System.err.println( e.getClass().getName() + ": " + e.getMessage() );
+			e.printStackTrace();
 			return -1;
 		}
 		return count;
@@ -441,6 +450,7 @@ public final class UTMDB {
 		catch(Exception e)
 		{
 			System.err.println( e.getClass().getName() + ": " + e.getMessage() );
+			e.printStackTrace();
 			return -1;
 		}
 		return count;
@@ -472,6 +482,7 @@ public final class UTMDB {
 		catch(Exception e)
 		{
 			System.err.println( e.getClass().getName() + ": " + e.getMessage() );
+			e.printStackTrace();
 			return -1;
 		}
 		return count;
@@ -513,6 +524,7 @@ public final class UTMDB {
 		catch(Exception e)
 		{
 			System.err.println( e.getClass().getName() + ": " + e.getMessage() );
+			e.printStackTrace();
 			return null;
 		}
 		
@@ -554,6 +566,7 @@ public final class UTMDB {
 		catch(Exception e)
 		{
 			System.err.println( e.getClass().getName() + ": " + e.getMessage() );
+			e.printStackTrace();
 			return null;
 		}
 		return o;
@@ -595,6 +608,7 @@ public final class UTMDB {
 		catch(Exception e)
 		{
 			System.err.println( e.getClass().getName() + ": " + e.getMessage() );
+			e.printStackTrace();
 			return null;
 		}
 		return o;
@@ -694,6 +708,7 @@ public final class UTMDB {
 		catch(Exception e)
 		{
 			System.err.println( e.getClass().getName() + ": " + e.getMessage() );
+			e.printStackTrace();
 		}
 		
 		return list;
@@ -730,6 +745,7 @@ public final class UTMDB {
 		catch(Exception e)
 		{
 			System.err.println( e.getClass().getName() + ": " + e.getMessage() );
+			e.printStackTrace();
 		}
 		
 		return list;
@@ -766,6 +782,7 @@ public final class UTMDB {
 		catch(Exception e)
 		{
 			System.err.println( e.getClass().getName() + ": " + e.getMessage() );
+			e.printStackTrace();
 		}
 		
 		return list;
@@ -802,6 +819,7 @@ public final class UTMDB {
 		catch(Exception e)
 		{
 			System.err.println( e.getClass().getName() + ": " + e.getMessage() );
+			e.printStackTrace();
 		}
 		
 		return list;
@@ -839,6 +857,7 @@ public final class UTMDB {
 		catch(Exception e)
 		{
 			System.err.println( e.getClass().getName() + ": " + e.getMessage() );
+			e.printStackTrace();
 		}
 		
 		return list;
@@ -876,6 +895,7 @@ public final class UTMDB {
 		catch(Exception e)
 		{
 			System.err.println( e.getClass().getName() + ": " + e.getMessage() );
+			e.printStackTrace();
 		}
 		
 		return list;
@@ -910,6 +930,7 @@ public final class UTMDB {
 		catch(Exception e)
 		{
 			System.err.println( e.getClass().getName() + ": " + e.getMessage() );
+			e.printStackTrace();
 		}
 		
 		return list;
@@ -944,6 +965,7 @@ public final class UTMDB {
 		catch(Exception e)
 		{
 			System.err.println( e.getClass().getName() + ": " + e.getMessage() );
+			e.printStackTrace();
 		}
 		
 		return list;
@@ -1078,6 +1100,7 @@ public final class UTMDB {
 		catch(Exception e)
 		{
 			System.err.println( e.getClass().getName() + ": " + e.getMessage() );
+			e.printStackTrace();
 		}
 	}
 	
@@ -1095,6 +1118,7 @@ public final class UTMDB {
 		catch(Exception e)
 		{
 			System.err.println( e.getClass().getName() + ": " + e.getMessage() );
+			e.printStackTrace();
 			return false;
 		}
 	}
@@ -1109,7 +1133,7 @@ public final class UTMDB {
 			
 			String strUpdateMethodsUML = "Update UMLMethod Set Class_ID = (Select CodeClass.Class_ID From CodeClass Where CodeClass.Classname = UMLMethod.Classname)";
 			
-			String strUpdateMethodsCode = "Update	CodeMethod Set Class_ID = (Select CodeClass.Class_ID From CodeClass Where CodeClass.Classname = CodeMethod.Classname)";
+			String strUpdateMethodsCode = "Update CodeMethod Set Class_ID = (Select CodeClass.Class_ID From CodeClass Where CodeClass.Classname = CodeMethod.Classname)";
 			
 			String strUpdateReferencesUML = "Update UMLReference Set Class_ID = (Select UMLClass.Class_ID From UMLClass Where UMLClass.ClassName = UMLReference.ClassName), Ref_Class_ID = (Select UMLClass.Class_ID From UMLClass Where UMLClass.ClassName = UMLReference.RefClassName)";
 			
@@ -1139,6 +1163,7 @@ public final class UTMDB {
 		catch(Exception e)
 		{
 			System.err.println( e.getClass().getName() + ": " + e.getMessage() );
+			e.printStackTrace();
 		}
 	}
 	
@@ -1222,6 +1247,8 @@ public final class UTMDB {
 		catch(Exception e)
 		{
 			System.err.println( e.getClass().getName() + ": " + e.getMessage() );
+			e.printStackTrace();
+			
 		}
 	}
 	
@@ -1389,24 +1416,20 @@ public final class UTMDB {
 		catch(Exception e)
 		{
 			System.err.println( e.getClass().getName() + ": " + e.getMessage() );
+			e.printStackTrace();
 		}
 	}
 	
 	public boolean Open()
 	{
 		try{
-
-			String dbpath = "platform://meta/" + UTMActivator.PLUGIN_ID;
-			{
-				File file = new File(dbpath);
-				if(file.exists())
-				{
-					dbpath += "/utm.db";
-				}
-				else
-				{
-					dbpath = "utm.db";
-				}
+			String dbpath;
+			try{
+				dbpath = ResourcesPlugin.getWorkspace().getRoot().getLocation().toOSString()
+						+ System.getProperty("file.separator") + "utm.db";
+			}
+			catch(Exception e){
+				dbpath = "utm.db";
 			}
 			
 			if(!UTMDB._hasCreatedDB)
@@ -1428,6 +1451,7 @@ public final class UTMDB {
 		catch(Exception e)
 		{
 			System.err.println( e.getClass().getName() + ": " + e.getMessage() );
+			e.printStackTrace();
 			return false;
 		}
 		return true;
@@ -1445,6 +1469,7 @@ public final class UTMDB {
 		catch(Exception e)
 		{
 			System.err.println( e.getClass().getName() + ": " + e.getMessage() );
+			e.printStackTrace();
 			return false;
 		}
 		return true;
@@ -1466,6 +1491,7 @@ public final class UTMDB {
 		catch(Exception e)
 		{
 			System.err.println( e.getClass().getName() + ": " + e.getMessage() );
+			e.printStackTrace();
 		}
 	}
 }

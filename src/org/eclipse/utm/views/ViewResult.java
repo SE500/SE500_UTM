@@ -225,7 +225,7 @@ public class ViewResult extends ViewPart {
 								+ staticType
 								+ abstractType
 								+ finalType
-								+ utmclass.ClassName + " "
+								+ utmclass.ClassName + " "  + (utmclass.NumMismatched > 0 || utmclass.OtherID < 1 ? "**" : "")
 								+ " Mismatchs: "
 								+ utmclass.NumMismatched;
 
@@ -244,9 +244,8 @@ public class ViewResult extends ViewPart {
 				for(UTMDBReference ref : SourceClassReference)
 				{
 					String RefNodeText1 = 
-							ref.ClassName + " "
-							+ ref.AccessType + " " 
-							+ ref.ReferenceClassName;
+							ref.AccessType + " " 
+							+ ref.ReferenceClassName + (ref.OtherID <= 0 ? "*" : "");
 
 					TreeItem subItemRef1 = new TreeItem(item1, SWT.NONE);
 					subItemRef1.setText(new String[] {RefNodeText1});
@@ -273,11 +272,12 @@ public class ViewResult extends ViewPart {
 				 */
 				ArrayList<UTMDBAttribute> attributeList1 = new ArrayList<UTMDBAttribute>();
 				attributeList1 = db.GetSourceAttributesList(utmclass.ClassID);
-				for(UTMDBAttribute utmattr : attributeList1)
+				for(UTMDBAttribute attr : attributeList1)
 				{
-					String NodeText1 = utmattr.AccessType + " " 
-							+ utmattr.Name + " " 
-							+ utmattr.Type;
+					UTMDBAttribute otherAttr = db.GetUMLAttribute(attr.OtherID);
+					String NodeText1 = attr.AccessType + (otherAttr == null || otherAttr.AccessType.compareTo(attr.AccessType) != 0 ? "*" : "") + " " + 
+							attr.Type + (otherAttr == null || otherAttr.Type.compareTo(attr.Type) != 0 ? "*" : "") + " " + 
+							attr.Name + (attr.NumMismatched > 0 || attr.OtherID < 1 ? "**" : "");
 
 
 					TreeItem subItemAttr1 = new TreeItem(item1, SWT.NONE);
@@ -288,42 +288,42 @@ public class ViewResult extends ViewPart {
 					 *  Create Location Node && Add Location Node to Attribute Node
 					 */
 					TreeItem subsubItemAttrFileName1 = new TreeItem(subItemAttr1, SWT.NONE);
-					subsubItemAttrFileName1.setText(" Location: " + utmattr.Filename + ":" +utmattr.LineNumber);
+					subsubItemAttrFileName1.setText(" Location: " + attr.Filename + ":" + attr.LineNumber);
 					subItemAttr1.setExpanded(expand);
 
 					/*
 					 * Create AttributeID Node && Add AttributeID Node to Attribute Node
 					 */
 					TreeItem subsubItemAttrID1 = new TreeItem(subItemAttr1, SWT.NONE);
-					subsubItemAttrID1.setText("AttributeID: " + String.valueOf(utmattr.AttributeID));
+					subsubItemAttrID1.setText("AttributeID: " + String.valueOf(attr.AttributeID));
 					subItemAttr1.setExpanded(expand);
 
 					/*
 					 * Create ClassID Node && Add ClassID Node to Attribute Node
 					 */
 					TreeItem subsubItemAttrClassID1 = new TreeItem(subItemAttr1, SWT.NONE);
-					subsubItemAttrClassID1.setText("Class ID: " + String.valueOf(utmattr.ClassID));
+					subsubItemAttrClassID1.setText("Class ID: " + String.valueOf(attr.ClassID));
 					subItemAttr1.setExpanded(expand);
 
 					/*
 					 * Create ClassName Node && Add ClassName Node to Attribute Node
 					 */
 					TreeItem subsubItemAttrClassNa1 = new TreeItem(subItemAttr1, SWT.NONE);
-					subsubItemAttrClassNa1.setText("Class Name: " + String.valueOf(utmattr.ClassName));
+					subsubItemAttrClassNa1.setText("Class Name: " + String.valueOf(attr.ClassName));
 					subItemAttr1.setExpanded(expand);
 
 					/*
 					 * Create OtherID Node && Add OtherID Node to Attribute Node
 					 */
 					TreeItem subsubItemAttrOtherID1 = new TreeItem(subItemAttr1, SWT.NONE);
-					subsubItemAttrOtherID1.setText("Matched UML ClassID: " + String.valueOf(utmattr.OtherID));
+					subsubItemAttrOtherID1.setText("Matched UML ClassID: " + String.valueOf(attr.OtherID));
 					subItemAttr1.setExpanded(expand);
 
 					/*
 					 * Create NumMismatched Node && Add NumMismatched Node to Attribute Node
 					 */
 					TreeItem subsubItemAttrNumMismatched1 = new TreeItem(subItemAttr1, SWT.NONE);
-					subsubItemAttrNumMismatched1.setText("Number MisMatched: " + String.valueOf(utmattr.NumMismatched));
+					subsubItemAttrNumMismatched1.setText("Number MisMatched: " + String.valueOf(attr.NumMismatched));
 					subItemAttr1.setExpanded(expand);
 				}
 
@@ -334,11 +334,16 @@ public class ViewResult extends ViewPart {
 				db.GetSourceMethodsList(utmclass.ClassID);
 				for(UTMDBMethod utmmeth : methodList1)
 				{
+					UTMDBMethod otherMethod = db.GetUMLMethod(utmmeth.OtherID);
 					TreeItem subItemMethod1 = new TreeItem(item1, SWT.NONE);
-					String MethodNodeText1 = utmmeth.AccessType + " " 
-							+ utmmeth.Type + " " 
-							+ utmmeth.Name
-							+ "(" + utmmeth.Parameters + ")";
+					String MethodNodeText1 = utmmeth.AccessType + (otherMethod == null || otherMethod.AccessType.compareTo(utmmeth.AccessType) != 0 ? "*" : "") + " " + 
+							utmmeth.Type + (otherMethod == null || otherMethod.Type.compareTo(utmmeth.Type) != 0 ? "*" : "") + " " + 
+							utmmeth.Name + 
+							"(" + 
+									utmmeth.Parameters + 
+									(otherMethod == null || otherMethod.Parameters.compareTo(utmmeth.Parameters) != 0 ? "*" : "")  + 
+							")" + 
+							(utmmeth.NumMismatched > 0 || utmmeth.OtherID < 1 ? "**" : "");
 
 					subItemMethod1.setText(MethodNodeText1);
 					item1.setExpanded(expand);
@@ -403,7 +408,7 @@ public class ViewResult extends ViewPart {
 								+ staticType
 								+ abstractType
 								+ finalType
-								+ utmclass.ClassName + " "
+								+ utmclass.ClassName + " " + (utmclass.NumMismatched > 0 || utmclass.OtherID < 1 ? "**" : "")
 								+ " Mismatchs: "
 								+ utmclass.NumMismatched;
 
@@ -421,8 +426,7 @@ public class ViewResult extends ViewPart {
 				for(UTMDBReference ref : umlClassReference)
 				{
 					String RefNodeText2 = 
-							ref.ClassName  + " " 
-							+ ref.AccessType + " " 
+							ref.AccessType + " " 
 							+ ref.ReferenceClassName;
 
 					TreeItem subItemRef2 = new TreeItem(item2, SWT.NONE);
@@ -450,11 +454,12 @@ public class ViewResult extends ViewPart {
 				 */
 				ArrayList<UTMDBAttribute> attributeList2 = new ArrayList<UTMDBAttribute>();
 				attributeList2 = db.GetUMLAttributesList(utmclass.ClassID);
-				for(UTMDBAttribute utmattr : attributeList2)
+				for(UTMDBAttribute attr : attributeList2)
 				{
-					String NodeText2 = utmattr.AccessType + " " 
-							+ utmattr.Name + " " 
-							+ utmattr.Type;
+					UTMDBAttribute otherAttr = db.GetUMLAttribute(attr.OtherID);
+					String NodeText2 = attr.AccessType + (otherAttr == null || otherAttr.AccessType.compareTo(attr.AccessType) != 0 ? "*" : "") + " " + 
+							attr.Type + (otherAttr == null || otherAttr.Type.compareTo(attr.Type) != 0 ? "*" : "") + " " + 
+							attr.Name + (attr.NumMismatched > 0 || attr.OtherID < 1 ? "**" : "");
 
 					TreeItem subItemAttr2 = new TreeItem(item2, SWT.NONE);
 					subItemAttr2.setText(new String[] {NodeText2});
@@ -464,42 +469,42 @@ public class ViewResult extends ViewPart {
 					 *  Create Location Node && Add Location Node to Attribute Node
 					 */
 					TreeItem subsubItemAttrFileName2 = new TreeItem(subItemAttr2, SWT.NONE);
-					subsubItemAttrFileName2.setText("Location: " + utmattr.Filename + ":" +utmattr.LineNumber);
+					subsubItemAttrFileName2.setText("Location: " + attr.Filename + ":" +attr.LineNumber);
 					subItemAttr2.setExpanded(expand);
 
 					/*
 					 * Create AttributeID Node && Add AttributeID Node to Attribute Node
 					 */
 					TreeItem subsubItemAttrID2 = new TreeItem(subItemAttr2, SWT.NONE);
-					subsubItemAttrID2.setText("AttributeID: " + String.valueOf(utmattr.AttributeID));
+					subsubItemAttrID2.setText("AttributeID: " + String.valueOf(attr.AttributeID));
 					subItemAttr2.setExpanded(expand);
 
 					/*
 					 * Create ClassID Node && Add ClassID Node to Attribute Node
 					 */
 					TreeItem subsubItemAttrClassID2 = new TreeItem(subItemAttr2, SWT.NONE);
-					subsubItemAttrClassID2.setText("ClassID: " + String.valueOf(utmattr.ClassID));
+					subsubItemAttrClassID2.setText("ClassID: " + String.valueOf(attr.ClassID));
 					subItemAttr2.setExpanded(expand);
 
 					/*
 					 * Create ClassName Node && Add ClassName Node to Attribute Node
 					 */
 					TreeItem subsubItemAttrClassNa2 = new TreeItem(subItemAttr2, SWT.NONE);
-					subsubItemAttrClassNa2.setText("Class Name: " + String.valueOf(utmattr.ClassName));
+					subsubItemAttrClassNa2.setText("Class Name: " + String.valueOf(attr.ClassName));
 					subItemAttr2.setExpanded(expand);
 
 					/*
 					 * Create OtherID Node && Add OtherID Node to Attribute Node
 					 */
 					TreeItem subsubItemAttrOtherID2 = new TreeItem(subItemAttr2, SWT.NONE);
-					subsubItemAttrOtherID2.setText("Matched Source ClassID: " + String.valueOf(utmattr.OtherID));
+					subsubItemAttrOtherID2.setText("Matched Source ClassID: " + String.valueOf(attr.OtherID));
 					subItemAttr2.setExpanded(expand);
 
 					/*
 					 * Create NumMismatched Node && Add NumMismatched Node to Attribute Node
 					 */
 					TreeItem subsubItemAttrNumMismatched2 = new TreeItem(subItemAttr2, SWT.NONE);
-					subsubItemAttrNumMismatched2.setText("Number MisMatched: " + String.valueOf(utmattr.NumMismatched));
+					subsubItemAttrNumMismatched2.setText("Number MisMatched: " + String.valueOf(attr.NumMismatched));
 					subItemAttr2.setExpanded(expand);
 				}
 
@@ -510,11 +515,16 @@ public class ViewResult extends ViewPart {
 				db.GetUMLMethodsList(utmclass.ClassID);
 				for(UTMDBMethod utmmeth : methodList2)
 				{
+					UTMDBMethod otherMethod = db.GetUMLMethod(utmmeth.OtherID);
 					TreeItem subItemMethod2 = new TreeItem(item2, SWT.NONE);
-					String MethodNodeText2 =  utmmeth.AccessType + " " 
-							+ utmmeth.Type + " " 
-							+ utmmeth.Name
-							+ "(" + utmmeth.Parameters + ")";
+					String MethodNodeText2 = utmmeth.AccessType + (otherMethod == null || otherMethod.AccessType.compareTo(utmmeth.AccessType) != 0 ? "*" : "") + " " + 
+							utmmeth.Type + (otherMethod == null || otherMethod.Type.compareTo(utmmeth.Type) != 0 ? "*" : "") + " " + 
+							utmmeth.Name + 
+							"(" + 
+									utmmeth.Parameters + 
+									(otherMethod == null || otherMethod.Parameters.compareTo(utmmeth.Parameters) != 0 ? "*" : "")  + 
+							")" + 
+							(utmmeth.NumMismatched > 0 || utmmeth.OtherID < 1 ? "**" : "");
 
 					subItemMethod2.setText(MethodNodeText2);
 					item2.setExpanded(expand);
@@ -726,8 +736,8 @@ public class ViewResult extends ViewPart {
 			TreeItem subitem3_4 = new TreeItem(item3,SWT.NONE);
 			subitem3_4.setText("UML: " + Math.round(totalUMLNumMismatched) 
 			+ " Mismatched of " 
-			+ Math.round(totalSourceNumTotal) 
-			+ " Elements (" + Math.round(((totalSourceNumTotal - totalSourceNumMismatched) / totalSourceNumTotal) * 100) 
+			+ Math.round(totalUMLNumTotal) 
+			+ " Elements (" + Math.round(((totalUMLNumTotal - totalUMLNumMismatched) / totalUMLNumTotal) * 100) 
 			+ "% Matched)");
 			
 			columnSourceClasses.pack();
