@@ -189,9 +189,12 @@ public class UTMActivator extends AbstractUIPlugin {
 	}
 	
 	/**
-	 * 
+	 * The method will search through available consoles and find the
+	 * plug-in specific console if it is not found it will be created
 	 * @param name
+	 * 		The name of the console to find/create
 	 * @return
+	 * 		Returns the Message Console associated with the name
 	 */
 	private static MessageConsole findConsole(String name) {
 		ConsolePlugin plugin = ConsolePlugin.getDefault();

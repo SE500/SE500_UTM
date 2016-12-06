@@ -40,7 +40,8 @@ public class ViewResult extends ViewPart {
 	 * Create contents of the output view part. Initialize three trees show the result of
 	 * parse UML, parse Source Code, Comparison, respectively. 
 	 *  
-	 * @param container, parent
+	 * @param parent 
+	 * 		The parent of the control
 	 */
 	@Override
 	public void createPartControl(Composite parent) {
@@ -331,7 +332,7 @@ public class ViewResult extends ViewPart {
 				 *  Create Method Node && Add Method Node to Class Node
 				 */
 				ArrayList<UTMDBMethod> methodList1 = new ArrayList<UTMDBMethod>();
-				db.GetSourceMethodsList(utmclass.ClassID);
+				methodList1 = db.GetSourceMethodsList(utmclass.ClassID);
 				for(UTMDBMethod utmmeth : methodList1)
 				{
 					UTMDBMethod otherMethod = db.GetUMLMethod(utmmeth.OtherID);
@@ -512,7 +513,7 @@ public class ViewResult extends ViewPart {
 				 *  Create Method Node && Add Method Node to Class Node
 				 */
 				ArrayList<UTMDBMethod> methodList2 = new ArrayList<UTMDBMethod>();
-				db.GetUMLMethodsList(utmclass.ClassID);
+				methodList2 = db.GetUMLMethodsList(utmclass.ClassID);
 				for(UTMDBMethod utmmeth : methodList2)
 				{
 					UTMDBMethod otherMethod = db.GetUMLMethod(utmmeth.OtherID);
@@ -589,8 +590,8 @@ public class ViewResult extends ViewPart {
 			ArrayList<UTMDBClass> SourceClassList = db.GetSourceClassList();
 			for(UTMDBClass curClass : SourceClassList)
 			{
-				float numTotal = 0;
-				float numMismatched = 0;
+				float numTotal = 1;
+				float numMismatched = (curClass.NumMismatched > 0 || curClass.OtherID < 1 ? 1 : 0);
 
 				ArrayList<UTMDBReference> SourceClassReference = db.GetSourceReferencesList(curClass.ClassID);
 				ArrayList<UTMDBAttribute> SourceAttributeList = db.GetSourceAttributesList(curClass.ClassID);
@@ -608,7 +609,7 @@ public class ViewResult extends ViewPart {
 				for(UTMDBAttribute attr : SourceAttributeList)
 				{
 					numTotal++;
-					if(attr.NumMismatched > 0)
+					if(attr.NumMismatched > 0 || attr.OtherID < 1)
 					{
 						numMismatched++;
 					}
@@ -617,7 +618,7 @@ public class ViewResult extends ViewPart {
 				for(UTMDBMethod method : SourceMethodList)
 				{
 					numTotal++;
-					if(method.NumMismatched > 0)
+					if(method.NumMismatched > 0 || method.OtherID < 1)
 					{
 						numMismatched++;
 					}
@@ -673,8 +674,8 @@ public class ViewResult extends ViewPart {
 			ArrayList<UTMDBClass> UMLClassList = db.GetUMLClassList();
 			for(UTMDBClass curClass : UMLClassList)
 			{
-				float numTotal = 0;
-				float numMismatched = 0;
+				float numTotal = 1;
+				float numMismatched = (curClass.NumMismatched > 0 || curClass.OtherID < 1 ? 1 : 0);
 
 				ArrayList<UTMDBReference> UMLClassReference = db.GetUMLReferencesList(curClass.ClassID);
 				ArrayList<UTMDBAttribute> UMLAttributeList = db.GetUMLAttributesList(curClass.ClassID);
@@ -694,7 +695,7 @@ public class ViewResult extends ViewPart {
 				{
 
 					numTotal++;
-					if(attr.NumMismatched > 0)
+					if(attr.NumMismatched > 0 || attr.OtherID < 1)
 					{
 						numMismatched++;
 					}
@@ -704,7 +705,7 @@ public class ViewResult extends ViewPart {
 				{
 					// Count Mismatches
 					numTotal++;
-					if(method.NumMismatched > 0)
+					if(method.NumMismatched > 0 || method.OtherID < 1)
 					{
 						numMismatched++;
 					}

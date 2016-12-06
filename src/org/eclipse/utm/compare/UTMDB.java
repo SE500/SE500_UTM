@@ -534,8 +534,9 @@ public final class UTMDB {
 	/**
 	 * If fromUML = true then UMLAttribute table is used else the CodeAttribute table is used.
 	 * @param fromUML Sets the table to use as the source.
-	 * @param ClassID Sets the Class_ID to reference from the source table.
-	 * @return UTMDBAttribute object representing the given ClassID of the sourced table.
+	 * @param AttributeID Sets the AttributeID to reference from the source table.
+	 * @return 
+	 * 		UTMDBAttribute object representing the given ClassID of the sourced table.
 	 */
 	private UTMDBAttribute getAttribute(boolean fromUML, int AttributeID)
 	{
@@ -575,7 +576,7 @@ public final class UTMDB {
 	/**
 	 * If fromUML = true then UMLMethod table is used else the CodeMethod table is used.
 	 * @param fromUML Sets the table to use as the source.
-	 * @param ClassID Sets the Class_ID to reference from the source table.
+	 * @param MethodID Sets the MethodID to reference from the source table.
 	 * @return UTMDBMethod object representing the given ClassID of the sourced table.
 	 */
 	private UTMDBMethod getMethod(boolean fromUML, int MethodID)
@@ -636,7 +637,7 @@ public final class UTMDB {
 	
 	/**
 	 * Retrieves the attribute object representing the attribute record created using {@link #NewSourceAttribute(String, int, String, String, String, String) NewSourceAttribute} method.
-	 * @param ClassID ID of the class to retrieve.
+	 * @param AttributeID ID of the attribute to retrieve.
 	 * @return UTMDBClass object representing the class record.
 	 */
 	public UTMDBAttribute GetSourceAttribute(int AttributeID)
@@ -646,7 +647,7 @@ public final class UTMDB {
 	
 	/**
 	 * Retrieves the attribute object representing the attribute record created using {@link #NewUMLAttribute(String, String, String, String, String) NewUMLAttribute} method.
-	 * @param ClassID ID of the class to retrieve.
+	 * @param AttributeID ID of the attribute to retrieve.
 	 * @return UTMDBAttribute object representing the attribute record.
 	 */
 	public UTMDBAttribute GetUMLAttribute(int AttributeID)
@@ -656,7 +657,7 @@ public final class UTMDB {
 	
 	/**
 	 * Retrieves the method object representing the method record created using {@link #NewSourceMethod(String, int, String, String, String, String, String) NewSourceMethod} method.
-	 * @param ClassID ID of the class to retrieve.
+	 * @param MethodID ID of the method to retrieve.
 	 * @return UTMDBMethod object representing the method record.
 	 */
 	public UTMDBMethod GetSourceMethod(int MethodID)
@@ -666,7 +667,7 @@ public final class UTMDB {
 	
 	/**
 	 * Retrieves the method object representing the method record created using {@link #NewUMLMethod(String, String, String, String, String, String) NewUMLMethod} method.
-	 * @param ClassID ID of the class to retrieve.
+	 * @param MethodID ID of the method to retrieve.
 	 * @return UTMDBMethod object representing the method record.
 	 */
 	public UTMDBMethod GetUMLMethod(int MethodID)
@@ -755,6 +756,8 @@ public final class UTMDB {
 	}
 
 	/**
+	 * Get the attributes for a class from the source code 
+	 * @param ClassID is the class to retrieve the attributes from
 	 * @return List of UTMDBAttribute objects which represent all records in the CodeAttributes table.
 	 */
 	public ArrayList<UTMDBAttribute> GetSourceAttributesList(int ClassID)
@@ -795,6 +798,8 @@ public final class UTMDB {
 	}
 	
 	/**
+	 * Get the attributes for a class from the uml
+	 * @param ClassID is the class to retrieve the attributes from
 	 * @return List of UTMDBAttribute objects which represent all records in the UMLAttributes table.
 	 */
 	public ArrayList<UTMDBAttribute> GetUMLAttributesList(int ClassID)
@@ -835,6 +840,8 @@ public final class UTMDB {
 	}
 	
 	/**
+	 * Get the methods for a class from the source code
+	 * @param ClassID is the class to retrieve the methods from
 	 * @return List of UTMDBMethod objects which represent all records in the CodeMethod table.
 	 */
 	public ArrayList<UTMDBMethod> GetSourceMethodsList(int ClassID)
@@ -876,6 +883,8 @@ public final class UTMDB {
 	}
 	
 	/**
+	 * Get the methods for a class from the uml
+	 * @param ClassID is the class to retrieve the methods from
 	 * @return List of UTMDBMethod objects which represent all records in the UMLMethod table.
 	 */
 	public ArrayList<UTMDBMethod> GetUMLMethodsList(int ClassID)
@@ -917,6 +926,8 @@ public final class UTMDB {
 	}
 	
 	/**
+	 * Get the reference for a class from the source code
+	 * @param ClassID is the class to retrieve the methods from
 	 * @return List of UTMDBReference objects which represent all records in the CodeReference table.
 	 */
 	public ArrayList<UTMDBReference> GetSourceReferencesList(int ClassID)
@@ -955,6 +966,8 @@ public final class UTMDB {
 	}
 	
 	/**
+	 * Get the references for a class from the uml
+	 * @param ClassID is the class to retrieve the methods from
 	 * @return List of UTMDBReference objects which represent all records in the UMLReference table.
 	 */
 	public ArrayList<UTMDBReference> GetUMLReferencesList(int ClassID)
@@ -995,6 +1008,7 @@ public final class UTMDB {
 	/**
 	 * Create a new record in the UMLClass table.
 	 * Calls the {@link #newClass(boolean, String, int, String, String, boolean, boolean, boolean) newClass} method.
+	 * @param Filename Name of the java file
 	 * @param ClassName Name of the class.
 	 * @param AccessType Access identifier of the class (public, private, etc..)
 	 * @param IsStatic True if the class is static.
@@ -1238,7 +1252,8 @@ public final class UTMDB {
 	
 	/**
 	 * Calls the {@link #countReferencesOf(boolean, String) countReferencesOf} method.
-	 * @param ClassName Name of the base class to count from.
+	 * @param ClassName 
+	 * 		Name of the base class to count from
 	 * @return Count of references of the base class ClassName within the CodeReference table.
 	 */
 	public int CountSourceReferencesOf(String ClassName)
@@ -1247,8 +1262,9 @@ public final class UTMDB {
 	}
 	
 	/**
-	 * Calls the {@link #countReferencesTo(boolean, String)
-	 * @param ClassName Name of the referenced class to count.
+	 * Calls the {@link #countReferencesTo(boolean, String)}
+	 * @param ClassName 
+	 * 		Name of the referenced class to count
 	 * @return Count of references to the referenced ClassName within the UMLReference table.
 	 */
 	public int CountUMLReferencesTo(String ClassName)
@@ -1257,8 +1273,9 @@ public final class UTMDB {
 	}
 	
 	/**
-	 * Calls the {@link #countReferencesTo(boolean, String)
-	 * @param ClassName Name of the referenced class to count.
+	 * Calls the {@link #countReferencesTo(boolean, String)}
+	 * @param ClassName 
+	 * 		Name of the referenced class to count
 	 * @return Count of references to the referenced ClassName within the CodeReference table.
 	 */
 	public int CountSourceReferencesTo(String ClassName)
