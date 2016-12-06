@@ -31,7 +31,7 @@ public class TestCompare {
 				db.NewSourceReference("ClassA", "extends", "ClassB");
 				db.NewSourceReference("ClassA", "implements", "UIFormElementClass");
 				db.NewSourceReference("ClassA", "implements", "UIPanel");
-				db.NewSourceAttribute("ClassA.java", 4, "ClassA", "private", "boolean", "_isInit");
+//				db.NewSourceAttribute("ClassA.java", 4, "ClassA", "private", "boolean", "_isInit");
 				db.NewSourceAttribute("ClassA.java", 5, "ClassA", "private", "int", "_counter");
 				db.NewSourceAttribute("ClassA.java", 6, "ClassA", "public", "String", "Type");
 				db.NewSourceAttribute("ClassA.java", 8, "ClassA", "public", "UIPanelControl", "Control");
@@ -122,8 +122,8 @@ public class TestCompare {
 						UTMDBAttribute otherAttr = db.GetUMLAttribute(attr.OtherID);
 						System.out.println(
 								"\t\t" + 
-								attr.AccessType + (otherAttr == null || otherAttr.AccessType.compareTo(attr.AccessType) != 0 ? "*" : "") + " " + 
-								attr.Type + (otherAttr == null || otherAttr.Type.compareTo(attr.Type) != 0 ? "*" : "") + " " + 
+								attr.AccessType + (otherAttr == null || !otherAttr.AccessType.equals(attr.AccessType) ? "*" : "") + " " + 
+								attr.Type + (otherAttr == null || !otherAttr.Type.equals(attr.Type) ? "*" : "") + " " + 
 								attr.Name + (attr.NumMismatched > 0 || attr.OtherID < 1 ? "**" : "")
 						);
 						System.out.println("\t\t\tAttributeID: " + attr.AttributeID);
@@ -137,6 +137,7 @@ public class TestCompare {
 						if(attr.NumMismatched > 0 || attr.OtherID < 1)
 						{
 							numMismatched++;
+							System.out.println("Missing");
 						}
 					}
 					System.out.println("\tMethods: ");
@@ -145,12 +146,12 @@ public class TestCompare {
 						UTMDBMethod otherMethod = db.GetUMLMethod(method.OtherID);
 						System.out.println(
 								"\t\t" + 
-								method.AccessType + (otherMethod == null || otherMethod.AccessType.compareTo(method.AccessType) != 0 ? "*" : "") + " " + 
-								method.Type + (otherMethod == null || otherMethod.Type.compareTo(method.Type) != 0 ? "*" : "") + " " + 
+								method.AccessType + (otherMethod == null || !otherMethod.AccessType.equals(method.AccessType) ? "*" : "") + " " + 
+								method.Type + (otherMethod == null || !otherMethod.Type.equals(method.Type) ? "*" : "") + " " + 
 								method.Name + 
 								"(" + 
 										method.Parameters + 
-										(otherMethod == null || otherMethod.Parameters.compareTo(method.Parameters) != 0 ? "*" : "")  + 
+										(otherMethod == null || !otherMethod.Parameters.equals(method.Parameters) ? "*" : "")  + 
 								")" + 
 								(method.NumMismatched > 0 || method.OtherID < 1 ? "**" : "")
 						);
@@ -184,7 +185,7 @@ public class TestCompare {
 				ArrayList<UTMDBClass> UMLClassList = db.GetUMLClassList();
 				for(UTMDBClass curClass : UMLClassList)
 				{
-					float numTotal = 0;
+					float numTotal = 1;
 					float numMismatched = (curClass.NumMismatched > 0 || curClass.OtherID < 1 ? 1 : 0);
 					
 					ArrayList<UTMDBReference> UMLClassReference = db.GetUMLReferencesList(curClass.ClassID);
@@ -215,8 +216,8 @@ public class TestCompare {
 						UTMDBAttribute otherAttr = db.GetSourceAttribute(attr.OtherID);
 						System.out.println(
 								"\t\t" + 
-								attr.AccessType + (otherAttr == null || otherAttr.AccessType.compareTo(attr.AccessType) != 0 ? "*" : "") + " " + 
-								attr.Type + (otherAttr == null || otherAttr.Type.compareTo(attr.Type) != 0 ? "*" : "") + " " + 
+								attr.AccessType + (otherAttr == null || !otherAttr.AccessType.equals(attr.AccessType) ? "*" : "") + " " + 
+								attr.Type + (otherAttr == null || !otherAttr.Type.equals(attr.Type) ? "*" : "") + " " + 
 								attr.Name + 
 								(attr.NumMismatched > 0 || attr.OtherID < 1 ? "**" : "")
 						);
@@ -228,7 +229,7 @@ public class TestCompare {
 						System.out.println("\t\t\tNumMismatched: " + attr.NumMismatched);
 						
 						numTotal++;
-						if(attr.NumMismatched > 0)
+						if(attr.NumMismatched > 0 || attr.OtherID < 1)
 						{
 							numMismatched++;
 						}
@@ -240,12 +241,12 @@ public class TestCompare {
 						UTMDBMethod otherMethod = db.GetSourceMethod(method.OtherID);
 						System.out.println(
 								"\t\t" + 
-								method.AccessType + (otherMethod.AccessType.compareTo(method.AccessType) != 0 ? "*" : "") + " " + 
-								method.Type + (otherMethod.Type.compareTo(method.Type) != 0 ? "*" : "") + " " + 
+								method.AccessType + (otherMethod == null || !otherMethod.AccessType.equals(method.AccessType) ? "*" : "") + " " + 
+								method.Type + (otherMethod == null || !otherMethod.Type.equals(method.Type) ? "*" : "") + " " + 
 								method.Name + 
 								"(" + 
 										method.Parameters + 
-										(otherMethod == null || otherMethod.Parameters.compareTo(method.Parameters) != 0 ? "*" : "")  + 
+										(otherMethod == null || !otherMethod.Parameters.equals(method.Parameters) ? "*" : "")  + 
 								")" + 
 								(method.NumMismatched > 0 || method.OtherID < 1 ? "**" : "")
 						);
