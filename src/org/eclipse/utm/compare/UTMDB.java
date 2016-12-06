@@ -502,6 +502,10 @@ public final class UTMDB {
 		{
 			Statement select = this._c.createStatement();
 			ResultSet rs = select.executeQuery("Select * From " + (fromUML ? "UML" : "Code") + "Class Where Class_ID = " + ClassID);
+			if(!rs.isBeforeFirst())
+			{ // Exit if no results returned
+				return null;
+			}
 			rs.next();
 			
 			o = new UTMDBClass();
@@ -545,6 +549,10 @@ public final class UTMDB {
 		{
 			Statement select = this._c.createStatement();
 			ResultSet rs = select.executeQuery("Select * From " + (fromUML ? "UML" : "Code") + "Attribute Where Attribute_ID = " + AttributeID);
+			if(!rs.isBeforeFirst())
+			{ // Exit if no results returned
+				return null;
+			}
 			rs.next();
 			
 			o = new UTMDBAttribute();
@@ -586,6 +594,10 @@ public final class UTMDB {
 		{
 			Statement select = this._c.createStatement();
 			ResultSet rs = select.executeQuery("Select * From " + (fromUML ? "UML" : "Code") + "Method Where Method_ID = " + MethodID);
+			if(!rs.isBeforeFirst())
+			{ // Exit if no results returned
+				return null;
+			}
 			rs.next();
 			
 			o = new UTMDBMethod();
@@ -1312,6 +1324,10 @@ public final class UTMDB {
 	 */
 	public boolean IsOpen()
 	{
+		if(this._c == null)
+		{
+			return false;
+		}
 		try
 		{
 			return !this._c.isClosed();

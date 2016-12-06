@@ -228,7 +228,7 @@ public class ViewResult extends ViewPart {
 								+ finalType
 								+ utmclass.ClassName + " "  + (utmclass.NumMismatched > 0 || utmclass.OtherID < 1 ? "**" : "")
 								+ " Mismatchs: "
-								+ utmclass.NumMismatched;
+								+ utmclass.NumMismatched + (utmclass.NumMismatched);
 
 
 				/*
