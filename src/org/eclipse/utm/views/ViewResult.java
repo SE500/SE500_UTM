@@ -590,8 +590,8 @@ public class ViewResult extends ViewPart {
 			ArrayList<UTMDBClass> SourceClassList = db.GetSourceClassList();
 			for(UTMDBClass curClass : SourceClassList)
 			{
-				float numTotal = 0;
-				float numMismatched = 0;
+				float numTotal = 1;
+				float numMismatched = (curClass.NumMismatched > 0 || curClass.OtherID < 1 ? 1 : 0);
 
 				ArrayList<UTMDBReference> SourceClassReference = db.GetSourceReferencesList(curClass.ClassID);
 				ArrayList<UTMDBAttribute> SourceAttributeList = db.GetSourceAttributesList(curClass.ClassID);
@@ -609,7 +609,7 @@ public class ViewResult extends ViewPart {
 				for(UTMDBAttribute attr : SourceAttributeList)
 				{
 					numTotal++;
-					if(attr.NumMismatched > 0)
+					if(attr.NumMismatched > 0 || attr.OtherID < 1)
 					{
 						numMismatched++;
 					}
@@ -618,7 +618,7 @@ public class ViewResult extends ViewPart {
 				for(UTMDBMethod method : SourceMethodList)
 				{
 					numTotal++;
-					if(method.NumMismatched > 0)
+					if(method.NumMismatched > 0 || method.OtherID < 1)
 					{
 						numMismatched++;
 					}
@@ -674,8 +674,8 @@ public class ViewResult extends ViewPart {
 			ArrayList<UTMDBClass> UMLClassList = db.GetUMLClassList();
 			for(UTMDBClass curClass : UMLClassList)
 			{
-				float numTotal = 0;
-				float numMismatched = 0;
+				float numTotal = 1;
+				float numMismatched = (curClass.NumMismatched > 0 || curClass.OtherID < 1 ? 1 : 0);
 
 				ArrayList<UTMDBReference> UMLClassReference = db.GetUMLReferencesList(curClass.ClassID);
 				ArrayList<UTMDBAttribute> UMLAttributeList = db.GetUMLAttributesList(curClass.ClassID);
@@ -695,7 +695,7 @@ public class ViewResult extends ViewPart {
 				{
 
 					numTotal++;
-					if(attr.NumMismatched > 0)
+					if(attr.NumMismatched > 0 || attr.OtherID < 1)
 					{
 						numMismatched++;
 					}
@@ -705,7 +705,7 @@ public class ViewResult extends ViewPart {
 				{
 					// Count Mismatches
 					numTotal++;
-					if(method.NumMismatched > 0)
+					if(method.NumMismatched > 0 || method.OtherID < 1)
 					{
 						numMismatched++;
 					}
