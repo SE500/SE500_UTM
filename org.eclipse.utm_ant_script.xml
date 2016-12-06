@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project default="plugin_export" name="build">
+	<target name="plugin_export">
+		<pde.exportPlugins destination="D:\EclipseWorkspaces\SE500\.metadata\.plugins\org.eclipse.pde.core\install" exportSource="true" exportSourceBundle="true" exportType="directory" plugins="org.eclipse.utm" useJARFormat="true"/>
+	</target>
+</project>

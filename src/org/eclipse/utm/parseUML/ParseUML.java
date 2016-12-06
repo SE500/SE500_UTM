@@ -67,7 +67,6 @@ public class ParseUML extends Job{
 	
 	/**
 	 * Empty constructor
-	 * @constructor  
 	 * If used initialize must be called before launch
 	 */
 	public ParseUML() {
@@ -77,6 +76,7 @@ public class ParseUML extends Job{
 	/**
 	 * Constructor with a passed model file
 	 * @param model
+	 * 		The model to be parsed
 	 */
 	public ParseUML(File model){
 		super("Parsing the UML");
@@ -129,6 +129,7 @@ public class ParseUML extends Job{
 	/**
 	 * This method initializes the ParseUML object
 	 * @param model
+	 * 		The model to be parsed
 	 */
 	public void initialize(File model) {
 		UTMActivator.log("Initialising prior to parsing the UML Model...");
@@ -170,6 +171,7 @@ public class ParseUML extends Job{
 	/**
 	 * Process the generated UML files within directory
 	 * @param directory
+	 * 		The directory to be processed
 	 * @return true if the directory is deleted or false if deletion fails
 	 * @deprecated
 	 * 		This is no longer used due to newly created dependency on org.eclipse.umlgen.gen.java
@@ -213,9 +215,11 @@ public class ParseUML extends Job{
 	/**
 	 * Process each individually generated file
 	 * @param file
+	 * 		The file to process
 	 * @return 	true if all lines are processed successfully 
 	 *			false if line fails to be processed
 	 * @throws IOException
+	 * 		If the file to process cannot be read and exception is thrown
 	 * @deprecated
 	 * 		This is no longer used due to newly created dependency on org.eclipse.umlgen.gen.java
 	 */
@@ -243,7 +247,9 @@ public class ParseUML extends Job{
 	/**
 	 * Process each line within a generated file and store it appropriately
 	 * @param line
-	 * @return
+	 * 		The line to process
+	 * @return 
+	 * 		True if successful false if not
 	 * @deprecated
 	 * 		This is no longer used due to newly created dependency on org.eclipse.umlgen.gen.java
 	 */

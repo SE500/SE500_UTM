@@ -40,7 +40,8 @@ public class ViewResult extends ViewPart {
 	 * Create contents of the output view part. Initialize three trees show the result of
 	 * parse UML, parse Source Code, Comparison, respectively. 
 	 *  
-	 * @param container, parent
+	 * @param parent 
+	 * 		The parent of the control
 	 */
 	@Override
 	public void createPartControl(Composite parent) {
@@ -331,7 +332,7 @@ public class ViewResult extends ViewPart {
 				 *  Create Method Node && Add Method Node to Class Node
 				 */
 				ArrayList<UTMDBMethod> methodList1 = new ArrayList<UTMDBMethod>();
-				db.GetSourceMethodsList(utmclass.ClassID);
+				methodList1 = db.GetSourceMethodsList(utmclass.ClassID);
 				for(UTMDBMethod utmmeth : methodList1)
 				{
 					UTMDBMethod otherMethod = db.GetUMLMethod(utmmeth.OtherID);
@@ -512,7 +513,7 @@ public class ViewResult extends ViewPart {
 				 *  Create Method Node && Add Method Node to Class Node
 				 */
 				ArrayList<UTMDBMethod> methodList2 = new ArrayList<UTMDBMethod>();
-				db.GetUMLMethodsList(utmclass.ClassID);
+				methodList2 = db.GetUMLMethodsList(utmclass.ClassID);
 				for(UTMDBMethod utmmeth : methodList2)
 				{
 					UTMDBMethod otherMethod = db.GetUMLMethod(utmmeth.OtherID);

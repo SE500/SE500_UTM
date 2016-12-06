@@ -181,8 +181,6 @@ public class ViewOpenMenu extends ViewPart {
 	/**
 	 * This method is the action when click 'start' button, a 'showResultsView' method
 	 * is used inside.
-	 * 
-	 * @exception throws InterruptedException
 	 */
 	private void computeTraceability() {
 		// Create a Progress Group
@@ -231,7 +229,6 @@ public class ViewOpenMenu extends ViewPart {
 	/**
 	 * A method used to trigger output view.
 	 * 
-	 * @exception PartInitException
 	 */
 	protected void showResultsView() {
 		IWorkbenchPage page = getSite().getPage();
@@ -294,6 +291,7 @@ public class ViewOpenMenu extends ViewPart {
 	/**
 	 * Checks whether a job is modal or not
 	 * @param job
+	 * 		The job to check
 	 * @return
 	 * 		returns true if it is Modal, false if not
 	 */

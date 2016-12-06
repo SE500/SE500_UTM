@@ -24,7 +24,7 @@ import org.eclipse.utm.compare.UTMDB;
 /**
  * A class that parses source files and enters relevant information into
  * the UTMDB - an SQL database
- * @authors Thomas Colborne, Ziyad Daghriri
+ * @author Thomas Colborne, Ziyad Daghriri
  * 
  */
 public class ParseSource extends Job {
@@ -71,7 +71,7 @@ public class ParseSource extends Job {
 
 	}
 
-	/** (non-Javadoc)
+	/* (non-Javadoc)
 	 * @see org.eclipse.core.runtime.jobs.Job#belongsTo(java.lang.Object)
 	 */
 	@Override
@@ -79,7 +79,7 @@ public class ParseSource extends Job {
 		return family.equals(UTMActivator.UTM_JOB_FAMILY);
 	}
 
-	/** (non-Javadoc)
+	/* (non-Javadoc)
 	 * @see org.eclipse.core.runtime.jobs.Job#run(java.lang.Object)
 	 */
 	@Override
@@ -186,6 +186,8 @@ public class ParseSource extends Job {
 	 * or parses a single java file
 	 * @param directoryOrFile
 	 * 		The directory or file to be parsed
+	 * @param monitor
+	 * 		The progress monitor to report progress on
 	 * @return
 	 * 		Returns true on successfully parsing all files
 	 * 		Returns false on failure
@@ -771,7 +773,7 @@ public class ParseSource extends Job {
 
 	/**
 	 * This method removes all the class's comments and libraries within the file
-	 * @param line
+	 * @param lines
 	 *		An array of lines from the file 'name'
 	 * @return
 	 * 		returns lines
@@ -806,8 +808,10 @@ public class ParseSource extends Job {
 
 	/**
 	 * This method removes the class or the interface declaration within the file
-	 * @param line
+	 * @param lines
 	 *		An array of lines from the file 'name'
+	 * @param declaration
+	 * 		The class declaration to be removed from lines
 	 * @return
 	 * 		returns codeWithoutDeclaration
 	 */
@@ -836,7 +840,7 @@ public class ParseSource extends Job {
 
 	/**
 	 * This method removes the methods content within the file
-	 * @param line
+	 * @param lines
 	 *		An array of lines from the file 'name'
 	 * @return
 	 * 		returns body
