@@ -32,13 +32,13 @@ public class TestCompare {
 				db.NewSourceReference("ClassA", "implements", "UIFormElementClass");
 				db.NewSourceReference("ClassA", "implements", "UIPanel");
 				db.NewSourceAttribute("ClassA.java", 4, "ClassA", "private", "boolean", "_isInit");
-//				db.NewSourceAttribute("ClassA.java", 5, "ClassA", "private", "int", "_counter");
+				db.NewSourceAttribute("ClassA.java", 5, "ClassA", "private", "int", "_counter");
 				db.NewSourceAttribute("ClassA.java", 6, "ClassA", "public", "String", "Type");
 				db.NewSourceAttribute("ClassA.java", 8, "ClassA", "public", "UIPanelControl", "Control");
 				db.NewSourceMethod("ClassA.java", 10, "ClassA", "public", "void", "DoTheThing", "int num, boolean isTrue");
 				db.NewSourceMethod("ClassA.java", 19, "ClassA", "public", "boolean", "IsSomethingDone", "int num");
 				db.NewSourceMethod("ClassA.java", 42, "ClassA", "public", "void", "WriteAnother", "String written");
-//				db.NewSourceMethod("ClassA.java", 58, "ClassA", "public", "int", "GetCounter", "");
+				db.NewSourceMethod("ClassA.java", 58, "ClassA", "public", "int", "GetCounter", "");
 	
 				db.NewSourceClass("ClassB.java", 1, "ClassB", "public", false, true, false);
 				db.NewSourceAttribute("ClassB.java", 4, "ClassB", "private", "boolean", "_isGood");
@@ -91,8 +91,8 @@ public class TestCompare {
 				ArrayList<UTMDBClass> SourceClassList = db.GetSourceClassList();
 				for(UTMDBClass curClass : SourceClassList)
 				{
-					float numTotal = 0;
-					float numMismatched = 0;
+					float numTotal = 1;
+					float numMismatched = (curClass.NumMismatched > 0 || curClass.OtherID < 1 ? 1 : 0);
 					
 					ArrayList<UTMDBReference> SourceClassReference = db.GetSourceReferencesList(curClass.ClassID);
 					ArrayList<UTMDBAttribute> SourceAttributeList = db.GetSourceAttributesList(curClass.ClassID);
@@ -102,7 +102,7 @@ public class TestCompare {
 					for(UTMDBReference ref : SourceClassReference)
 					{
 						numTotal++;
-						if(ref.OtherID <= 0)
+						if(ref.NumMismatched > 0 || ref.OtherID < 1)
 						{
 							numMismatched++;
 						}
@@ -120,7 +120,6 @@ public class TestCompare {
 					for(UTMDBAttribute attr : SourceAttributeList)
 					{
 						UTMDBAttribute otherAttr = db.GetUMLAttribute(attr.OtherID);
-						System.err.println(attr.OtherID);
 						System.out.println(
 								"\t\t" + 
 								attr.AccessType + (otherAttr == null || otherAttr.AccessType.compareTo(attr.AccessType) != 0 ? "*" : "") + " " + 
@@ -135,7 +134,7 @@ public class TestCompare {
 						System.out.println("\t\t\tNumMismatched: " + attr.NumMismatched);
 						
 						numTotal++;
-						if(attr.NumMismatched > 0)
+						if(attr.NumMismatched > 0 || attr.OtherID < 1)
 						{
 							numMismatched++;
 						}
@@ -186,7 +185,7 @@ public class TestCompare {
 				for(UTMDBClass curClass : UMLClassList)
 				{
 					float numTotal = 0;
-					float numMismatched = 0;
+					float numMismatched = (curClass.NumMismatched > 0 || curClass.OtherID < 1 ? 1 : 0);
 					
 					ArrayList<UTMDBReference> UMLClassReference = db.GetUMLReferencesList(curClass.ClassID);
 					ArrayList<UTMDBAttribute> UMLAttributeList = db.GetUMLAttributesList(curClass.ClassID);
@@ -196,7 +195,7 @@ public class TestCompare {
 					for(UTMDBReference ref : UMLClassReference)
 					{
 						numTotal++;
-						if(ref.OtherID <= 0)
+						if(ref.NumMismatched > 0 || ref.OtherID < 1)
 						{
 							numMismatched++;
 						}
@@ -241,8 +240,8 @@ public class TestCompare {
 						UTMDBMethod otherMethod = db.GetSourceMethod(method.OtherID);
 						System.out.println(
 								"\t\t" + 
-								method.AccessType + (otherMethod == null || otherMethod.AccessType.compareTo(method.AccessType) != 0 ? "*" : "") + " " + 
-								method.Type + (otherMethod == null || otherMethod.Type.compareTo(method.Type) != 0 ? "*" : "") + " " + 
+								method.AccessType + (otherMethod.AccessType.compareTo(method.AccessType) != 0 ? "*" : "") + " " + 
+								method.Type + (otherMethod.Type.compareTo(method.Type) != 0 ? "*" : "") + " " + 
 								method.Name + 
 								"(" + 
 										method.Parameters + 
@@ -259,7 +258,7 @@ public class TestCompare {
 						
 						// Count Mismatches
 						numTotal++;
-						if(method.NumMismatched > 0)
+						if(method.NumMismatched > 0 || method.OtherID < 1)
 						{
 							numMismatched++;
 						}
